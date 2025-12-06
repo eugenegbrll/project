@@ -1,98 +1,58 @@
 <?php
 session_start();
-include 'db.php';
+require 'db.php';
 
-// Jika koneksi gagal
-if (!$conn) {
-    die("Koneksi gagal: " . mysqli_connect_error());
-}
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-$error = "";
+    $username = $_POST['username'];
+    $password = $_POST['password'];
 
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    $sql = $conn->prepare("SELECT * FROM users WHERE username = ?");
+    $sql->bind_param("s", $username);
+    $sql->execute();
+    $result = $sql->get_result();
 
-    // Ambil input
-    $username = trim($_POST['username']);
-    $input_password = $_POST['password'];
+    if ($result->num_rows === 1) {
+        $user = $result->fetch_assoc();
 
-    // Cek input kosong
-    if ($username === "" || $input_password === "") {
-        $error = "Username dan password harus diisi!";
-    } else {
+        if (password_verify($password, $user['password'])) {
 
-        // Query cek user
-        $sql = "SELECT user_id, password, role FROM users WHERE username = ?";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("s", $username);
-        $stmt->execute();
+            $_SESSION['user_id'] = $user['user_id'];
+            $_SESSION['username'] = $user['username'];
+            $_SESSION['role'] = $user['role'];
+            $_SESSION['full_name'] = $user['full_name'];
 
-        $result = $stmt->get_result();
-
-        // Jika username ditemukan
-        if ($result && $result->num_rows === 1) {
-            $user = $result->fetch_assoc();
-
-            // Verifikasi password
-            if (password_verify($input_password, $user['password'])) {
-
-                // Simpan session
-                $_SESSION['user_id'] = $user['user_id'];
-                $_SESSION['role'] = $user['role'];
-
-                // Redirect berdasarkan role
-                if ($user['role'] == 'admin') {
-                    header("Location: admin_dashboard.php");
-                } else {
-                    header("Location: student_dashboard.php");
-                }
-                exit();
-
-            } else {
-                $error = "Password salah!";
+            if ($user['role'] === 'student') {
+                header("Location: student_dashboard.php");
+                exit;
+            } else if ($user['role'] === 'admin') {
+                header("Location: admin_dashboard.php");
+                exit;
             }
 
         } else {
-            $error = "Username tidak ditemukan!";
+            $error = "Password salah!";
         }
-
-        $stmt->close();
+    } else {
+        $error = "Username tidak ditemukan!";
     }
 }
 ?>
-
 <!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <title>Login</title>
-</head>
+<html>
+<head><title>Login</title></head>
 <body>
 
-    <h2>Login</h2>
+<h2>Login</h2>
 
-    <?php if (!empty($error)): ?>
-        <p style="color:red;"><?= htmlspecialchars($error) ?></p>
-    <?php endif; ?>
+<?php if (!empty($_GET['registered'])) echo "<p style='color:green;'>Registrasi berhasil! Silakan login.</p>"; ?>
+<?php if (!empty($error)) echo "<p style='color:red;'>$error</p>"; ?>
 
-    <form method="POST" action="">
-        <input 
-            type="text" 
-            name="username" 
-            placeholder="Username" 
-            required
-        ><br><br>
-
-        <input 
-            type="password" 
-            name="password" 
-            placeholder="Password" 
-            required
-        ><br><br>
-
-        <button type="submit">Login</button>
-    </form>
-
-    <p>Belum punya akun? <a href="register.php">Register di sini</a></p>
+<form method="POST">
+    <input type="text" name="username" placeholder="Username" required><br><br>
+    <input type="password" name="password" placeholder="Password" required><br><br>
+    <button type="submit">Login</button>
+</form>
 
 </body>
 </html>

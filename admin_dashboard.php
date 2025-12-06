@@ -86,7 +86,7 @@ if (isset($_GET['delete_material'])) {
     <title>Admin Dashboard</title>
 </head>
 <body>
-    <h1>Selamat Datang, Admin</h1>
+    <h1>Selamat Datang, <?= htmlspecialchars($_SESSION['full_name']) ?></h1>
 
     <!-- ------------------------------------------------ -->
     <h2>➕ Tambah Course Baru</h2>
