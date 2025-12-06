@@ -5,7 +5,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'admin') {
     exit();
 }
 
-include 'db_connect.php';
+include 'db.php';
 
 /* -----------------------------
    Aksi: Tambah Course
@@ -71,7 +71,6 @@ if (isset($_POST['add_quiz'])) {
 if (isset($_GET['delete_material'])) {
     $id = $_GET['delete_material'];
 
-    // Hapus juga quiz terkait
     $conn->query("DELETE FROM quizzes WHERE material_id = $id");
 
     $conn->query("DELETE FROM materials WHERE material_id = $id");
@@ -87,9 +86,9 @@ if (isset($_GET['delete_material'])) {
 </head>
 <body>
     <h1>Selamat Datang, <?= htmlspecialchars($_SESSION['full_name']) ?></h1>
+    <h1><a href="logout.php">Logout</a></h1>
 
-    <!-- ------------------------------------------------ -->
-    <h2>➕ Tambah Course Baru</h2>
+    <h2>Tambah Course Baru</h2>
     <form method="POST">
         <input type="hidden" name="add_course">
         <input type="text" name="course_name" placeholder="Nama Course" required>
@@ -98,8 +97,7 @@ if (isset($_GET['delete_material'])) {
 
     <hr>
 
-    <!-- ------------------------------------------------ -->
-    <h2>➕ Tambah Materi Pelajaran</h2>
+    <h2>Tambah Materi Pelajaran</h2>
     <form method="POST">
         <input type="hidden" name="add_material">
         
@@ -125,8 +123,7 @@ if (isset($_GET['delete_material'])) {
 
     <hr>
 
-    <!-- ------------------------------------------------ -->
-    <h2>📝 Buat Quiz Terkait Materi</h2>
+    <h2>Buat Quiz Terkait Materi</h2>
     <form method="POST">
         <input type="hidden" name="add_quiz">
 
@@ -159,8 +156,7 @@ if (isset($_GET['delete_material'])) {
 
     <hr>
 
-    <!-- ------------------------------------------------ -->
-    <h2>🗑️ Kelola Materi</h2>
+    <h2>Kelola Materi</h2>
     <?php
     $sql_list = "
         SELECT m.material_id, m.material_title, c.course_name

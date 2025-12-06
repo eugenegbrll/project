@@ -1,103 +1,68 @@
 <?php
 session_start();
-if (!isset($_SESSION['user_id'])) {
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'student') {
     header("Location: login.php");
     exit();
 }
 
-include 'db_connect.php';
+include 'db.php';
 
-if (!isset($_GET['id'])) {
-    echo "Course ID tidak ditemukan.";
-    exit();
-}
+$course_id = $_GET['id'] ?? 0;
+$user_id = $_SESSION['user_id'];
 
-$course_id = $_GET['id'];
-$user_id   = $_SESSION['user_id'];
-
-/* ---------------------------------------------
-   Ambil data course + progress siswa
---------------------------------------------- */
-$sql = "
-    SELECT 
-        c.course_id,
-        c.course_name,
-        c.teacher_name,
-        c.description,
-        c.image_url,
-        sc.progress
-    FROM courses c
-    JOIN student_courses sc 
-         ON c.course_id = sc.course_id
-    WHERE c.course_id = ? 
-      AND sc.user_id = ?
-";
-
+// Ambil info course + progress
+$sql = "SELECT c.*, sc.progress 
+        FROM courses c 
+        LEFT JOIN student_courses sc 
+        ON c.course_id = sc.course_id AND sc.user_id = ?
+        WHERE c.course_id = ?";
 $stmt = $conn->prepare($sql);
-$stmt->bind_param("ii", $course_id, $user_id);
+$stmt->bind_param("ii", $user_id, $course_id);
 $stmt->execute();
-$result = $stmt->get_result();
+$course = $stmt->get_result()->fetch_assoc();
 
-/* ---------------------------------------------
-   Cek apakah course ditemukan
---------------------------------------------- */
-if ($result->num_rows === 0) {
-    echo "Course tidak ditemukan atau kamu belum terdaftar.";
+if (!$course) {
+    echo "Course tidak ditemukan";
     exit();
 }
 
-$course = $result->fetch_assoc();
-$stmt->close();
-
+// Ambil materials
+$sql_m = "SELECT * FROM materials WHERE course_id = ? ORDER BY level ASC";
+$stmt_m = $conn->prepare($sql_m);
+$stmt_m->bind_param("i", $course_id);
+$stmt_m->execute();
+$materials = $stmt_m->get_result();
 ?>
 <!DOCTYPE html>
-<html lang="id">
+<html>
 <head>
     <title>Detail Course</title>
-    <style>
-        .card {
-            width: 400px;
-            padding: 15px;
-            border: 1px solid #ccc;
-            border-radius: 10px;
-            margin: 20px auto;
-        }
-        img {
-            max-width: 100%;
-            border-radius: 8px;
-        }
-        .progress-bar {
-            width: 100%;
-            background: #eee;
-            border-radius: 8px;
-            overflow: hidden;
-            height: 20px;
-            margin-top: 5px;
-        }
-        .progress-fill {
-            height: 100%;
-            background: #4caf50;
-        }
-    </style>
 </head>
 <body>
 
-<div class="card">
-    <h2><?= htmlspecialchars($course['course_name']) ?></h2>
+<a href="student_dashboard.php">⬅ Kembali</a>
 
-    <?php if (!empty($course['image_url'])): ?>
-        <img src="<?= htmlspecialchars($course['image_url']) ?>" alt="Course Image">
-    <?php endif; ?>
+<h1><?php echo htmlspecialchars($course['course_name']); ?></h1>
+<p><strong>Guru:</strong> <?php echo htmlspecialchars($course['teacher_name']); ?></p>
+<p><?php echo htmlspecialchars($course['description']); ?></p>
 
-    <p><strong>Guru:</strong> <?= htmlspecialchars($course['teacher_name']) ?></p>
-    <p><strong>Deskripsi:</strong> <?= nl2br(htmlspecialchars($course['description'])) ?></p>
+<h3>Progress Kamu: <?php echo $course['progress']; ?>%</h3>
+<hr>
 
-    <p><strong>Progress Kamu:</strong></p>
-    <div class="progress-bar">
-        <div class="progress-fill" style="width: <?= (int)$course['progress'] ?>%;"></div>
-    </div>
-    <p><?= (int)$course['progress'] ?>%</p>
-</div>
+<h2>Daftar Materi</h2>
+
+<?php
+while ($m = $materials->fetch_assoc()) {
+    echo "<div style='margin-bottom:20px;'>
+            <h3>Level {$m['level']} - " . htmlspecialchars($m['material_title']) . "</h3>
+            <p>" . nl2br(htmlspecialchars($m['material_content'])) . "</p>";
+
+    // Tampilkan "Kerjakan Quiz" untuk material ini
+    echo "<a href='quiz.php?material_id={$m['material_id']}'>Kerjakan Quiz ➜</a>";
+
+    echo "</div><hr>";
+}
+?>
 
 </body>
 </html>
