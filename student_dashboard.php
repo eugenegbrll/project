@@ -15,6 +15,7 @@ $user_id = $_SESSION['user_id'];
 </head>
 <body>
 
+<h1>Halo, <?= htmlspecialchars($_SESSION['full_name']) ?></h1>
 <h1><a href="logout.php">Logout</a></h1>
 
 <h2>Course yang Diambil</h2>
@@ -40,6 +41,7 @@ $user_id = $_SESSION['user_id'];
     }
     ?>
 </div>
+
 
 <hr>
 
