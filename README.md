@@ -27,4 +27,4 @@ Fitur 3 =
 - Student punya pet dan bisa menyelamatkan pet di quiz
 - Pet bisa digerak-gerakin dalam air
 - Tambah css untuk register.php dan quiz.php
-- idea nanti : Pet bisa muncul di dashboard student dan dielus-elus
+- Pet muncul di dashboard student dan dielus-elus
