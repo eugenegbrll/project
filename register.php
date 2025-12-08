@@ -6,6 +6,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $username = $_POST['username'];
     $full_name = $_POST['full_name'];
+    $favorite_animal = $_POST['favorite_animal'];
     $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
     $role = "student"; 
 
@@ -18,8 +19,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = "Username sudah dipakai!";
     } else {
       
-        $sql = $conn->prepare("INSERT INTO users (username, password, full_name, role) VALUES (?, ?, ?, ?)");
-        $sql->bind_param("ssss", $username, $password, $full_name, $role);
+        $sql = $conn->prepare("INSERT INTO users (username, password, full_name, favorite_animal, role) VALUES (?, ?, ?, ?, ?)");
+        $sql->bind_param("sssss", $username, $password, $full_name, $favorite_animal, $role);
 
         if ($sql->execute()) {
             header("Location: login.php?registered=1");
@@ -32,20 +33,79 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ?>
 <!DOCTYPE html>
 <html>
-<head><title>Register</title></head>
+<head>
+    <title>Register</title>
+    <link rel="stylesheet" href="register.css">
+</head>
 <body>
 
 <h2>Register</h2>
 
-<?php if (!empty($error)) echo "<p style='color:red;'>$error</p>"; ?>
+<?php if (!empty($error)) echo "<p class='error'>$error</p>"; ?>
 
 <form method="POST">
-    <input type="text" name="full_name" placeholder="Full Name" required><br><br>
-    <input type="text" name="username" placeholder="Username" required><br><br>
-    <input type="password" name="password" placeholder="Password" required><br><br>
+    <label>Full Name:</label>
+    <input type="text" name="full_name" placeholder="Full Name" required>
+    
+    <label>Username:</label>
+    <input type="text" name="username" placeholder="Username" required>
+    
+    <label>Password:</label>
+    <input type="password" name="password" placeholder="Password" required>
+    
+    <label>Pilih Hewan Favorit (untuk quiz nanti!):</label>
+    <div class="animal-selector">
+        <div class="animal-option">
+            <input type="radio" name="favorite_animal" value="cat" id="cat" required>
+            <label for="cat">🐈<div class="animal-name">Kucing</div></label>
+        </div>
+        <div class="animal-option">
+            <input type="radio" name="favorite_animal" value="dog" id="dog">
+            <label for="dog">🐕<div class="animal-name">Anjing</div></label>
+        </div>
+        <div class="animal-option">
+            <input type="radio" name="favorite_animal" value="chicken" id="chicken">
+            <label for="chicken">🐓<div class="animal-name">Ayam</div></label>
+        </div>
+        <div class="animal-option">
+            <input type="radio" name="favorite_animal" value="fish" id="fish">
+            <label for="fish">🐠<div class="animal-name">Ikan</div></label>
+        </div>
+        <div class="animal-option">
+            <input type="radio" name="favorite_animal" value="rabbit" id="rabbit">
+            <label for="rabbit">🐇<div class="animal-name">Kelinci</div></label>
+        </div>
+        <div class="animal-option">
+            <input type="radio" name="favorite_animal" value="lizard" id="lizard">
+            <label for="lizard">🦎<div class="animal-name">Kadal</div></label>
+        </div>
+    </div>
+    
     <button type="submit">Register</button>
-    <a href="login.php">login</a>
+    <p style="text-align: center; margin-top: 15px;">
+        <a href="login.php">Sudah punya akun? Login</a>
+    </p>
 </form>
+
+<script>
+// Make the entire animal-option div clickable
+document.querySelectorAll('.animal-option').forEach(option => {
+    option.addEventListener('click', function() {
+        const radio = this.querySelector('input[type="radio"]');
+        radio.checked = true;
+        
+        // Remove selected class from all options
+        document.querySelectorAll('.animal-option').forEach(opt => {
+            opt.style.borderColor = '#ddd';
+            opt.style.backgroundColor = 'white';
+        });
+        
+        // Add selected style to clicked option
+        this.style.borderColor = '#4CAF50';
+        this.style.backgroundColor = '#e8f5e9';
+    });
+});
+</script>
 
 </body>
 </html>
