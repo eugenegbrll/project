@@ -38,71 +38,54 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="register.css">
 </head>
 <body>
+<div class="register-container">
+    <h2>Register</h2>
 
-<h2>Register</h2>
+    <?php if (!empty($error)) echo "<p class='error'>$error</p>"; ?>
 
-<?php if (!empty($error)) echo "<p class='error'>$error</p>"; ?>
-
-<form method="POST">
-    <label>Full Name:</label>
-    <input type="text" name="full_name" placeholder="Full Name" required>
-    
-    <label>Username:</label>
-    <input type="text" name="username" placeholder="Username" required>
-    
-    <label>Password:</label>
-    <input type="password" name="password" placeholder="Password" required>
-    
-    <label>Pilih Hewan Favorit:</label>
-    <div class="animal-selector">
-        <div class="animal-option">
-            <input type="radio" name="favorite_animal" value="cat" id="cat" required>
-            <label for="cat">🐈<div class="animal-name">Kucing</div></label>
+    <form method="POST">
+        <label>Full Name:</label>
+        <input type="text" name="full_name" placeholder="Full Name" required>
+        
+        <label>Username:</label>
+        <input type="text" name="username" placeholder="Username" required>
+        
+        <label>Password:</label>
+        <input type="password" name="password" placeholder="Password" required>
+        
+        <label>Pilih Hewan Favorit:</label>
+        <div class="animal-selector">
+            <div class="animal-option">
+                <input type="radio" name="favorite_animal" value="cat" id="cat" required>
+                <label for="cat">🐈<div class="animal-name">Kucing</div></label>
+            </div>
+            <div class="animal-option">
+                <input type="radio" name="favorite_animal" value="dog" id="dog">
+                <label for="dog">🐕<div class="animal-name">Anjing</div></label>
+            </div>
+            <div class="animal-option">
+                <input type="radio" name="favorite_animal" value="chicken" id="chicken">
+                <label for="chicken">🐓<div class="animal-name">Ayam</div></label>
+            </div>
+            <div class="animal-option">
+                <input type="radio" name="favorite_animal" value="fish" id="fish">
+                <label for="fish">🐠<div class="animal-name">Ikan</div></label>
+            </div>
+            <div class="animal-option">
+                <input type="radio" name="favorite_animal" value="rabbit" id="rabbit">
+                <label for="rabbit">🐇<div class="animal-name">Kelinci</div></label>
+            </div>
+            <div class="animal-option">
+                <input type="radio" name="favorite_animal" value="lizard" id="lizard">
+                <label for="lizard">🦎<div class="animal-name">Kadal</div></label>
+            </div>
         </div>
-        <div class="animal-option">
-            <input type="radio" name="favorite_animal" value="dog" id="dog">
-            <label for="dog">🐕<div class="animal-name">Anjing</div></label>
-        </div>
-        <div class="animal-option">
-            <input type="radio" name="favorite_animal" value="chicken" id="chicken">
-            <label for="chicken">🐓<div class="animal-name">Ayam</div></label>
-        </div>
-        <div class="animal-option">
-            <input type="radio" name="favorite_animal" value="fish" id="fish">
-            <label for="fish">🐠<div class="animal-name">Ikan</div></label>
-        </div>
-        <div class="animal-option">
-            <input type="radio" name="favorite_animal" value="rabbit" id="rabbit">
-            <label for="rabbit">🐇<div class="animal-name">Kelinci</div></label>
-        </div>
-        <div class="animal-option">
-            <input type="radio" name="favorite_animal" value="lizard" id="lizard">
-            <label for="lizard">🦎<div class="animal-name">Kadal</div></label>
-        </div>
-    </div>
-    
-    <button type="submit">Register</button>
-    <p style="text-align: center; margin-top: 15px;">
+        
+        <button type="submit">Register</button>
         <a href="login.php">Sudah punya akun? Login</a>
-    </p>
-</form>
+    </form>
+</div>
 
-<script>
-document.querySelectorAll('.animal-option').forEach(option => {
-    option.addEventListener('click', function() {
-        const radio = this.querySelector('input[type="radio"]');
-        radio.checked = true;
-        
-        document.querySelectorAll('.animal-option').forEach(opt => {
-            opt.style.borderColor = '#ddd';
-            opt.style.backgroundColor = 'white';
-        });
-        
-        this.style.borderColor = '#4CAF50';
-        this.style.backgroundColor = '#e8f5e9';
-    });
-});
-</script>
 
 </body>
 </html>

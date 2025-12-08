@@ -1,9 +1,38 @@
-/* register.php */
 body {
     font-family: Arial, sans-serif;
     max-width: 500px;
     margin: 50px auto;
     padding: 20px;
+    border-radius: 10px;
+    background: linear-gradient(to bottom, #87CEEB 0%, #87CEEB 50%, #4682B4 100%);
+}
+
+.register-container {
+    background-color: #f9f9f9;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}  
+
+.register-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #1e5582;
+}
+
+.register-container label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #0f1082;  
+}
+
+.register-container a {
+    display: block;
+    text-align: center;
+    margin-top: 15px;
+    color: #0f7ed9;
+    text-decoration: none;
 }
 
 .animal-selector {
@@ -32,7 +61,7 @@ body {
 }
 
 .animal-option input[type="radio"]:checked + label {
-    border-color: #4CAF50;
+    border-color: #0e8111;
     background-color: #e8f5e9;
 }
 
@@ -58,7 +87,7 @@ input[type="text"], input[type="password"] {
 
 button {
     width: 100%;
-    padding: 12px;
+    padding: 20px;
     background-color: #4CAF50;
     color: white;
     border: none;
@@ -69,13 +98,10 @@ button {
         
 button:hover {
     background-color: #45a049;
+    transform: scale(1.05);
 }
 
 .error {
     color: red;
-    padding: 10px;
-    background-color: #ffebee;
-    border-radius: 5px;
     margin-bottom: 15px;
 }
-

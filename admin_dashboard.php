@@ -153,6 +153,7 @@ $selected_material_id = $_GET['material_id'] ?? '';
     <h1>Selamat Datang, <?= htmlspecialchars($_SESSION['full_name']) ?></h1>
     <h1><a href="logout.php">Logout</a></h1>
 
+    <h1>Admin Dashboard</h1>
     <?php if (isset($_GET['success']) && $_GET['success'] == 'quiz_added'): ?>
         <p style="color: green;">✅ Quiz berhasil ditambahkan! Tambah pertanyaan lagi untuk materi yang sama.</p>
     <?php endif; ?>
