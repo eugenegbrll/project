@@ -1,91 +1,108 @@
 <?php
 session_start();
-include 'db.php'; // pastikan sama dengan login.php
+require 'db.php'; 
 
-$error = "";
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $username = $_POST['username'];
+    $full_name = $_POST['full_name'];
+    $favorite_animal = $_POST['favorite_animal'];
+    $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+    $role = "student"; 
 
-    $full_name = trim($_POST['full_name']);
-    $username  = trim($_POST['username']);
-    $password  = $_POST['password'];
-    $role      = $_POST['role'];
+    $check = $conn->prepare("SELECT * FROM users WHERE username = ?");
+    $check->bind_param("s", $username);
+    $check->execute();
+    $res = $check->get_result();
 
-    // Validasi sederhana
-    if ($full_name === "" || $username === "" || $password === "") {
-        $error = "Semua form harus diisi!";
+    if ($res->num_rows > 0) {
+        $error = "Username sudah dipakai!";
     } else {
+      
+        $sql = $conn->prepare("INSERT INTO users (username, password, full_name, favorite_animal, role) VALUES (?, ?, ?, ?, ?)");
+        $sql->bind_param("sssss", $username, $password, $full_name, $favorite_animal, $role);
 
-        // Hash password
-        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-
-        // Cek apakah username sudah dipakai
-        $check = $conn->prepare("SELECT user_id FROM users WHERE username = ?");
-        $check->bind_param("s", $username);
-        $check->execute();
-        $result = $check->get_result();
-
-        if ($result->num_rows > 0) {
-            $error = "Username sudah digunakan!";
+        if ($sql->execute()) {
+            header("Location: login.php?registered=1");
+            exit;
         } else {
-
-            // Insert user baru
-            $sql = "INSERT INTO users (full_name, username, password, role) VALUES (?, ?, ?, ?)";
-            $stmt = $conn->prepare($sql);
-            $stmt->bind_param("ssss", $full_name, $username, $hashed_password, $role);
-
-            if ($stmt->execute()) {
-
-                // Setelah berhasil daftar → langsung login otomatis
-                $_SESSION['user_id'] = $stmt->insert_id;
-                $_SESSION['role'] = $role;
-
-                // Redirect sesuai role
-                if ($role === "admin") {
-                    header("Location: admin_dashboard.php");
-                } else {
-                    header("Location: student_dashboard.php");
-                }
-                exit();
-
-            } else {
-                $error = "Gagal registrasi: " . $stmt->error;
-            }
+            $error = "Gagal melakukan registrasi!";
         }
     }
 }
 ?>
 <!DOCTYPE html>
-<html lang="id">
+<html>
 <head>
-    <meta charset="UTF-8">
     <title>Register</title>
+    <link rel="stylesheet" href="register.css">
 </head>
 <body>
 
 <h2>Register</h2>
 
-<?php if (!empty($error)): ?>
-    <p style="color:red;"><?= htmlspecialchars($error) ?></p>
-<?php endif; ?>
+<?php if (!empty($error)) echo "<p class='error'>$error</p>"; ?>
 
-<form method="POST" action="">
-    <input type="text" name="full_name" placeholder="Nama Lengkap" required><br><br>
-
-    <input type="text" name="username" placeholder="Username" required><br><br>
-
-    <input type="password" name="password" placeholder="Password" required><br><br>
-
-    <label>Role:</label>
-    <select name="role" required>
-        <option value="student">Student</option>
-        <option value="admin">Admin</option>
-    </select><br><br>
-
+<form method="POST">
+    <label>Full Name:</label>
+    <input type="text" name="full_name" placeholder="Full Name" required>
+    
+    <label>Username:</label>
+    <input type="text" name="username" placeholder="Username" required>
+    
+    <label>Password:</label>
+    <input type="password" name="password" placeholder="Password" required>
+    
+    <label>Pilih Hewan Favorit (untuk quiz nanti!):</label>
+    <div class="animal-selector">
+        <div class="animal-option">
+            <input type="radio" name="favorite_animal" value="cat" id="cat" required>
+            <label for="cat">🐈<div class="animal-name">Kucing</div></label>
+        </div>
+        <div class="animal-option">
+            <input type="radio" name="favorite_animal" value="dog" id="dog">
+            <label for="dog">🐕<div class="animal-name">Anjing</div></label>
+        </div>
+        <div class="animal-option">
+            <input type="radio" name="favorite_animal" value="chicken" id="chicken">
+            <label for="chicken">🐓<div class="animal-name">Ayam</div></label>
+        </div>
+        <div class="animal-option">
+            <input type="radio" name="favorite_animal" value="fish" id="fish">
+            <label for="fish">🐠<div class="animal-name">Ikan</div></label>
+        </div>
+        <div class="animal-option">
+            <input type="radio" name="favorite_animal" value="rabbit" id="rabbit">
+            <label for="rabbit">🐇<div class="animal-name">Kelinci</div></label>
+        </div>
+        <div class="animal-option">
+            <input type="radio" name="favorite_animal" value="lizard" id="lizard">
+            <label for="lizard">🦎<div class="animal-name">Kadal</div></label>
+        </div>
+    </div>
+    
     <button type="submit">Register</button>
+    <p style="text-align: center; margin-top: 15px;">
+        <a href="login.php">Sudah punya akun? Login</a>
+    </p>
 </form>
 
-<p>Sudah punya akun? <a href="login.php">Login</a></p>
+<script>
+document.querySelectorAll('.animal-option').forEach(option => {
+    option.addEventListener('click', function() {
+        const radio = this.querySelector('input[type="radio"]');
+        radio.checked = true;
+        
+        document.querySelectorAll('.animal-option').forEach(opt => {
+            opt.style.borderColor = '#ddd';
+            opt.style.backgroundColor = 'white';
+        });
+        
+        this.style.borderColor = '#4CAF50';
+        this.style.backgroundColor = '#e8f5e9';
+    });
+});
+</script>
 
 </body>
 </html>
