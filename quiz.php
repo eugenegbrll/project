@@ -204,7 +204,6 @@ let timeLeft = 30;
 let timerId;
 const waterHeight = 300;
 
-// Pinball physics variables
 let animalX = 150;
 let animalY = 50;
 let velocityX = 3;
@@ -213,7 +212,6 @@ let gravity = 0.1;
 let bounce = 0.8;
 let animationId;
 
-// Drag variables
 let isDragging = false;
 let dragOffsetX = 0;
 let dragOffsetY = 0;
@@ -229,37 +227,30 @@ function startTimer() {
     const submitBtn = document.getElementById('submitBtn');
     const timerContainer = document.querySelector('.timer-container');
     
-    // Get container dimensions
     const containerWidth = timerContainer.offsetWidth;
     const containerHeight = timerContainer.offsetHeight;
     const animalSize = 80;
     
-    // Initialize animal position
     animalX = containerWidth / 2 - animalSize / 2;
     animalY = 50;
     
-    // Random initial velocity
     velocityX = (Math.random() - 0.5) * 6;
     velocityY = Math.random() * 2 + 1;
     
-    // Drag event handlers
     function startDrag(e) {
         isDragging = true;
         animal.style.cursor = 'grabbing';
-        
-        // Get mouse position relative to container
+
         const rect = timerContainer.getBoundingClientRect();
         const mouseX = (e.clientX || e.touches[0].clientX) - rect.left;
         const mouseY = (e.clientY || e.touches[0].clientY) - rect.top;
         
-        // Calculate offset from mouse to animal position
         dragOffsetX = mouseX - animalX;
         dragOffsetY = mouseY - animalY;
         
         lastMouseX = mouseX;
         lastMouseY = mouseY;
         
-        // Stop the pinball animation while dragging
         if (animationId) {
             cancelAnimationFrame(animationId);
         }
@@ -274,22 +265,18 @@ function startTimer() {
         const mouseX = (e.clientX || e.touches[0].clientX) - rect.left;
         const mouseY = (e.clientY || e.touches[0].clientY) - rect.top;
         
-        // Update animal position
         animalX = mouseX - dragOffsetX;
         animalY = mouseY - dragOffsetY;
         
-        // Keep within bounds
         animalX = Math.max(0, Math.min(animalX, containerWidth - animalSize));
         animalY = Math.max(0, Math.min(animalY, containerHeight - animalSize));
         
-        // Calculate velocity based on mouse movement (for throw effect)
         velocityX = (mouseX - lastMouseX) * 0.5;
         velocityY = (mouseY - lastMouseY) * 0.5;
         
         lastMouseX = mouseX;
         lastMouseY = mouseY;
-        
-        // Update position
+
         animal.style.left = animalX + 'px';
         animal.style.top = animalY + 'px';
         
@@ -302,94 +289,74 @@ function startTimer() {
         isDragging = false;
         animal.style.cursor = 'grab';
         
-        // Apply throw velocity (with some boost for fun!)
         velocityX *= 1.5;
         velocityY *= 1.5;
         
-        // Restart the pinball animation
         animateAnimal();
         
         e.preventDefault();
     }
     
-    // Add event listeners for mouse
     animal.addEventListener('mousedown', startDrag);
     document.addEventListener('mousemove', drag);
     document.addEventListener('mouseup', endDrag);
     
-    // Add event listeners for touch (mobile)
     animal.addEventListener('touchstart', startDrag);
     document.addEventListener('touchmove', drag, { passive: false });
     document.addEventListener('touchend', endDrag);
     
-    // Pinball animation function
     function animateAnimal() {
-        if (isDragging) return; // Don't animate while dragging
+        if (isDragging) return; 
         
-        // Apply gravity
         velocityY += gravity;
         
-        // Update position
         animalX += velocityX;
         animalY += velocityY;
         
-        // Get current water height percentage
         const currentWaterHeight = ((30 - timeLeft) / 30) * 100;
         const waterPixelHeight = (currentWaterHeight / 100) * containerHeight;
         const waterTop = containerHeight - waterPixelHeight;
         
-        // Check boundaries and bounce
-        
-        // Left wall
         if (animalX <= 0) {
             animalX = 0;
             velocityX = Math.abs(velocityX) * bounce;
         }
         
-        // Right wall
         if (animalX >= containerWidth - animalSize) {
             animalX = containerWidth - animalSize;
             velocityX = -Math.abs(velocityX) * bounce;
         }
         
-        // Top (sky)
         if (animalY <= 0) {
             animalY = 0;
             velocityY = Math.abs(velocityY) * bounce;
         }
         
-        // Bottom (water surface or floor)
         const bottomBoundary = Math.max(waterTop - animalSize, containerHeight - animalSize);
         if (animalY >= bottomBoundary) {
             animalY = bottomBoundary;
             velocityY = -Math.abs(velocityY) * bounce;
             
-            // Add random horizontal velocity on bounce
             velocityX += (Math.random() - 0.5) * 2;
         }
         
-        // If in water, add water resistance
         if (animalY + animalSize > waterTop) {
-            velocityX *= 0.98; // Water drag
+            velocityX *= 0.98; 
             velocityY *= 0.98;
-            gravity = 0.05; // Less gravity in water
+            gravity = 0.05; 
         } else {
-            gravity = 0.1; // Normal gravity in air
+            gravity = 0.1; 
         }
         
-        // Apply rotation based on velocity
         const rotation = velocityX * 2;
         
-        // Update animal position
         animal.style.left = animalX + 'px';
         animal.style.top = animalY + 'px';
         animal.style.transform = `rotate(${rotation}deg)`;
         
-        // Continue animation
         animationId = requestAnimationFrame(animateAnimal);
     }
     
-    // Start pinball animation
     animateAnimal();
     
     timerId = setInterval(() => {
@@ -397,31 +364,26 @@ function startTimer() {
         timerText.textContent = timeLeft;
         document.getElementById('timeTaken').value = 30 - timeLeft;
         
-        // Calculate water level (starts from 0, goes to 100%)
         const waterLevel = ((30 - timeLeft) / 30) * 100;
         water.style.height = waterLevel + '%';
         
-        // Critical warning
         if (timeLeft <= 10) {
             timerText.classList.add('critical');
             animal.classList.add('drowning');
             warningMessage.classList.add('show');
             
-            // Add panic movement (but not while dragging)
             if (!isDragging) {
                 velocityX += (Math.random() - 0.5) * 4;
                 velocityY += (Math.random() - 0.5) * 3;
             }
         }
         
-        // Time's up
         if (timeLeft <= 0) {
             clearInterval(timerId);
             cancelAnimationFrame(animationId);
             submitBtn.disabled = true;
             gameOver.classList.add('show');
             
-            // Remove drag functionality
             animal.removeEventListener('mousedown', startDrag);
             document.removeEventListener('mousemove', drag);
             document.removeEventListener('mouseup', endDrag);
@@ -429,13 +391,11 @@ function startTimer() {
             document.removeEventListener('touchmove', drag);
             document.removeEventListener('touchend', endDrag);
             
-            // Sink animation
             animal.style.transition = 'all 1s ease-in';
             animal.style.transform = 'translateY(100px) rotate(180deg)';
             animal.style.opacity = '0.3';
             animal.style.cursor = 'default';
             
-            // Auto redirect after 5 seconds
             setTimeout(() => {
                 location.reload();
             }, 5000);
@@ -443,15 +403,12 @@ function startTimer() {
     }, 1000);
 }
 
-// Start timer when page loads
 window.onload = startTimer;
 
-// Clear timer when form is submitted
 document.getElementById('quizForm').addEventListener('submit', function() {
     clearInterval(timerId);
     cancelAnimationFrame(animationId);
     
-    // Success animation - animal jumps for joy!
     const animal = document.getElementById('animal');
     animal.style.transition = 'all 0.5s ease-out';
     animal.style.transform = 'translateY(-50px) scale(1.2) rotate(0deg)';

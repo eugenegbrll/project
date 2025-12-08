@@ -88,19 +88,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </form>
 
 <script>
-// Make the entire animal-option div clickable
 document.querySelectorAll('.animal-option').forEach(option => {
     option.addEventListener('click', function() {
         const radio = this.querySelector('input[type="radio"]');
         radio.checked = true;
         
-        // Remove selected class from all options
         document.querySelectorAll('.animal-option').forEach(opt => {
             opt.style.borderColor = '#ddd';
             opt.style.backgroundColor = 'white';
         });
         
-        // Add selected style to clicked option
         this.style.borderColor = '#4CAF50';
         this.style.backgroundColor = '#e8f5e9';
     });
