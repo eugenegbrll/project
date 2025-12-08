@@ -26,3 +26,4 @@ Fitur 3 =
 - Register diperbaharui dengan fitur pilih binatang favorit sebagai pet
 - Student punya pet dan bisa menyelamatkan pet di quiz
 - Pet bisa digerak-gerakin dalam air
+- idea nanti : Pet bisa muncul di dashboard student dan dielus-elus
