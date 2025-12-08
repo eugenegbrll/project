@@ -53,7 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <label>Password:</label>
     <input type="password" name="password" placeholder="Password" required>
     
-    <label>Pilih Hewan Favorit (untuk quiz nanti!):</label>
+    <label>Pilih Hewan Favorit:</label>
     <div class="animal-selector">
         <div class="animal-option">
             <input type="radio" name="favorite_animal" value="cat" id="cat" required>
