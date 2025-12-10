@@ -70,12 +70,14 @@ $already_answered = $stmt_check->get_result()->fetch_assoc();
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Selamatkan <?php echo $animal_name; ?>mu!</title>
+    <title>Quiz</title>
     <link rel="stylesheet" href="quiz.css">
 </head>
-<body class="game-body">
+<body>
 
-<div class="game-container">
+
+<main class="game-body"> 
+    <div class="game-container">
     <a href="course_detail.php?id=<?php 
         $course_q = $conn->query("SELECT course_id FROM materials WHERE material_id = $material_id");
         echo $course_q->fetch_assoc()['course_id'];
@@ -87,7 +89,7 @@ $already_answered = $stmt_check->get_result()->fetch_assoc();
     <div class="progress-bar">
         <div class="progress-fill" style="width: <?php echo (($current_index + 1) / $total_questions) * 100; ?>%;"></div>
     </div>
-    
+        
     <p style="text-align: center;"><strong>Pertanyaan <?php echo ($current_index + 1); ?> dari <?php echo $total_questions; ?></strong></p>
 
     <?php if (!$already_answered): ?>
@@ -96,7 +98,7 @@ $already_answered = $stmt_check->get_result()->fetch_assoc();
         <div class="animal" id="animal"><?php echo $animal_emoji; ?></div>
         <div class="water" id="water"></div>
     </div>
-    
+        
     <div class="warning-message" id="warningMessage">
         ⚠️ CEPAT! <?php echo strtoupper($animal_name); ?>MU HAMPIR TENGGELAM! ⚠️
     </div>
@@ -127,7 +129,7 @@ $already_answered = $stmt_check->get_result()->fetch_assoc();
 
             <?php
             $options = ['A' => $quiz['option_a'], 'B' => $quiz['option_b'], 'C' => $quiz['option_c'], 'D' => $quiz['option_d']];
-            
+                
             foreach ($options as $letter => $text) {
                 if (!empty($text)) {
                     $disabled = $already_answered ? 'disabled' : '';
@@ -135,13 +137,13 @@ $already_answered = $stmt_check->get_result()->fetch_assoc();
                     echo '<label class="quiz-option">
                             <input type="radio" name="answer" value="' . $letter . '" required ' . $disabled . ' ' . $checked . '> 
                             ' . $letter . '. ' . htmlspecialchars($text) . '
-                          </label>';
+                        </label>';
                 }
             }
             ?>
 
             <br>
-            
+                
             <?php if (!$already_answered): ?>
                 <button type="submit" id="submitBtn">💾 Selamatkan <?php echo $animal_name; ?>!</button>
             <?php else: ?>
@@ -169,257 +171,270 @@ $already_answered = $stmt_check->get_result()->fetch_assoc();
             $check_q = $conn->query("SELECT * FROM quiz_results WHERE user_id = $user_id AND quiz_id = {$quizzes[$i]['quiz_id']}");
             $is_answered = $check_q->num_rows > 0;
             $class = $is_answered ? 'answered' : 'unanswered';
-            $current_class = ($i == $current_index) ? 'current' : '';
+                $current_class = ($i == $current_index) ? 'current' : '';
             ?>
             <a href="quiz.php?material_id=<?php echo $material_id; ?>&question=<?php echo $i; ?>" 
-               class="nav-button <?php echo $class . ' ' . $current_class; ?>">
+            class="nav-button <?php echo $class . ' ' . $current_class; ?>">
                 <?php echo ($i + 1); ?> <?php echo $is_answered ? '✓' : ''; ?>
             </a>
         <?php endfor; ?>
+        </div>
     </div>
-</div>
 
-<div class="game-over" id="gameOver">
-    <div class="game-over-content">
-        <h2>⏰ Waktu Habis!</h2>
-        <div class="game-over-animal"><?php echo $animal_emoji; ?></div>
-        <p style="font-size: 18px; color: #666;">
-            <?php echo $animal_name; ?>mu tenggelam karena kamu tidak menjawab tepat waktu!<br>
-            Tapi tenang, kamu bisa coba lagi.
-        </p>
-        <button onclick="location.reload()">🔄 Coba Lagi</button>
-        <br><br>
-        <a href="course_detail.php?id=<?php 
-            $course_q = $conn->query("SELECT course_id FROM materials WHERE material_id = $material_id");
-            echo $course_q->fetch_assoc()['course_id'];
-        ?>">
-            <button>Kembali ke Course</button>
-        </a>
+    <div class="game-over" id="gameOver">
+        <div class="game-over-content">
+            <h2>⏰ Waktu Habis!</h2>
+            <div class="game-over-animal"><?php echo $animal_emoji; ?></div>
+            <p style="font-size: 18px; color: #666;">
+                <?php echo $animal_name; ?>mu tenggelam karena kamu tidak menjawab tepat waktu!<br>
+                Tapi tenang, kamu bisa coba lagi.
+            </p>
+            <button onclick="location.reload()">🔄 Coba Lagi</button>
+            <br><br>
+            <a href="course_detail.php?id=<?php 
+                $course_q = $conn->query("SELECT course_id FROM materials WHERE material_id = $material_id");
+                echo $course_q->fetch_assoc()['course_id'];
+            ?>">
+                <button>Kembali ke Course</button>
+            </a>
+        </div>
     </div>
-</div>
 
-<?php if (!$already_answered): ?>
-<script>
-let timeLeft = 30;
-let timerId;
-const waterHeight = 300;
+    <?php if (!$already_answered): ?>
+    <script>
+    let timeLeft = 30;
+    let timerId;
+    const waterHeight = 300;
 
-let animalX = 150;
-let animalY = 50;
-let velocityX = 3;
-let velocityY = 2;
-let gravity = 0.1;
-let bounce = 0.8;
-let animationId;
+    let animalX = 150;
+    let animalY = 50;
+    let velocityX = 3;
+    let velocityY = 2;
+    let gravity = 0.1;
+    let bounce = 0.8;
+    let animationId;
 
-let isDragging = false;
-let dragOffsetX = 0;
-let dragOffsetY = 0;
-let lastMouseX = 0;
-let lastMouseY = 0;
+    let isDragging = false;
+    let dragOffsetX = 0;
+    let dragOffsetY = 0;
+    let lastMouseX = 0;
+    let lastMouseY = 0;
 
-function startTimer() {
-    const timerText = document.getElementById('timerText');
-    const water = document.getElementById('water');
-    const animal = document.getElementById('animal');
-    const warningMessage = document.getElementById('warningMessage');
-    const gameOver = document.getElementById('gameOver');
-    const submitBtn = document.getElementById('submitBtn');
-    const timerContainer = document.querySelector('.timer-container');
-    
-    const containerWidth = timerContainer.offsetWidth;
-    const containerHeight = timerContainer.offsetHeight;
-    const animalSize = 80;
-    
-    animalX = containerWidth / 2 - animalSize / 2;
-    animalY = 50;
-    
-    velocityX = (Math.random() - 0.5) * 6;
-    velocityY = Math.random() * 2 + 1;
-    
-    function startDrag(e) {
-        isDragging = true;
-        animal.style.cursor = 'grabbing';
-
-        const rect = timerContainer.getBoundingClientRect();
-        const mouseX = (e.clientX || e.touches[0].clientX) - rect.left;
-        const mouseY = (e.clientY || e.touches[0].clientY) - rect.top;
+    function startTimer() {
+        const timerText = document.getElementById('timerText');
+        const water = document.getElementById('water');
+        const animal = document.getElementById('animal');
+        const warningMessage = document.getElementById('warningMessage');
+        const gameOver = document.getElementById('gameOver');
+        const submitBtn = document.getElementById('submitBtn');
+        const timerContainer = document.querySelector('.timer-container');
         
-        dragOffsetX = mouseX - animalX;
-        dragOffsetY = mouseY - animalY;
+        const containerWidth = timerContainer.offsetWidth;
+        const containerHeight = timerContainer.offsetHeight;
+        const animalSize = 80;
         
-        lastMouseX = mouseX;
-        lastMouseY = mouseY;
+        animalX = containerWidth / 2 - animalSize / 2;
+        animalY = 50;
         
-        if (animationId) {
-            cancelAnimationFrame(animationId);
+        velocityX = (Math.random() - 0.5) * 6;
+        velocityY = Math.random() * 2 + 1;
+        
+        function startDrag(e) {
+            isDragging = true;
+            animal.style.cursor = 'grabbing';
+
+            const rect = timerContainer.getBoundingClientRect();
+            const mouseX = (e.clientX || e.touches[0].clientX) - rect.left;
+            const mouseY = (e.clientY || e.touches[0].clientY) - rect.top;
+            
+            dragOffsetX = mouseX - animalX;
+            dragOffsetY = mouseY - animalY;
+            
+            lastMouseX = mouseX;
+            lastMouseY = mouseY;
+            
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+            }
+            
+            e.preventDefault();
         }
         
-        e.preventDefault();
-    }
-    
-    function drag(e) {
-        if (!isDragging) return;
-        
-        const rect = timerContainer.getBoundingClientRect();
-        const mouseX = (e.clientX || e.touches[0].clientX) - rect.left;
-        const mouseY = (e.clientY || e.touches[0].clientY) - rect.top;
-        
-        animalX = mouseX - dragOffsetX;
-        animalY = mouseY - dragOffsetY;
-        
-        animalX = Math.max(0, Math.min(animalX, containerWidth - animalSize));
-        animalY = Math.max(0, Math.min(animalY, containerHeight - animalSize));
-        
-        velocityX = (mouseX - lastMouseX) * 0.5;
-        velocityY = (mouseY - lastMouseY) * 0.5;
-        
-        lastMouseX = mouseX;
-        lastMouseY = mouseY;
+        function drag(e) {
+            if (!isDragging) return;
+            
+            const rect = timerContainer.getBoundingClientRect();
+            const mouseX = (e.clientX || e.touches[0].clientX) - rect.left;
+            const mouseY = (e.clientY || e.touches[0].clientY) - rect.top;
+            
+            animalX = mouseX - dragOffsetX;
+            animalY = mouseY - dragOffsetY;
+            
+            animalX = Math.max(0, Math.min(animalX, containerWidth - animalSize));
+            animalY = Math.max(0, Math.min(animalY, containerHeight - animalSize));
+            
+            velocityX = (mouseX - lastMouseX) * 0.5;
+            velocityY = (mouseY - lastMouseY) * 0.5;
+            
+            lastMouseX = mouseX;
+            lastMouseY = mouseY;
 
-        animal.style.left = animalX + 'px';
-        animal.style.top = animalY + 'px';
+            animal.style.left = animalX + 'px';
+            animal.style.top = animalY + 'px';
+            
+            e.preventDefault();
+        }
         
-        e.preventDefault();
-    }
-    
-    function endDrag(e) {
-        if (!isDragging) return;
+        function endDrag(e) {
+            if (!isDragging) return;
+            
+            isDragging = false;
+            animal.style.cursor = 'grab';
+            
+            velocityX *= 1.5;
+            velocityY *= 1.5;
+            
+            animateAnimal();
+            
+            e.preventDefault();
+        }
         
-        isDragging = false;
-        animal.style.cursor = 'grab';
+        animal.addEventListener('mousedown', startDrag);
+        document.addEventListener('mousemove', drag);
+        document.addEventListener('mouseup', endDrag);
         
-        velocityX *= 1.5;
-        velocityY *= 1.5;
+        animal.addEventListener('touchstart', startDrag);
+        document.addEventListener('touchmove', drag, { passive: false });
+        document.addEventListener('touchend', endDrag);
+        
+        function animateAnimal() {
+            if (isDragging) return; 
+            
+            velocityY += gravity;
+            
+            animalX += velocityX;
+            animalY += velocityY;
+            
+            const currentWaterHeight = ((30 - timeLeft) / 30) * 100;
+            const waterPixelHeight = (currentWaterHeight / 100) * containerHeight;
+            const waterTop = containerHeight - waterPixelHeight;
+            
+            if (animalX <= 0) {
+                animalX = 0;
+                velocityX = Math.abs(velocityX) * bounce;
+            }
+            
+            if (animalX >= containerWidth - animalSize) {
+                animalX = containerWidth - animalSize;
+                velocityX = -Math.abs(velocityX) * bounce;
+            }
+            
+            if (animalY <= 0) {
+                animalY = 0;
+                velocityY = Math.abs(velocityY) * bounce;
+            }
+            
+            const bottomBoundary = Math.max(waterTop - animalSize, containerHeight - animalSize);
+            if (animalY >= bottomBoundary) {
+                animalY = bottomBoundary;
+                velocityY = -Math.abs(velocityY) * bounce;
+                
+                velocityX += (Math.random() - 0.5) * 2;
+            }
+            
+            if (animalY + animalSize > waterTop) {
+                velocityX *= 0.98; 
+                velocityY *= 0.98;
+                gravity = 0.05; 
+            } else {
+                gravity = 0.1; 
+            }
+            
+            const rotation = velocityX * 2;
+            
+            animal.style.left = animalX + 'px';
+            animal.style.top = animalY + 'px';
+            animal.style.transform = `rotate(${rotation}deg)`;
+            
+            animationId = requestAnimationFrame(animateAnimal);
+        }
         
         animateAnimal();
         
-        e.preventDefault();
-    }
-    
-    animal.addEventListener('mousedown', startDrag);
-    document.addEventListener('mousemove', drag);
-    document.addEventListener('mouseup', endDrag);
-    
-    animal.addEventListener('touchstart', startDrag);
-    document.addEventListener('touchmove', drag, { passive: false });
-    document.addEventListener('touchend', endDrag);
-    
-    function animateAnimal() {
-        if (isDragging) return; 
-        
-        velocityY += gravity;
-        
-        animalX += velocityX;
-        animalY += velocityY;
-        
-        const currentWaterHeight = ((30 - timeLeft) / 30) * 100;
-        const waterPixelHeight = (currentWaterHeight / 100) * containerHeight;
-        const waterTop = containerHeight - waterPixelHeight;
-        
-        if (animalX <= 0) {
-            animalX = 0;
-            velocityX = Math.abs(velocityX) * bounce;
-        }
-        
-        if (animalX >= containerWidth - animalSize) {
-            animalX = containerWidth - animalSize;
-            velocityX = -Math.abs(velocityX) * bounce;
-        }
-        
-        if (animalY <= 0) {
-            animalY = 0;
-            velocityY = Math.abs(velocityY) * bounce;
-        }
-        
-        const bottomBoundary = Math.max(waterTop - animalSize, containerHeight - animalSize);
-        if (animalY >= bottomBoundary) {
-            animalY = bottomBoundary;
-            velocityY = -Math.abs(velocityY) * bounce;
+        timerId = setInterval(() => {
+            timeLeft--;
+            timerText.textContent = timeLeft;
+            document.getElementById('timeTaken').value = 30 - timeLeft;
             
-            velocityX += (Math.random() - 0.5) * 2;
-        }
-        
-        if (animalY + animalSize > waterTop) {
-            velocityX *= 0.98; 
-            velocityY *= 0.98;
-            gravity = 0.05; 
-        } else {
-            gravity = 0.1; 
-        }
-        
-        const rotation = velocityX * 2;
-        
-        animal.style.left = animalX + 'px';
-        animal.style.top = animalY + 'px';
-        animal.style.transform = `rotate(${rotation}deg)`;
-        
-        animationId = requestAnimationFrame(animateAnimal);
-    }
-    
-    animateAnimal();
-    
-    timerId = setInterval(() => {
-        timeLeft--;
-        timerText.textContent = timeLeft;
-        document.getElementById('timeTaken').value = 30 - timeLeft;
-        
-        const waterLevel = ((30 - timeLeft) / 30) * 100;
-        water.style.height = waterLevel + '%';
-        
-        if (timeLeft <= 10) {
-            timerText.classList.add('critical');
-            animal.classList.add('drowning');
-            warningMessage.classList.add('show');
+            const waterLevel = ((30 - timeLeft) / 30) * 100;
+            water.style.height = waterLevel + '%';
             
-            if (!isDragging) {
-                velocityX += (Math.random() - 0.5) * 4;
-                velocityY += (Math.random() - 0.5) * 3;
+            if (timeLeft <= 10) {
+                timerText.classList.add('critical');
+                animal.classList.add('drowning');
+                warningMessage.classList.add('show');
+                
+                if (!isDragging) {
+                    velocityX += (Math.random() - 0.5) * 4;
+                    velocityY += (Math.random() - 0.5) * 3;
+                }
             }
-        }
+            
+            if (timeLeft <= 0) {
+                clearInterval(timerId);
+                cancelAnimationFrame(animationId);
+                submitBtn.disabled = true;
+                gameOver.classList.add('show');
+
+                fetch("quiz_failed.php", { method: "POST" });
+
+                try {
+                    localStorage.setItem('petMood', 'sad');
+                    localStorage.setItem('petReason', 'drowned');
+                } catch(e) {}
+                
+                animal.removeEventListener('mousedown', startDrag);
+                document.removeEventListener('mousemove', drag);
+                document.removeEventListener('mouseup', endDrag);
+                animal.removeEventListener('touchstart', startDrag);
+                document.removeEventListener('touchmove', drag);
+                document.removeEventListener('touchend', endDrag);
+                
+                animal.style.transition = 'all 1s ease-in';
+                animal.style.transform = 'translateY(100px) rotate(180deg)';
+                animal.style.opacity = '0.3';
+                animal.style.cursor = 'default';
+                
+                setTimeout(() => {
+                    location.reload();
+                }, 5000);
+            }
+        }, 1000);
+    }
+
+    window.onload = startTimer;
+
+    document.getElementById('quizForm').addEventListener('submit', function() {
+        clearInterval(timerId);
+        cancelAnimationFrame(animationId);
         
-        if (timeLeft <= 0) {
-            clearInterval(timerId);
-            cancelAnimationFrame(animationId);
-            submitBtn.disabled = true;
-            gameOver.classList.add('show');
-            
-            animal.removeEventListener('mousedown', startDrag);
-            document.removeEventListener('mousemove', drag);
-            document.removeEventListener('mouseup', endDrag);
-            animal.removeEventListener('touchstart', startDrag);
-            document.removeEventListener('touchmove', drag);
-            document.removeEventListener('touchend', endDrag);
-            
-            animal.style.transition = 'all 1s ease-in';
-            animal.style.transform = 'translateY(100px) rotate(180deg)';
-            animal.style.opacity = '0.3';
-            animal.style.cursor = 'default';
-            
-            setTimeout(() => {
-                location.reload();
-            }, 5000);
-        }
-    }, 1000);
-}
+        const animal = document.getElementById('animal');
+        animal.style.transition = 'all 0.5s ease-out';
+        animal.style.transform = 'translateY(-50px) scale(1.2) rotate(0deg)';
+        animal.style.cursor = 'default';
+        
+        setTimeout(() => {
+            animal.style.transform = 'translateY(0px) scale(1) rotate(0deg)';
+        }, 500);
+    });
+    </script>
+    <?php endif; ?>
+</main>
 
-window.onload = startTimer;
 
-document.getElementById('quizForm').addEventListener('submit', function() {
-    clearInterval(timerId);
-    cancelAnimationFrame(animationId);
-    
-    const animal = document.getElementById('animal');
-    animal.style.transition = 'all 0.5s ease-out';
-    animal.style.transform = 'translateY(-50px) scale(1.2) rotate(0deg)';
-    animal.style.cursor = 'default';
-    
-    setTimeout(() => {
-        animal.style.transform = 'translateY(0px) scale(1) rotate(0deg)';
-    }, 500);
-});
-</script>
-<?php endif; ?>
+<footer>
+    <?php include 'footer.html'; ?>
+</footer>
 
 </body>
 </html>

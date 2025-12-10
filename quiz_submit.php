@@ -71,6 +71,25 @@ if ($answered_count == $total_questions) {
         $stmt_update->bind_param("dii", $progress_increment, $user_id, $course_id);
         $stmt_update->execute();
     }
+    
+    $sql_check_all = "SELECT COUNT(*) as total_correct 
+                      FROM quiz_results 
+                      WHERE user_id = ? AND material_id = ? AND is_correct = 1";
+    $stmt_check_all = $conn->prepare($sql_check_all);
+    $stmt_check_all->bind_param("ii", $user_id, $material_id);
+    $stmt_check_all->execute();
+    $total_correct = $stmt_check_all->get_result()->fetch_assoc()['total_correct'];
+    
+
+    if ($total_correct < $total_questions) {
+        $_SESSION['pet_sad'] = true;
+        $_SESSION['quiz_failed_material'] = $material_id;
+    }
+}
+
+if (!$is_correct) {
+    $_SESSION['pet_sad'] = true;
+    $_SESSION['wrong_answer_count'] = ($_SESSION['wrong_answer_count'] ?? 0) + 1;
 }
 
 $next_question = $current_index + 1;
@@ -81,4 +100,9 @@ if ($next_question < $total_questions) {
     header("Location: quiz.php?material_id=$material_id&question=$current_index&completed=1");
 }
 exit();
+
+setTimeout(() => {
+    location.reload();
+}, 5000);
+
 ?>

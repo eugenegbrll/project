@@ -83,43 +83,50 @@ $materials = $stmt_m->get_result();
 </head>
 <body>
 
-<a href="student_dashboard.php">⬅ Kembali</a>
+<main> 
+    <a href="student_dashboard.php">⬅ Kembali</a>
 
-<h1><?php echo htmlspecialchars($course['course_name']); ?></h1>
-<p><strong>Guru:</strong> <?php echo htmlspecialchars($course['teacher_name']); ?></p>
-<p><?php echo htmlspecialchars($course['description']); ?></p>
+    <h1><?php echo htmlspecialchars($course['course_name']); ?></h1>
+    <p><strong>Guru:</strong> <?php echo htmlspecialchars($course['teacher_name']); ?></p>
+    <p><?php echo htmlspecialchars($course['description']); ?></p>
 
-<h3>Progress Kamu:</h3>
-<div class="progress-bar">
-    <div class="progress-fill" style="width: <?php echo $progress; ?>%;">
-        <?php echo $progress; ?>%
+    <h3>Progress Kamu:</h3>
+    <div class="progress-bar">
+        <div class="progress-fill" style="width: <?php echo $progress; ?>%;">
+            <?php echo $progress; ?>%
+        </div>
     </div>
-</div>
-<p><?php echo $completed; ?> dari <?php echo $total; ?> materi selesai</p>
+    <p><?php echo $completed; ?> dari <?php echo $total; ?> materi selesai</p>
 
-<hr>
+    <hr>
 
-<h2>Daftar Materi</h2>
+    <h2>Daftar Materi</h2>
 
-<?php
-while ($m = $materials->fetch_assoc()) {
-    $completed_class = $m['is_completed'] ? 'completed' : '';
-    $completed_badge = $m['is_completed'] ? ' ✅' : '';
-    
-    echo "<div class='material-card $completed_class'>";
-    echo "<h3>Level {$m['level']} - " . htmlspecialchars($m['material_title']) . $completed_badge . "</h3>";
-    echo "<p>" . nl2br(htmlspecialchars($m['material_content'])) . "</p>";
+    <?php
+    while ($m = $materials->fetch_assoc()) {
+        $completed_class = $m['is_completed'] ? 'completed' : '';
+        $completed_badge = $m['is_completed'] ? ' ✅' : '';
+        
+        echo "<div class='material-card $completed_class'>";
+        echo "<h3>Level {$m['level']} - " . htmlspecialchars($m['material_title']) . $completed_badge . "</h3>";
+        echo "<p>" . nl2br(htmlspecialchars($m['material_content'])) . "</p>";
 
-    if ($m['is_completed']) {
-        echo "<p style='color: green;'>✓ Materi selesai!</p>";
-        echo "<a href='quiz.php?material_id={$m['material_id']}'>Review Quiz ➜</a>";
-    } else {
-        echo "<a href='quiz.php?material_id={$m['material_id']}'>Kerjakan Quiz ➜</a>";
+        if ($m['is_completed']) {
+            echo "<p style='color: green;'>✓ Materi selesai!</p>";
+            echo "<a href='quiz.php?material_id={$m['material_id']}'>Review Quiz ➜</a>";
+        } else {
+            echo "<a href='quiz.php?material_id={$m['material_id']}'>Kerjakan Quiz ➜</a>";
+        }
+
+        echo "</div>";
     }
+    ?>
+</main>
 
-    echo "</div>";
-}
-?>
+
+<footer>
+    <?php include 'footer.html'; ?>
+</footer>
 
 </body>
 </html>

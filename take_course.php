@@ -30,40 +30,50 @@ $result = $stmt->get_result();
     <link rel="stylesheet" href="take_course.css">
 </head>
 <body>
-<h2>Pilih Course Baru</h2>
-<a href="student_dashboard.php">⬅ Kembali</a>
-<br><br>
 
-<?php
-if ($total_courses == 0) {
-    echo "<div class='empty-message'>
-            <h3>Belum Ada Course</h3>
-            <p>Saat ini belum ada course yang tersedia. Silakan hubungi admin untuk menambahkan course.</p>
-          </div>";
-} elseif ($result->num_rows == 0) {
-    echo "<div class='empty-message'>
-            <h3>Maaf!</h3>
-            <p>Kamu sudah mengambil semua course yang tersedia!</p>
-          </div>";
-} else {
-    while ($row = $result->fetch_assoc()) {
-        echo "<div class='course-box'>
-                <strong>" . htmlspecialchars($row['course_name']) . "</strong>";
-        
-        if (!empty($row['description'])) {
-            echo "<p style='color: #666; margin: 5px 0;'>" . htmlspecialchars($row['description']) . "</p>";
+
+<main>
+    <h2>Pilih Course Baru</h2>
+    <a href="student_dashboard.php">⬅ Kembali</a>
+    <br><br>
+
+    <?php
+    if ($total_courses == 0) {
+        echo "<div class='empty-message'>
+                <h3>Belum Ada Course</h3>
+                <p>Saat ini belum ada course yang tersedia. Silakan hubungi admin untuk menambahkan course.</p>
+            </div>";
+    } elseif ($result->num_rows == 0) {
+        echo "<div class='empty-message'>
+                <h3>Maaf!</h3>
+                <p>Kamu sudah mengambil semua course yang tersedia!</p>
+            </div>";
+    } else {
+        while ($row = $result->fetch_assoc()) {
+            echo "<div class='course-box'>
+                    <strong>" . htmlspecialchars($row['course_name']) . "</strong>";
+            
+            if (!empty($row['description'])) {
+                echo "<p style='color: #666; margin: 5px 0;'>" . htmlspecialchars($row['description']) . "</p>";
+            }
+            
+            if (!empty($row['teacher_name'])) {
+                echo "<p style='color: #888; font-size: 14px;'>Guru: " . htmlspecialchars($row['teacher_name']) . "</p>";
+            }
+            
+            echo "<a href='take_course_process.php?id={$row['course_id']}'>
+                    📖 Ambil Course Ini
+                </a>
+                </div>";
         }
-        
-        if (!empty($row['teacher_name'])) {
-            echo "<p style='color: #888; font-size: 14px;'>Guru: " . htmlspecialchars($row['teacher_name']) . "</p>";
-        }
-        
-        echo "<a href='take_course_process.php?id={$row['course_id']}'>
-                📖 Ambil Course Ini
-              </a>
-              </div>";
     }
-}
-?>
+    ?>
+</main>
+
+
+<footer>
+    <?php include 'footer.html'; ?>
+</footer>
+
 </body>
 </html>
