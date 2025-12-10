@@ -40,20 +40,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ?>
 <!DOCTYPE html>
 <html>
-<head><title>Login</title></head>
+<head><title>Login</title>
+<link rel="stylesheet" href="login.css"></head>
 <body>
 
-<h2>Login</h2>
+<main>
+    <h2>Login</h2>
 
-<?php if (!empty($_GET['registered'])) echo "<p style='color:green;'>Registrasi berhasil! Silakan login.</p>"; ?>
-<?php if (!empty($error)) echo "<p style='color:red;'>$error</p>"; ?>
+    <?php if (!empty($_GET['registered'])) echo "<p style='color:green;'>Registrasi berhasil! Silakan login.</p>"; ?>
+    <?php if (!empty($error)) echo "<p style='color:red;'>$error</p>"; ?>
 
-<form method="POST">
-    <input type="text" name="username" placeholder="Username" required><br><br>
-    <input type="password" name="password" placeholder="Password" required><br><br>
-    <button type="submit">Login</button>
-    <a href="register.php">register</a>
-</form>
+    <form method="POST">
+        <label for="username">Username</label>
+        <input type="text" name="username" placeholder="Username" required>
+        <label for="password">Password</label>
+        <input type="password" name="password" placeholder="Password" required>
+        <button type="submit">Login</button>
+        <a href="register.php">Belum punya akun? Register</a>
+    </form>
+</main>
+
 
 </body>
 </html>
