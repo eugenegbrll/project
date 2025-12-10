@@ -40,6 +40,17 @@ body {
     overflow: visible;
 }
 
+.pet-box.sad {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    animation: sadShake 2s ease-in-out infinite;
+}
+
+@keyframes sadShake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-2px); }
+    75% { transform: translateX(2px); }
+}
+
 .pet-emoji {
     font-size: 100px;
     cursor: pointer;
@@ -55,6 +66,27 @@ body {
 
 .pet-emoji:active {
     transform: scale(0.95);
+}
+
+.pet-emoji.sad {
+    filter: grayscale(80%) drop-shadow(0 5px 10px rgba(0,0,0,0.5));
+    animation: sadBob 3s ease-in-out infinite;
+}
+
+@keyframes sadBob {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(5px); }
+}
+
+.pet-emoji.crying {
+    animation: cry 1s ease-in-out;
+}
+
+@keyframes cry {
+    0%, 100% { transform: scale(1) rotate(0deg); }
+    25% { transform: scale(0.95) rotate(-5deg); }
+    50% { transform: scale(0.9) rotate(5deg); }
+    75% { transform: scale(0.95) rotate(-5deg); }
 }
 
 .pet-emoji.squish {
@@ -112,6 +144,13 @@ body {
     pointer-events: none;
 }
 
+.tear {
+    position: absolute;
+    font-size: 20px;
+    animation: fallTear 2s ease-in forwards;
+    pointer-events: none;
+}
+
 @keyframes floatHeart {
     0% {
         transform: translateY(0) scale(0);
@@ -123,6 +162,21 @@ body {
     }
     100% {
         transform: translateY(-100px) scale(0.5);
+        opacity: 0;
+    }
+}
+
+@keyframes fallTear {
+    0% {
+        transform: translateY(0) scale(0);
+        opacity: 1;
+    }
+    50% {
+        transform: translateY(50px) scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(100px) scale(0.8);
         opacity: 0;
     }
 }
@@ -145,9 +199,19 @@ body {
     animation: pulse 2s infinite;
 }
 
+.pat-counter.healing {
+    background: #4CAF50;
+    animation: pulseHeal 1s infinite;
+}
+
 @keyframes pulse {
     0%, 100% { transform: scale(1); }
     50% { transform: scale(1.1); }
+}
+
+@keyframes pulseHeal {
+    0%, 100% { transform: scale(1); box-shadow: 0 3px 10px rgba(76,175,80,0.5); }
+    50% { transform: scale(1.2); box-shadow: 0 3px 15px rgba(76,175,80,0.8); }
 }
 
 .speech-bubble {

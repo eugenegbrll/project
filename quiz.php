@@ -70,7 +70,7 @@ $already_answered = $stmt_check->get_result()->fetch_assoc();
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Selamatkan <?php echo $animal_name; ?>mu!</title>
+    <title>Quiz</title>
     <link rel="stylesheet" href="quiz.css">
 </head>
 <body class="game-body">
@@ -383,6 +383,13 @@ function startTimer() {
             cancelAnimationFrame(animationId);
             submitBtn.disabled = true;
             gameOver.classList.add('show');
+
+            fetch("quiz_failed.php", { method: "POST" });
+
+            try {
+                localStorage.setItem('petMood', 'sad');
+                localStorage.setItem('petReason', 'drowned');
+            } catch(e) {}
             
             animal.removeEventListener('mousedown', startDrag);
             document.removeEventListener('mousemove', drag);
