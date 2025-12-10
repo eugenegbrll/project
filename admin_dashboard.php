@@ -7,7 +7,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'admin') {
 
 include 'db.php';
 
-$teacher_id = $_SESSION['user_id']; // Current logged-in teacher
+$teacher_id = $_SESSION['user_id']; 
 
 if (isset($_POST['add_course'])) {
     $course_name = $_POST['course_name'];
@@ -30,7 +30,6 @@ if (isset($_POST['add_material'])) {
     $content = $_POST['content'];
     $level = $_POST['level'];
 
-    // Verify course belongs to this teacher
     $verify = $conn->prepare("SELECT * FROM courses WHERE course_id = ? AND teacher_id = ?");
     $verify->bind_param("ii", $course_id, $teacher_id);
     $verify->execute();
@@ -58,7 +57,6 @@ if (isset($_POST['add_quiz'])) {
     $option_d = !empty($_POST['option_d']) ? $_POST['option_d'] : null;
     $correct_answer = $_POST['correct_answer'];
 
-    // Verify material belongs to this teacher's course
     $verify = $conn->prepare("SELECT m.* FROM materials m 
                               JOIN courses c ON m.course_id = c.course_id 
                               WHERE m.material_id = ? AND c.teacher_id = ?");
@@ -86,7 +84,6 @@ if (isset($_POST['add_quiz'])) {
 if (isset($_GET['delete_material'])) {
     $id = $_GET['delete_material'];
 
-    // Verify material belongs to this teacher
     $verify = $conn->prepare("SELECT m.* FROM materials m 
                               JOIN courses c ON m.course_id = c.course_id 
                               WHERE m.material_id = ? AND c.teacher_id = ?");
@@ -107,13 +104,11 @@ if (isset($_GET['delete_material'])) {
 if (isset($_GET['delete_course'])) {
     $course_id = $_GET['delete_course'];
     
-    // Verify course belongs to this teacher
     $verify = $conn->prepare("SELECT * FROM courses WHERE course_id = ? AND teacher_id = ?");
     $verify->bind_param("ii", $course_id, $teacher_id);
     $verify->execute();
     
     if ($verify->get_result()->num_rows > 0) {
-        // Get all materials for this course
         $materials = $conn->query("SELECT material_id FROM materials WHERE course_id = $course_id");
         while ($mat = $materials->fetch_assoc()) {
             $mat_id = $mat['material_id'];
@@ -196,7 +191,6 @@ $selected_material_id = $_GET['material_id'] ?? '';
                 echo "<p style='color: #666;'>" . htmlspecialchars($course['description']) . "</p>";
             }
             
-            // Count materials and students
             $material_count = $conn->query("SELECT COUNT(*) as total FROM materials WHERE course_id = {$course['course_id']}")->fetch_assoc()['total'];
             $student_count = $conn->query("SELECT COUNT(*) as total FROM student_courses WHERE course_id = {$course['course_id']}")->fetch_assoc()['total'];
             
@@ -330,5 +324,9 @@ $selected_material_id = $_GET['material_id'] ?? '';
         }
     }
     ?>
+
+<footer>
+    <?php include 'footer.html'; ?>
+</footer>
 </body>
 </html>

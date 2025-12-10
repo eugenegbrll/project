@@ -38,7 +38,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="register.css">
 </head>
 <body>
-<div class="register-container">
+
+<main>
+    <div class="register-container">
     <h2>Register</h2>
 
     <?php if (!empty($error)) echo "<p class='error'>$error</p>"; ?>
@@ -84,7 +86,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <button type="submit">Register</button>
         <a href="login.php">Sudah punya akun? Login</a>
     </form>
-</div>
+    </div>
+</main>
+
+<footer>
+    <?php include 'footer.html'; ?>
+</footer>
 
 </body>
 </html>

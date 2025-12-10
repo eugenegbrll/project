@@ -140,12 +140,7 @@ $wrong_count = $_SESSION['wrong_answer_count'] ?? 0;
         <div class="pet-mood" id="petMood"><?php echo $is_pet_sad ? '😢 Sedih' : '😊 Happy'; ?></div>
     </div>
 </div>
-
 </main>
-
-<footer>
-
-</footer>
 
 <script>
 let patCount = 0;
@@ -399,6 +394,10 @@ if (isSad) {
     }, 1000);
 }
 </script>
+
+<footer>
+    <?php include 'footer.html'; ?>
+</footer>
 
 </body>
 </html>
