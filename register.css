@@ -1,17 +1,26 @@
 body {
     font-family: Arial, sans-serif;
-    max-width: 500px;
-    margin: 50px auto;
-    padding: 20px;
-    border-radius: 10px;
+    margin: 0;
+    padding: 0px;
     background: linear-gradient(to bottom, #87CEEB 0%, #87CEEB 50%, #4682B4 100%);
+    background-attachment: fixed;
+    padding: 0%;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+main {
+    flex: 1 0 auto;
 }
 
 .register-container {
     background-color: #f9f9f9;
-    padding: 30px;
+    padding: 20px;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    max-width: 500px;
+    margin: 30px auto;
 }  
 
 .register-container h2 {
@@ -30,9 +39,9 @@ body {
 .register-container a {
     display: block;
     text-align: center;
-    margin-top: 15px;
     color: #0f7ed9;
     text-decoration: none;
+    margin: 20px auto;
 }
 
 .animal-selector {

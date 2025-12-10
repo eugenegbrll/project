@@ -23,12 +23,37 @@ if (isset($_POST['add_course'])) {
     exit();
 }
 
-
 if (isset($_POST['add_material'])) {
     $course_id = $_POST['course_id'];
     $title = $_POST['title'];
     $content = $_POST['content'];
     $level = $_POST['level'];
+    $file_path = null;
+    $file_name = null;
+    $file_type = null;
+
+    // Handle file upload
+    if (isset($_FILES['material_file']) && $_FILES['material_file']['error'] == 0) {
+    $allowed_extensions = ['ppt', 'pptx', 'jpg', 'jpeg', 'png', 'docx', 'pdf', 'mov', 'mp4', 'mp3'];
+    $file_info = pathinfo($_FILES['material_file']['name']);
+    $file_extension = strtolower($file_info['extension']);
+        
+    if (in_array($file_extension, $allowed_extensions)) {
+        $upload_dir = __DIR__ . '/uploads/materials/';
+            if (!file_exists($upload_dir)) {
+                mkdir($upload_dir, 0777, true);
+            }
+            
+            $unique_name = uniqid() . '_' . time() . '.' . $file_extension;
+            $target_path = $upload_dir . $unique_name;
+            
+            if (move_uploaded_file($_FILES['material_file']['tmp_name'], $target_path)) {
+                $file_path = 'uploads/materials/' . $unique_name;
+                $file_name = $_FILES['material_file']['name'];
+                $file_type = $file_extension;
+            }
+        }
+    }
 
     $verify = $conn->prepare("SELECT * FROM courses WHERE course_id = ? AND teacher_id = ?");
     $verify->bind_param("ii", $course_id, $teacher_id);
@@ -36,10 +61,10 @@ if (isset($_POST['add_material'])) {
     
     if ($verify->get_result()->num_rows > 0) {
         $stmt = $conn->prepare("
-            INSERT INTO materials (course_id, material_title, material_content, level)
-            VALUES (?, ?, ?, ?)
+            INSERT INTO materials (course_id, material_title, material_content, level, file_path, file_name, file_type)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
         ");
-        $stmt->bind_param("issi", $course_id, $title, $content, $level);
+        $stmt->bind_param("issssss", $course_id, $title, $content, $level, $file_path, $file_name, $file_type);
         $stmt->execute();
         $stmt->close();
     }
@@ -89,8 +114,16 @@ if (isset($_GET['delete_material'])) {
                               WHERE m.material_id = ? AND c.teacher_id = ?");
     $verify->bind_param("ii", $id, $teacher_id);
     $verify->execute();
+    $result = $verify->get_result();
     
-    if ($verify->get_result()->num_rows > 0) {
+    if ($result->num_rows > 0) {
+        $material = $result->fetch_assoc();
+        
+        // Delete file if exists
+        if (!empty($material['file_path']) && file_exists($material['file_path'])) {
+            unlink($material['file_path']);
+        }
+        
         $conn->query("DELETE FROM quiz_results WHERE material_id = $id");
         $conn->query("DELETE FROM material_completions WHERE material_id = $id");
         $conn->query("DELETE FROM quizzes WHERE material_id = $id");
@@ -109,9 +142,15 @@ if (isset($_GET['delete_course'])) {
     $verify->execute();
     
     if ($verify->get_result()->num_rows > 0) {
-        $materials = $conn->query("SELECT material_id FROM materials WHERE course_id = $course_id");
+        $materials = $conn->query("SELECT material_id, file_path FROM materials WHERE course_id = $course_id");
         while ($mat = $materials->fetch_assoc()) {
             $mat_id = $mat['material_id'];
+            
+            // Delete file if exists
+            if (!empty($mat['file_path']) && file_exists($mat['file_path'])) {
+                unlink($mat['file_path']);
+            }
+            
             $conn->query("DELETE FROM quiz_results WHERE material_id = $mat_id");
             $conn->query("DELETE FROM material_completions WHERE material_id = $mat_id");
             $conn->query("DELETE FROM quizzes WHERE material_id = $mat_id");
@@ -141,6 +180,21 @@ $selected_material_id = $_GET['material_id'] ?? '';
         }
         .course-box h3 {
             margin-top: 0;
+        }
+        .student-link {
+            display: inline-block;
+            margin-left: 10px;
+            color: #007bff;
+            text-decoration: none;
+        }
+        .student-link:hover {
+            text-decoration: underline;
+        }
+        .file-input-label {
+            display: block;
+            margin-top: 10px;
+            color: #666;
+            font-size: 14px;
         }
     </style>
 </head>
@@ -194,7 +248,8 @@ $selected_material_id = $_GET['material_id'] ?? '';
             $material_count = $conn->query("SELECT COUNT(*) as total FROM materials WHERE course_id = {$course['course_id']}")->fetch_assoc()['total'];
             $student_count = $conn->query("SELECT COUNT(*) as total FROM student_courses WHERE course_id = {$course['course_id']}")->fetch_assoc()['total'];
             
-            echo "<p style='color: #888;'>📚 {$material_count} materi | 👥 {$student_count} siswa</p>";
+            echo "<p style='color: #888;'>📚 {$material_count} materi | 👥 {$student_count} siswa";
+            echo " <a href='view_students.php?course_id={$course['course_id']}' class='student-link'>[Show Students]</a></p>";
             echo "<a href='?delete_course={$course['course_id']}' onclick='return confirm(\"Yakin hapus course ini? Semua materi dan quiz akan terhapus!\");' style='color: red;'>[Hapus Course]</a>";
             echo "</div>";
         }
@@ -204,7 +259,7 @@ $selected_material_id = $_GET['material_id'] ?? '';
     <hr>
     
     <h2>Tambah Materi Pelajaran</h2>
-    <form method="POST">
+    <form method="POST" enctype="multipart/form-data">
         <input type="hidden" name="add_material">
         
         <label>Pilih Course:</label>
@@ -231,6 +286,13 @@ $selected_material_id = $_GET['material_id'] ?? '';
         <input type="text" name="title" placeholder="Judul Materi" required><br><br>
         <textarea name="content" placeholder="Konten Materi"></textarea><br><br>
         <input type="number" name="level" placeholder="Level (misal: 1)" required><br><br>
+
+        <label class="file-input-label">
+            📎 Upload File Materi (PPT, JPG, PNG, DOCX, PDF, MOV, MP4, MP3):
+            <input type="file" name="material_file" accept=".ppt,.pptx,.jpg,.jpeg,.png,.docx,.pdf,.mov,.mp4,.mp3">
+        </label><br><br>
+
+
 
         <button type="submit">Simpan Materi</button>
     </form>
@@ -300,7 +362,7 @@ $selected_material_id = $_GET['material_id'] ?? '';
     <h2>Kelola Materi Saya</h2>
     <?php
     $sql_list = "
-        SELECT m.material_id, m.material_title, c.course_name,
+        SELECT m.material_id, m.material_title, m.file_name, m.file_type, c.course_name,
                (SELECT COUNT(*) FROM quizzes WHERE material_id = m.material_id) as quiz_count
         FROM materials m 
         JOIN courses c ON m.course_id = c.course_id
@@ -318,8 +380,13 @@ $selected_material_id = $_GET['material_id'] ?? '';
             echo "<p>" .
                 htmlspecialchars($item['course_name']) .
                 " - " .
-                htmlspecialchars($item['material_title']) .
-                " <span style='color: gray;'>(" . $item['quiz_count'] . " quiz)</span> " .
+                htmlspecialchars($item['material_title']);
+            
+            if (!empty($item['file_name'])) {
+                echo " <span style='color: blue;'>📎 " . htmlspecialchars($item['file_name']) . "</span>";
+            }
+            
+            echo " <span style='color: gray;'>(" . $item['quiz_count'] . " quiz)</span> " .
                 " <a href='?delete_material=".$item['material_id']."' onclick='return confirm(\"Yakin?\");'>[Hapus]</a></p>";
         }
     }
