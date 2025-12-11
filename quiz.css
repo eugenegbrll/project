@@ -5,6 +5,12 @@
     padding: 20px;
     background: linear-gradient(to bottom, #87CEEB 0%, #87CEEB 50%, #4682B4 100%);
     min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main{
+    flex: 1 0 auto;
 }
         
 .game-container {
