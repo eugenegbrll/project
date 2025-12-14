@@ -343,8 +343,8 @@ $selected_material_id = $_GET['material_id'] ?? '';
                 <option value="D">D</option>
             </select><br><br>
 
-            <button type="submit" name="add_another" value="1">➕ Simpan & Tambah Pertanyaan Lagi</button>
-            <button type="submit">✅ Simpan & Selesai</button>
+            <button type="submit" name="add_another" value="1">Simpan & Tambah Pertanyaan Lagi</button>
+            <button type="submit">Simpan & Selesai</button>
         </form>
     </div>
 
