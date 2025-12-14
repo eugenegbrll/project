@@ -28,3 +28,4 @@ Fitur 3 =
 - Pet bisa digerak-gerakin dalam air
 - Tambah css untuk register.php dan quiz.php
 - Pet muncul di dashboard student dan dielus-elus
+- admin dashboard sekarang ada css style
