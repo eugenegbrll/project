@@ -123,6 +123,10 @@ header {
     transition: width 0.25s ease;
 }
 
+.container nav p a::after{
+    background-color: red;
+}
+
 .container nav a:hover::after {
     width: 80%;
 }
