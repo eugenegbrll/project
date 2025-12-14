@@ -36,7 +36,6 @@ $course = $course_result->fetch_assoc();
         <h1>📚 <?= htmlspecialchars($course['course_name']) ?></h1>
         
         <?php
-        // Get statistics
         $total_students = $conn->query("SELECT COUNT(*) as total FROM student_courses WHERE course_id = $course_id")->fetch_assoc()['total'];
         $avg_progress = $conn->query("SELECT AVG(progress) as avg FROM student_courses WHERE course_id = $course_id")->fetch_assoc()['avg'] ?? 0;
         $completed_students = $conn->query("SELECT COUNT(*) as total FROM student_courses WHERE course_id = $course_id AND progress = 100")->fetch_assoc()['total'];

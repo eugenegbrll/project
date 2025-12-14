@@ -56,6 +56,68 @@ $wrong_count = $_SESSION['wrong_answer_count'] ?? 0;
     <link rel="stylesheet" href="student_dashboard.css">
     <script src="student_dashboard.js" defer></script>
     <audio id="petSound" src="sounds/<?php echo $pet_sound; ?>"></audio>
+    <script>
+        function deleteTodo(todoId) {
+            if (!confirm("Yakin hapus tugas ini?")) return;
+
+            fetch("delete_todo.php", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                body: "todo_id=" + todoId
+            })
+            .then(res => {
+                if (res.ok) {
+                    document.getElementById("todo-" + todoId).remove();
+                } else {
+                    alert("Gagal menghapus todo");
+                }
+            });
+        }
+    </script>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const petContainer = document.getElementById("petContainer");
+
+    let isDragging = false;
+    let offsetX = 0;
+    let offsetY = 0;
+
+    petContainer.addEventListener("mousedown", (e) => {
+        isDragging = true;
+
+        const rect = petContainer.getBoundingClientRect();
+        offsetX = e.clientX - rect.left;
+        offsetY = e.clientY - rect.top;
+
+        petContainer.style.transition = "none";
+    });
+
+    document.addEventListener("mousemove", (e) => {
+        if (!isDragging) return;
+
+        let x = e.clientX - offsetX;
+        let y = e.clientY - offsetY;
+
+        const maxX = window.innerWidth - petContainer.offsetWidth;
+        const maxY = window.innerHeight - petContainer.offsetHeight;
+
+        x = Math.max(0, Math.min(x, maxX));
+        y = Math.max(0, Math.min(y, maxY));
+
+        petContainer.style.left = x + "px";
+        petContainer.style.top = y + "px";
+        petContainer.style.right = "auto";
+        petContainer.style.bottom = "auto";
+    });
+
+    document.addEventListener("mouseup", () => {
+        isDragging = false;
+    });
+});
+</script>
 
 
 </head>
@@ -73,7 +135,7 @@ $wrong_count = $_SESSION['wrong_answer_count'] ?? 0;
 <main>
     <div class="subcontainer">
         <h2>Course yang Diambil</h2>
-    <a href="take_course.php">Ambil Course Baru</a>
+    <a href="take_course.php" style="text-decoration:underline;">Ambil Course Baru</a>
     </div>
 
     <hr>
@@ -130,11 +192,11 @@ $wrong_count = $_SESSION['wrong_answer_count'] ?? 0;
         <h2>To-Do List</h2>
 
         <form action="add_todo.php" method="POST">
-            <input type="text" name="task" placeholder="Tambah tugas baru" required style="padding: 10px; width: 300px; border: 1px solid #ddd; border-radius: 5px;">
+            <input type="text" name="task" placeholder="Tambah tugas baru" required style="padding: 10px; width: 500px; border: 1px solid #ddd; border-radius: 5px;">
             <button type="submit">Tambah</button>
         </form>
 
-        <ul id="todo-list" style="list-style: none; padding: 0;">
+        <ul id="todo-list" style="list-style: none; padding:0; max-width: 850px; border: 1px solid #ddd; border-radius: 5px; margin-top: 20px; background: #f9f9f9;">
         <?php
         $sql_todo = "SELECT todo_id, task_description, is_completed 
                     FROM todo_list WHERE user_id = ?";
@@ -147,16 +209,27 @@ $wrong_count = $_SESSION['wrong_answer_count'] ?? 0;
             $checked = $todo['is_completed'] ? 'checked' : '';
             $style = $todo['is_completed'] ? 'text-decoration: line-through; color: #999;' : '';
             
-            echo "<li id='todo-{$todo['todo_id']}' style='padding: 10px; margin: 5px 0; background: white; border-radius: 5px; $style'>
+            echo "<li id='todo-{$todo['todo_id']}' 
+                style='display:flex;align-items:center;justify-content:space-between;
+                    padding:10px;margin:5px 0;background:white;border-radius:5px;$style'>
+                
+                <div>
                     <input type='checkbox' $checked onchange='toggleTodo({$todo['todo_id']})'>
                     " . htmlspecialchars($todo['task_description']) . "
-                </li>";
+                </div>
+
+                <button onclick='deleteTodo({$todo['todo_id']})'
+                        style='background:none;border:none;color:red;
+                            font-size:18px;cursor:pointer;'>
+                    ❌
+                </button>
+            </li>";
         }
         ?>
         </ul>
     </div>
 
-    <div class="pet-container">
+    <div class="pet-container" id="petContainer">
         <div class="pet-box <?php echo $is_pet_sad ? 'sad' : ''; ?>" id="petBox">
             <div class="pat-counter <?php echo $is_pet_sad ? 'healing' : ''; ?>" id="patCounter">
                 <?php echo $is_pet_sad ? ($wrong_count > 0 ? $wrong_count : '!') : '0'; ?>

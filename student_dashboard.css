@@ -91,11 +91,17 @@ header {
 #patCounter {
     display: none;
 }
+
 .pet-container {
     position: fixed;
     bottom: 20px;
     right: 20px;
     z-index: 1000;
+    cursor: grab;
+}
+
+.pet-container:active {
+    cursor: grabbing;
 }
 
 .pet-box {
@@ -136,6 +142,12 @@ header {
     transform: scale(0.95);
 }
 
+@keyframes squish {
+    25% { transform: scale(1.2, 0.8); }
+    50% { transform: scale(0.9, 1.1); }
+}
+
+
 .pet-emoji.sad {
     filter: grayscale(80%) drop-shadow(0 5px 10px rgba(0,0,0,0.5));
     animation: sadBob 3s ease-in-out infinite;
@@ -159,14 +171,6 @@ header {
 
 .pet-emoji.squish {
     animation: squish 0.3s ease-out;
-}
-
-@keyframes squish {
-    0% { transform: scale(1, 1); }
-    25% { transform: scale(1.2, 0.8); }
-    50% { transform: scale(0.9, 1.1); }
-    75% { transform: scale(1.05, 0.95); }
-    100% { transform: scale(1, 1); }
 }
 
 .pet-emoji.happy {
@@ -329,3 +333,4 @@ header {
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-10px); }
 }
+

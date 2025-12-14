@@ -136,7 +136,7 @@ $course = $conn->query("SELECT * FROM courses WHERE course_id = $course_id")->fe
                 echo "<form method='POST' action='mark_complete.php' style='display: inline;'>
                         <input type='hidden' name='material_id' value='$material_id'>
                         <input type='hidden' name='course_id' value='$course_id'>
-                        <button type='submit' class='btn btn-success'>✅ Tandai Selesai</button>
+                        <button type='submit' class='btn btn-success' style='border:none;padding:15px 20px;font-size: medium;' disabled>Mohon Ditunggu</button>
                       </form>";
             }
             
