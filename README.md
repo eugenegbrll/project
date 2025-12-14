@@ -19,7 +19,7 @@ Fitur 2 =
 - Admin bisa add & delete materials
 - Admin bisa add & delete quiz
 - Student bisa pilih course dan mengerjakan quiznya
-- Student bisa menambah dan mencoret selesai to-do list
+- Student bisa menambah dan mencoret selesai to-do list 
 
 Q3 Assignment 3
 Fitur 3 =
@@ -28,6 +28,8 @@ Fitur 3 =
 - Pet bisa digerak-gerakin dalam air
 - Tambah css untuk register.php, login.php, student_dashboard.php, quiz.php, dan footer.php
 - Pet muncul di dashboard student dan dielus-elus
+- to do list yang sudah pernah dibikin bisa di delete
+- pet container boxnya bisa digerak-gerakin
 
 Docs dokumentasi :
 https://docs.google.com/document/d/1C99qOebzaYZp50c80h-rO4b6ZwngwcecUPMeaqlsVY4/edit?usp=sharing
