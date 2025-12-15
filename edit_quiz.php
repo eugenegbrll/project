@@ -119,10 +119,13 @@ if (isset($_GET['edit_quiz_id'])) {
             </nav>
         </div>
     </header>
-
-    <h1>Edit Quiz</h1>
-    <h3>Course: <?= htmlspecialchars($material['course_name']) ?></h3>
-    <h3>Materi: <?= htmlspecialchars($material['material_title']) ?></h3>
+    
+    <div style="padding-left:8%;">
+        <h1 style="text-align:center">Edit Quiz</h1>
+        <h3>Course: <?= htmlspecialchars($material['course_name']) ?></h3>
+        <h3>Materi: <?= htmlspecialchars($material['material_title']) ?></h3>
+    </div>
+    
 
     <?php if (isset($_GET['success']) && $_GET['success'] == 'quiz_updated'): ?>
         <p style="color: green;">✅ Quiz berhasil diupdate!</p>
