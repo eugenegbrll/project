@@ -179,6 +179,7 @@ $selected_material_id = $_GET['material_id'] ?? '';
                 <a href="#course-terbuat">Course Terbuat</a>
                 <a href="#tambah-materi">Tambah Materi</a>
                 <a href="#buat-quiz">Buat Quiz</a>
+                <a href="#kelola-materi">Kelola Materi</a>
                 <p>Selamat Datang, <?= htmlspecialchars($_SESSION['full_name']) ?></p>
                 <p><a href="logout.php" style="color:rgb(255, 62, 62);font-size:medium;">Logout</a></p>
             </nav>
@@ -350,7 +351,40 @@ $selected_material_id = $_GET['material_id'] ?? '';
 
     <hr>
 
-    
+    <h2 id="kelola-materi">Kelola Materi</h2>
+    <div class="material-list">
+        <?php
+        $sql_list = "
+            SELECT m.material_id, m.material_title, m.file_name, m.file_type, c.course_name,
+                (SELECT COUNT(*) FROM quizzes WHERE material_id = m.material_id) as quiz_count
+            FROM materials m 
+            JOIN courses c ON m.course_id = c.course_id
+            WHERE c.teacher_id = ?
+        ";
+        $stmt_list = $conn->prepare($sql_list);
+        $stmt_list->bind_param("i", $teacher_id);
+        $stmt_list->execute();
+        $result_list = $stmt_list->get_result();
+
+        if ($result_list->num_rows == 0) {
+            echo "<p>Belum ada materi. Tambah materi untuk course yang kamu buat.</p>";
+        } else {
+            while ($item = $result_list->fetch_assoc()) {
+                echo "<p>" .
+                    htmlspecialchars($item['course_name']) .
+                    " - " .
+                    htmlspecialchars($item['material_title']);
+                
+                if (!empty($item['file_name'])) {
+                    echo " <span style='color: blue;'>📎 " . htmlspecialchars($item['file_name']) . "</span>";
+                }
+                
+                echo " <span style='color: gray;'>(" . $item['quiz_count'] . " quiz)</span> " .
+                    " <a href='?delete_material=".$item['material_id']."' onclick='return confirm(\"Yakin?\");'>[Hapus]</a></p>";
+            }
+        }
+        ?>
+    </div>
 
 <footer>
     <?php include 'footer.html'; ?>

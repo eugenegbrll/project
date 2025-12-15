@@ -102,6 +102,7 @@ if (isset($_POST['update_course'])) {
         ?>
     </div>
 
+
     <footer>
         <?php include 'footer.html'; ?>
     </footer>
