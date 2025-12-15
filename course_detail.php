@@ -10,123 +10,145 @@ include 'db.php';
 $course_id = $_GET['id'] ?? 0;
 $user_id = $_SESSION['user_id'];
 
-$sql = "SELECT c.* FROM courses c WHERE c.course_id = ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("i", $course_id);
-$stmt->execute();
-$course = $stmt->get_result()->fetch_assoc();
-
-if (!$course) {
-    echo "Course tidak ditemukan";
+$check = $conn->query("SELECT * FROM student_courses WHERE user_id = $user_id AND course_id = $course_id");
+if ($check->num_rows == 0) {
+    echo "Kamu belum terdaftar di course ini.";
     exit();
 }
 
-$sql_progress = "SELECT 
-    COUNT(DISTINCT m.material_id) as total_materials,
-    COUNT(DISTINCT mc.material_id) as completed_materials
-    FROM materials m
-    LEFT JOIN material_completions mc ON m.material_id = mc.material_id AND mc.user_id = ?
-    WHERE m.course_id = ?";
-$stmt_prog = $conn->prepare($sql_progress);
-$stmt_prog->bind_param("ii", $user_id, $course_id);
-$stmt_prog->execute();
-$progress_data = $stmt_prog->get_result()->fetch_assoc();
-
-$total = $progress_data['total_materials'];
-$completed = $progress_data['completed_materials'];
-$progress = $total > 0 ? round(($completed / $total) * 100) : 0;
-
-$sql_m = "SELECT m.*, 
-          EXISTS(SELECT 1 FROM material_completions mc 
-                 WHERE mc.material_id = m.material_id 
-                 AND mc.user_id = ?) as is_completed
-          FROM materials m 
-          WHERE m.course_id = ? 
-          ORDER BY m.level ASC";
-$stmt_m = $conn->prepare($sql_m);
-$stmt_m->bind_param("ii", $user_id, $course_id);
-$stmt_m->execute();
-$materials = $stmt_m->get_result();
+$course = $conn->query("SELECT * FROM courses WHERE course_id = $course_id")->fetch_assoc();
 ?>
+
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-    <title>Detail Course</title>
-    <style>
-        .material-card {
-            border: 1px solid #ddd;
-            padding: 15px;
-            margin-bottom: 15px;
-            border-radius: 5px;
-        }
-        .material-card.completed {
-            background-color: #e8f5e9;
-            border-color: #4CAF50;
-        }
-        .progress-bar {
-            width: 100%;
-            height: 30px;
-            background-color: #ddd;
-            border-radius: 15px;
-            margin: 20px 0;
-        }
-        .progress-fill {
-            height: 100%;
-            background-color: #4CAF50;
-            border-radius: 15px;
-            text-align: center;
-            line-height: 30px;
-            color: white;
-            font-weight: bold;
-        }
-    </style>
+    <title><?= htmlspecialchars($course['course_name']) ?></title>
+    <link rel="stylesheet" href="course_detail.css">
 </head>
 <body>
-
-<main> 
-    <a href="student_dashboard.php">⬅ Kembali</a>
-
-    <h1><?php echo htmlspecialchars($course['course_name']); ?></h1>
-    <p><strong>Guru:</strong> <?php echo htmlspecialchars($course['teacher_name']); ?></p>
-    <p><?php echo htmlspecialchars($course['description']); ?></p>
-
-    <h3>Progress Kamu:</h3>
-    <div class="progress-bar">
-        <div class="progress-fill" style="width: <?php echo $progress; ?>%;">
-            <?php echo $progress; ?>%
+    <header>
+        <div class="bar">
+            <h1>EduQuest</h1>
+            <nav>
+                <p>Halo, <?= htmlspecialchars($_SESSION['full_name']) ?></p>
+                <p><a href="logout.php">Logout</a></p>
+            </nav>
         </div>
-    </div>
-    <p><?php echo $completed; ?> dari <?php echo $total; ?> materi selesai</p>
+    </header>
 
-    <hr>
-
-    <h2>Daftar Materi</h2>
-
-    <?php
-    while ($m = $materials->fetch_assoc()) {
-        $completed_class = $m['is_completed'] ? 'completed' : '';
-        $completed_badge = $m['is_completed'] ? ' ✅' : '';
+    <main>
+        <div class="container">
+        <a href="student_dashboard.php" class="back-link">⬅ Kembali ke Dashboard</a>
         
-        echo "<div class='material-card $completed_class'>";
-        echo "<h3>Level {$m['level']} - " . htmlspecialchars($m['material_title']) . $completed_badge . "</h3>";
-        echo "<p>" . nl2br(htmlspecialchars($m['material_content'])) . "</p>";
+        <h1><?= htmlspecialchars($course['course_name']) ?></h1>
+        
+        <?php if (!empty($course['description'])): ?>
+            <p style="color: #666; font-size: 16px;"><?= htmlspecialchars($course['description']) ?></p>
+        <?php endif; ?>
+        
+        <p><strong>Pengajar:</strong> <?= htmlspecialchars($course['teacher_name']) ?></p>
 
-        if ($m['is_completed']) {
-            echo "<p style='color: green;'>✓ Materi selesai!</p>";
-            echo "<a href='quiz.php?material_id={$m['material_id']}'>Review Quiz ➜</a>";
-        } else {
-            echo "<a href='quiz.php?material_id={$m['material_id']}'>Kerjakan Quiz ➜</a>";
+        <h2>Materi Pelajaran</h2>
+
+        <?php
+        $materials = $conn->query("SELECT * FROM materials WHERE course_id = $course_id ORDER BY level ASC");
+        
+        if ($materials->num_rows == 0) {
+            echo "<p>Belum ada materi tersedia.</p>";
         }
 
-        echo "</div>";
-    }
-    ?>
-</main>
+        while ($mat = $materials->fetch_assoc()) {
+            $material_id = $mat['material_id'];
+            
+            $check_complete = $conn->query("SELECT * FROM material_completions WHERE user_id = $user_id AND material_id = $material_id");
+            $is_completed = $check_complete->num_rows > 0;
+            
+            $class = $is_completed ? 'material-box completed' : 'material-box';
+            
+            echo "<div class='$class'>";
+            echo "<h3>📖 Level {$mat['level']}: " . htmlspecialchars($mat['material_title']) . "</h3>";
+            
+            if ($is_completed) {
+                echo "<p style='color: green;'><strong>✅ Materi Selesai</strong></p>";
+            }
+            
+            echo "<p>" . nl2br(htmlspecialchars($mat['material_content'])) . "</p>";
+            
+            if (!empty($mat['file_path']) && file_exists($mat['file_path'])) {
+                echo "<div class='file-preview'>";
+                echo "<h4>";
+                
+                $file_type = strtolower($mat['file_type']);
+                $file_icon = '📎';
+                $can_preview = false;
+                
+                if (in_array($file_type, ['mp4', 'mov'])) {
+                    $file_icon = '🎥';
+                    $can_preview = true;
+                    echo "$file_icon Lihat Video Materi</h4>";
+                    echo "<video controls>";
+                    echo "<source src='{$mat['file_path']}' type='video/" . ($file_type == 'mov' ? 'quicktime' : 'mp4') . "'>";
+                    echo "Browser Anda tidak mendukung video.</video>";
+                } elseif ($file_type == 'mp3') {
+                    $file_icon = '🎵';
+                    $can_preview = true;
+                    echo "$file_icon Dengarkan Audio Materi</h4>";
+                    echo "<audio controls>";
+                    echo "<source src='{$mat['file_path']}' type='audio/mpeg'>";
+                    echo "Browser Anda tidak mendukung audio.</audio>";
+                } elseif (in_array($file_type, ['jpg', 'jpeg', 'png'])) {
+                    $file_icon = '🖼️';
+                    $can_preview = true;
+                    echo "$file_icon Lihat Gambar Materi</h4>";
+                    echo "<img src='{$mat['file_path']}' alt='" . htmlspecialchars($mat['material_title']) . "'>";
+                } elseif (in_array($file_type, ['pdf'])) {
+                    $file_icon = '📄';
+                    echo "$file_icon Dokumen PDF</h4>";
+                    echo "<p>File: " . htmlspecialchars($mat['file_name']) . "</p>";
+                } elseif (in_array($file_type, ['ppt', 'pptx'])) {
+                    $file_icon = '📊';
+                    echo "$file_icon Presentasi PowerPoint</h4>";
+                    echo "<p>File: " . htmlspecialchars($mat['file_name']) . "</p>";
+                } elseif (in_array($file_type, ['docx'])) {
+                    $file_icon = '📝';
+                    echo "$file_icon Dokumen Word</h4>";
+                    echo "<p>File: " . htmlspecialchars($mat['file_name']) . "</p>";
+                } else {
+                    echo "$file_icon File Materi</h4>";
+                    echo "<p>File: " . htmlspecialchars($mat['file_name']) . "</p>";
+                }
+                
+                echo "<a href='{$mat['file_path']}' download='" . htmlspecialchars($mat['file_name']) . "' class='download-btn'>⬇️ Download File</a>";
+                echo "</div>";
+            }
+            
+            $quiz_check = $conn->query("SELECT COUNT(*) as total FROM quizzes WHERE material_id = $material_id");
+            $quiz_count = $quiz_check->fetch_assoc()['total'];
+            
+            if ($quiz_count > 0) {
+                echo "<p style='margin-top: 15px;'><strong>🎯 Kerjakan Quiz:</strong></p>";
+                echo "<a href='quiz.php?material_id=$material_id' class='btn'>Mulai Quiz ($quiz_count pertanyaan)</a>";
+            } else {
+                echo "<p style='color: #999; margin-top: 15px;'><em>Quiz belum tersedia untuk materi ini.</em></p>";
+            }
+            
+            if (!$is_completed && $quiz_count == 0) {
+                echo "<form method='POST' action='mark_complete.php' style='display: inline;'>
+                        <input type='hidden' name='material_id' value='$material_id'>
+                        <input type='hidden' name='course_id' value='$course_id'>
+                        <button type='submit' class='btn btn-success' style='border:none;padding:15px 20px;font-size: medium;' disabled>Mohon Ditunggu</button>
+                      </form>";
+            }
+            
+            echo "</div>";
+        }
+        ?>
+    </div>
+    </main>
+    
 
-
-<footer>
-    <?php include 'footer.html'; ?>
-</footer>
-
+    <footer style="margin-top: 40px;">
+        <?php include 'footer.html'; ?>
+    </footer>
 </body>
 </html>

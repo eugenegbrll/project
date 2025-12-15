@@ -80,7 +80,6 @@ if ($answered_count == $total_questions) {
     $stmt_check_all->execute();
     $total_correct = $stmt_check_all->get_result()->fetch_assoc()['total_correct'];
     
-
     if ($total_correct < $total_questions) {
         $_SESSION['pet_sad'] = true;
         $_SESSION['quiz_failed_material'] = $material_id;
@@ -100,9 +99,4 @@ if ($next_question < $total_questions) {
     header("Location: quiz.php?material_id=$material_id&question=$current_index&completed=1");
 }
 exit();
-
-setTimeout(() => {
-    location.reload();
-}, 5000);
-
 ?>

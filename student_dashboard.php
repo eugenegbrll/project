@@ -56,31 +56,114 @@ $wrong_count = $_SESSION['wrong_answer_count'] ?? 0;
     <link rel="stylesheet" href="student_dashboard.css">
     <script src="student_dashboard.js" defer></script>
     <audio id="petSound" src="sounds/<?php echo $pet_sound; ?>"></audio>
+    <script>
+        function deleteTodo(todoId) {
+            if (!confirm("Yakin hapus tugas ini?")) return;
+
+            fetch("delete_todo.php", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                body: "todo_id=" + todoId
+            })
+            .then(res => {
+                if (res.ok) {
+                    document.getElementById("todo-" + todoId).remove();
+                } else {
+                    alert("Gagal menghapus todo");
+                }
+            });
+        }
+    </script>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const petContainer = document.getElementById("petContainer");
+
+    let isDragging = false;
+    let offsetX = 0;
+    let offsetY = 0;
+
+    petContainer.addEventListener("mousedown", (e) => {
+        isDragging = true;
+
+        const rect = petContainer.getBoundingClientRect();
+        offsetX = e.clientX - rect.left;
+        offsetY = e.clientY - rect.top;
+
+        petContainer.style.transition = "none";
+    });
+
+    document.addEventListener("mousemove", (e) => {
+        if (!isDragging) return;
+
+        let x = e.clientX - offsetX;
+        let y = e.clientY - offsetY;
+
+        const maxX = window.innerWidth - petContainer.offsetWidth;
+        const maxY = window.innerHeight - petContainer.offsetHeight;
+
+        x = Math.max(0, Math.min(x, maxX));
+        y = Math.max(0, Math.min(y, maxY));
+
+        petContainer.style.left = x + "px";
+        petContainer.style.top = y + "px";
+        petContainer.style.right = "auto";
+        petContainer.style.bottom = "auto";
+    });
+
+    document.addEventListener("mouseup", () => {
+        isDragging = false;
+    });
+});
+</script>
 
 
 </head>
-
 <body>
 <header>
-
+    <div class="container">
+        <h1>EduQuest</h1>
+        <nav>
+            <p>Halo, <?= htmlspecialchars($_SESSION['full_name']) ?></p>
+            <p><a href="logout.php">Logout</a></p>
+        </nav>
+    </div>
 </header>
 
 <main>
-    <div class="container">
-    <h1>Halo, <?= htmlspecialchars($_SESSION['full_name']) ?></h1>
-    <h1><a href="logout.php">Logout</a></h1>
+    <div class="subcontainer">
+        <h2>Course yang Diambil</h2>
+    <a href="take_course.php" style="text-decoration:underline;">Ambil Course Baru</a>
+    </div>
 
-    <h2>Course yang Diambil</h2>
-    <a href="take_course.php">Ambil Course Baru</a>
+    <hr>
 
     <div class="courses-container">
         <?php
-        $sql = "SELECT c.course_name, c.course_id, sc.progress 
-                FROM courses c 
-                JOIN student_courses sc ON c.course_id = sc.course_id 
-                WHERE sc.user_id = ?";
+        $sql = "
+        SELECT 
+            c.course_id,
+            c.course_name,
+
+            -- total materi per course
+            (SELECT COUNT(*) 
+            FROM materials m 
+            WHERE m.course_id = c.course_id) AS total_materials,
+
+            -- materi yang sudah diselesaikan oleh user
+            (SELECT COUNT(*) 
+            FROM material_completions mc
+            JOIN materials m2 ON mc.material_id = m2.material_id
+            WHERE mc.user_id = ? AND m2.course_id = c.course_id) AS completed_materials
+
+        FROM courses c
+        JOIN student_courses sc ON c.course_id = sc.course_id
+        WHERE sc.user_id = ?
+        ";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("i", $user_id);
+        $stmt->bind_param("ii", $user_id, $user_id);
         $stmt->execute();
         $result = $stmt->get_result();
 
@@ -89,9 +172,14 @@ $wrong_count = $_SESSION['wrong_answer_count'] ?? 0;
         }
 
         while ($course = $result->fetch_assoc()) {
+            $total = $course['total_materials'];
+            $completed = $course['completed_materials'];
+
+            $progress = ($total > 0) ? round(($completed / $total) * 100) : 0;
+
             echo "<div class='course-card'>";
             echo "<h3>" . htmlspecialchars($course['course_name']) . "</h3>";
-            echo "<p>Progress: " . $course['progress'] . "%</p>";
+            echo "<p>Progress: $progress%</p>";
             echo "<a href='course_detail.php?id=" . $course['course_id'] . "'>Lihat Detail</a>";
             echo "</div>";
         }
@@ -100,304 +188,316 @@ $wrong_count = $_SESSION['wrong_answer_count'] ?? 0;
 
     <hr>
 
-    <h2>To-Do List</h2>
+    <div class="todo-container">
+        <h2>To-Do List</h2>
 
-    <form action="add_todo.php" method="POST">
-        <input type="text" name="task" placeholder="Tambah tugas baru" required style="padding: 10px; width: 300px; border: 1px solid #ddd; border-radius: 5px;">
-        <button type="submit">Tambah</button>
-    </form>
+        <form action="add_todo.php" method="POST">
+            <input type="text" name="task" placeholder="Tambah tugas baru" required style="padding: 10px; width: 500px; border: 1px solid #ddd; border-radius: 5px;">
+            <button type="submit">Tambah</button>
+        </form>
 
-    <ul id="todo-list" style="list-style: none; padding: 0;">
-    <?php
-    $sql_todo = "SELECT todo_id, task_description, is_completed 
-                 FROM todo_list WHERE user_id = ?";
-    $stmt_todo = $conn->prepare($sql_todo);
-    $stmt_todo->bind_param("i", $user_id);
-    $stmt_todo->execute();
-    $result_todo = $stmt_todo->get_result();
+        <ul id="todo-list" style="list-style: none; padding:0; max-width: 850px; border: 1px solid #ddd; border-radius: 5px; margin-top: 20px; background: #f9f9f9;">
+        <?php
+        $sql_todo = "SELECT todo_id, task_description, is_completed 
+                    FROM todo_list WHERE user_id = ?";
+        $stmt_todo = $conn->prepare($sql_todo);
+        $stmt_todo->bind_param("i", $user_id);
+        $stmt_todo->execute();
+        $result_todo = $stmt_todo->get_result();
 
-    while ($todo = $result_todo->fetch_assoc()) {
-        $checked = $todo['is_completed'] ? 'checked' : '';
-        $style = $todo['is_completed'] ? 'text-decoration: line-through; color: #999;' : '';
-        
-        echo "<li id='todo-{$todo['todo_id']}' style='padding: 10px; margin: 5px 0; background: white; border-radius: 5px; $style'>
-                <input type='checkbox' $checked onchange='toggleTodo({$todo['todo_id']})'>
-                " . htmlspecialchars($todo['task_description']) . "
-             </li>";
-    }
-    ?>
-    </ul>
-</div>
+        while ($todo = $result_todo->fetch_assoc()) {
+            $checked = $todo['is_completed'] ? 'checked' : '';
+            $style = $todo['is_completed'] ? 'text-decoration: line-through; color: #999;' : '';
+            
+            echo "<li id='todo-{$todo['todo_id']}' 
+                style='display:flex;align-items:center;justify-content:space-between;
+                    padding:10px;margin:5px 0;background:white;border-radius:5px;$style'>
+                
+                <div>
+                    <input type='checkbox' $checked onchange='toggleTodo({$todo['todo_id']})'>
+                    " . htmlspecialchars($todo['task_description']) . "
+                </div>
 
-<div class="pet-container">
-    <div class="pet-box <?php echo $is_pet_sad ? 'sad' : ''; ?>" id="petBox">
-        <div class="pat-counter <?php echo $is_pet_sad ? 'healing' : ''; ?>" id="patCounter">
-            <?php echo $is_pet_sad ? ($wrong_count > 0 ? $wrong_count : '!') : '0'; ?>
-        </div>
-        <div class="speech-bubble" id="speechBubble"></div>
-        <div class="pet-emoji <?php echo $is_pet_sad ? 'sad crying' : ''; ?>" id="petEmoji" onclick="patPet()"><?php echo $pet_emoji; ?></div>
-        <div class="pet-name">My <?php echo $pet_name; ?></div>
-        <div class="pet-mood" id="petMood"><?php echo $is_pet_sad ? '😢 Sedih' : '😊 Happy'; ?></div>
+                <button onclick='deleteTodo({$todo['todo_id']})'
+                        style='background:none;border:none;color:red;
+                            font-size:18px;cursor:pointer;'>
+                    ❌
+                </button>
+            </li>";
+        }
+        ?>
+        </ul>
     </div>
-</div>
-</main>
 
-<script>
-let patCount = 0;
-let idleTimer;
-let lastPatTime = Date.now();
-let isSad = <?php echo $is_pet_sad ? 'true' : 'false'; ?>;
-let patsNeeded = <?php echo max($wrong_count, 5); ?>;
-let healingPats = 0;
+    <div class="pet-container" id="petContainer">
+        <div class="pet-box <?php echo $is_pet_sad ? 'sad' : ''; ?>" id="petBox">
+            <div class="pat-counter <?php echo $is_pet_sad ? 'healing' : ''; ?>" id="patCounter">
+                <?php echo $is_pet_sad ? ($wrong_count > 0 ? $wrong_count : '!') : '0'; ?>
+            </div>
+            <div class="speech-bubble" id="speechBubble"></div>
+            <div class="pet-emoji <?php echo $is_pet_sad ? 'sad crying' : ''; ?>" id="petEmoji" onclick="patPet()"><?php echo $pet_emoji; ?></div>
+            <div class="pet-name">My <?php echo $pet_name; ?></div>
+            <div class="pet-mood" id="petMood"><?php echo $is_pet_sad ? '😢 Sedih' : '😊 Happy'; ?></div>
+        </div>
+    </div>
+    </main>
 
-const petEmoji = document.getElementById('petEmoji');
-const patCounter = document.getElementById('patCounter');
-const speechBubble = document.getElementById('speechBubble');
-const petMood = document.getElementById('petMood');
-const petBox = document.getElementById('petBox');
+    <script>
+    let patCount = 0;
+    let idleTimer;
+    let lastPatTime = Date.now();
+    let isSad = <?php echo $is_pet_sad ? 'true' : 'false'; ?>;
+    let patsNeeded = <?php echo max($wrong_count, 5); ?>;
+    let healingPats = 0;
 
-const happyPhrases = [
-    '<?php echo $pet_sound; ?>',
-    '❤️ Love you!',
-    '😊 Yay!',
-    '✨ Ahhh enak banget!',
-    '🥰 Elus dong!',
-    '💕 Thank you!',
-    '🎉 Woohoo!'
-];
+    const petEmoji = document.getElementById('petEmoji');
+    const patCounter = document.getElementById('patCounter');
+    const speechBubble = document.getElementById('speechBubble');
+    const petMood = document.getElementById('petMood');
+    const petBox = document.getElementById('petBox');
 
-const sadPhrases = [
-    '😢 Aku sedih',
-    '💔 Maafkan aku',
-    '😭 Aku mengecewakanmu',
-    '🥺 Elus aku dong...',
-    '💧 Kenapa aku begini...'
-];
+    const happyPhrases = [
+        '<?php echo $pet_sound; ?>',
+        '❤️ Love you!',
+        '😊 Yay!',
+        '✨ Ahhh enak banget!',
+        '🥰 Elus dong!',
+        '💕 Thank you!',
+        '🎉 Woohoo!'
+    ];
 
-const healingPhrases = [
-    '🌟 Oh!',
-    '💚 Aku merasa baikan',
-    '😊 Thank you!',
-    '✨ Aku merasa lebih senang!',
-    '💖 Kamu peduli aku!',
-    '🥰 Lagi plis!'
-];
+    const sadPhrases = [
+        '😢 Aku sedih',
+        '💔 Maafkan aku',
+        '😭 Aku mengecewakanmu',
+        '🥺 Elus aku dong...',
+        '💧 Kenapa aku begini...'
+    ];
 
-const happyMoods = [
-    '😊 Senang',
-    '🥰 Loved',
-    '😍 Girang',
-    '✨ Gembira',
-    '💖 Blessed'
-];
+    const healingPhrases = [
+        '🌟 Oh!',
+        '💚 Aku merasa baikan',
+        '😊 Thank you!',
+        '✨ Aku merasa lebih senang!',
+        '💖 Kamu peduli aku!',
+        '🥰 Lagi plis!'
+    ];
 
-const sadMoods = [
-    '😢 Sedih',
-    '💔 Terluka',
-    '😭 Menangis',
-    '🥺 Cemberut',
-    '😿 Kecewa'
-];
+    const happyMoods = [
+        '😊 Senang',
+        '🥰 Loved',
+        '😍 Girang',
+        '✨ Gembira',
+        '💖 Blessed'
+    ];
 
-if (isSad) {
-    setInterval(() => {
-        createTear();
-    }, 3000);
-}
+    const sadMoods = [
+        '😢 Sedih',
+        '💔 Terluka',
+        '😭 Menangis',
+        '🥺 Cemberut',
+        '😿 Kecewa'
+    ];
 
-function patPet() {
-    const sound = document.getElementById('petSound');
-    sound.currentTime = 0;
-    sound.play();
-    lastPatTime = Date.now();
-    
     if (isSad) {
-        healingPats++;
-        patCounter.textContent = patsNeeded - healingPats;
+        setInterval(() => {
+            createTear();
+        }, 3000);
+    }
+
+    function patPet() {
+        const sound = document.getElementById('petSound');
+        sound.currentTime = 0;
+        sound.play();
+        lastPatTime = Date.now();
         
-        petEmoji.classList.remove('sad', 'crying', 'squish', 'happy', 'wiggle');
-        petEmoji.classList.add('squish');
-        
-        const randomPhrase = healingPhrases[Math.floor(Math.random() * healingPhrases.length)];
-        speechBubble.textContent = randomPhrase;
-        speechBubble.classList.add('show');
-        
-        createHeart();
-        
-        if (healingPats >= patsNeeded) {
-            healPet();
+        if (isSad) {
+            healingPats++;
+            patCounter.textContent = patsNeeded - healingPats;
+            
+            petEmoji.classList.remove('sad', 'crying', 'squish', 'happy', 'wiggle');
+            petEmoji.classList.add('squish');
+            
+            const randomPhrase = healingPhrases[Math.floor(Math.random() * healingPhrases.length)];
+            speechBubble.textContent = randomPhrase;
+            speechBubble.classList.add('show');
+            
+            createHeart();
+            
+            if (healingPats >= patsNeeded) {
+                healPet();
+            }
+            
+            setTimeout(() => {
+                petEmoji.classList.remove('squish');
+            }, 500);
+            
+        } else {
+            patCount++;
+            patCounter.textContent = patCount;
+            
+            petEmoji.classList.remove('squish', 'happy', 'wiggle', 'idle-blink', 'idle-bounce');
+            
+            const animations = ['squish', 'happy', 'wiggle'];
+            const randomAnim = animations[Math.floor(Math.random() * animations.length)];
+            petEmoji.classList.add(randomAnim);
+            
+            const randomPhrase = happyPhrases[Math.floor(Math.random() * happyPhrases.length)];
+            speechBubble.textContent = randomPhrase;
+            speechBubble.classList.add('show');
+            
+            const randomMood = happyMoods[Math.floor(Math.random() * happyMoods.length)];
+            petMood.textContent = randomMood;
+            
+            createHeart();
+            
+            setTimeout(() => {
+                petEmoji.classList.remove(randomAnim);
+            }, 500);
+            
+            resetIdleTimer();
         }
         
         setTimeout(() => {
-            petEmoji.classList.remove('squish');
-        }, 500);
+            speechBubble.classList.remove('show');
+        }, 2000);
+    }
+
+    function healPet() {
+        isSad = false;
+        petBox.classList.remove('sad');
+        petEmoji.classList.remove('sad', 'crying');
+        patCounter.classList.remove('healing');
+        patCounter.textContent = '0';
+        patCount = 0;
+        healingPats = 0;
         
-    } else {
-        patCount++;
-        patCounter.textContent = patCount;
-        
-        petEmoji.classList.remove('squish', 'happy', 'wiggle', 'idle-blink', 'idle-bounce');
-        
-        const animations = ['squish', 'happy', 'wiggle'];
-        const randomAnim = animations[Math.floor(Math.random() * animations.length)];
-        petEmoji.classList.add(randomAnim);
-        
-        const randomPhrase = happyPhrases[Math.floor(Math.random() * happyPhrases.length)];
-        speechBubble.textContent = randomPhrase;
+        petMood.textContent = '🎉 Sembuh!';
+        speechBubble.textContent = '💖 Terima kasih! Aku bahagia lagi!';
         speechBubble.classList.add('show');
         
-        const randomMood = happyMoods[Math.floor(Math.random() * happyMoods.length)];
-        petMood.textContent = randomMood;
-        
-        createHeart();
-        
+        petEmoji.classList.add('happy');
         setTimeout(() => {
-            petEmoji.classList.remove(randomAnim);
-        }, 500);
+            petEmoji.classList.remove('happy');
+        }, 1000);
         
-        resetIdleTimer();
-    }
-    
-    setTimeout(() => {
-        speechBubble.classList.remove('show');
-    }, 2000);
-}
-
-function healPet() {
-    isSad = false;
-    petBox.classList.remove('sad');
-    petEmoji.classList.remove('sad', 'crying');
-    patCounter.classList.remove('healing');
-    patCounter.textContent = '0';
-    patCount = 0;
-    healingPats = 0;
-    
-    petMood.textContent = '🎉 Sembuh!';
-    speechBubble.textContent = '💖 Terima kasih! Aku bahagia lagi!';
-    speechBubble.classList.add('show');
-    
-    petEmoji.classList.add('happy');
-    setTimeout(() => {
-        petEmoji.classList.remove('happy');
-    }, 1000);
-    
-    for (let i = 0; i < 10; i++) {
-        setTimeout(() => createHeart(), i * 100);
-    }
-    
-    setTimeout(() => {
-        speechBubble.classList.remove('show');
-        petMood.textContent = '😊 Happy';
-    }, 3000);
-    
-    fetch('clear_pet_sad.php')
-        .then(() => {
-            resetIdleTimer();
-        });
-}
-
-function createHeart() {
-    const heart = document.createElement('div');
-    heart.className = 'heart';
-    heart.textContent = '❤️';
-    
-    const randomX = Math.random() * 100 - 50;
-    heart.style.left = `calc(50% + ${randomX}px)`;
-    heart.style.top = '50%';
-    
-    petBox.appendChild(heart);
-    
-    setTimeout(() => {
-        heart.remove();
-    }, 1500);
-}
-
-function createTear() {
-    if (!isSad) return;
-    
-    const tear = document.createElement('div');
-    tear.className = 'tear';
-    tear.textContent = '💧';
-    
-    const randomX = Math.random() * 60 - 30;
-    tear.style.left = `calc(50% + ${randomX}px)`;
-    tear.style.top = '60%';
-    
-    petBox.appendChild(tear);
-    
-    setTimeout(() => {
-        tear.remove();
-    }, 2000);
-}
-
-function startIdleAnimation() {
-    if (isSad) {
-        const randomSad = sadPhrases[Math.floor(Math.random() * sadPhrases.length)];
-        speechBubble.textContent = randomSad;
-        speechBubble.classList.add('show');
+        for (let i = 0; i < 10; i++) {
+            setTimeout(() => createHeart(), i * 100);
+        }
         
         setTimeout(() => {
             speechBubble.classList.remove('show');
+            petMood.textContent = '😊 Happy';
         }, 3000);
         
-        const randomMood = sadMoods[Math.floor(Math.random() * sadMoods.length)];
-        petMood.textContent = randomMood;
-        
-        return;
+        fetch('clear_pet_sad.php')
+            .then(() => {
+                resetIdleTimer();
+            });
     }
-    
-    const idleAnimations = ['idle-blink', 'idle-bounce'];
-    const randomIdle = idleAnimations[Math.floor(Math.random() * idleAnimations.length)];
-    
-    petEmoji.classList.add(randomIdle);
-    
-    setTimeout(() => {
-        petEmoji.classList.remove(randomIdle);
-    }, 3000);
-}
 
-function resetIdleTimer() {
-    clearInterval(idleTimer);
-    idleTimer = setInterval(() => {
-        const timeSinceLastPat = Date.now() - lastPatTime;
-        if (timeSinceLastPat > 8000) {
-            startIdleAnimation();
-        }
-    }, 8000);
-}
-
-function toggleTodo(id) {
-    fetch("toggle_todo.php?id=" + id)
-        .then(response => response.text())
-        .then(result => {
-            let li = document.getElementById("todo-" + id);
-            if (result === "1") {
-                li.style.textDecoration = "line-through";
-                li.style.color = "#999";
-            } else {
-                li.style.textDecoration = "none";
-                li.style.color = "#000";
-            }
-        });
-}
-
-resetIdleTimer();
-setTimeout(startIdleAnimation, 3000);
-
-if (isSad) {
-    setTimeout(() => {
-        speechBubble.textContent = '😢 Aku butuh ' + patsNeeded + ' pelukan untuk ceria lagi...';
-        speechBubble.classList.add('show');
+    function createHeart() {
+        const heart = document.createElement('div');
+        heart.className = 'heart';
+        heart.textContent = '❤️';
+        
+        const randomX = Math.random() * 100 - 50;
+        heart.style.left = `calc(50% + ${randomX}px)`;
+        heart.style.top = '50%';
+        
+        petBox.appendChild(heart);
+        
         setTimeout(() => {
-            speechBubble.classList.remove('show');
-        }, 4000);
-    }, 1000);
-}
-</script>
+            heart.remove();
+        }, 1500);
+    }
 
-<footer>
-    <?php include 'footer.html'; ?>
-</footer>
+    function createTear() {
+        if (!isSad) return;
+        
+        const tear = document.createElement('div');
+        tear.className = 'tear';
+        tear.textContent = '💧';
+        
+        const randomX = Math.random() * 60 - 30;
+        tear.style.left = `calc(50% + ${randomX}px)`;
+        tear.style.top = '60%';
+        
+        petBox.appendChild(tear);
+        
+        setTimeout(() => {
+            tear.remove();
+        }, 2000);
+    }
+
+    function startIdleAnimation() {
+        if (isSad) {
+            const randomSad = sadPhrases[Math.floor(Math.random() * sadPhrases.length)];
+            speechBubble.textContent = randomSad;
+            speechBubble.classList.add('show');
+            
+            setTimeout(() => {
+                speechBubble.classList.remove('show');
+            }, 3000);
+            
+            const randomMood = sadMoods[Math.floor(Math.random() * sadMoods.length)];
+            petMood.textContent = randomMood;
+            
+            return;
+        }
+        
+        const idleAnimations = ['idle-blink', 'idle-bounce'];
+        const randomIdle = idleAnimations[Math.floor(Math.random() * idleAnimations.length)];
+        
+        petEmoji.classList.add(randomIdle);
+        
+        setTimeout(() => {
+            petEmoji.classList.remove(randomIdle);
+        }, 3000);
+    }
+
+    function resetIdleTimer() {
+        clearInterval(idleTimer);
+        idleTimer = setInterval(() => {
+            const timeSinceLastPat = Date.now() - lastPatTime;
+            if (timeSinceLastPat > 8000) {
+                startIdleAnimation();
+            }
+        }, 8000);
+    }
+
+    function toggleTodo(id) {
+        fetch("toggle_todo.php?id=" + id)
+            .then(response => response.text())
+            .then(result => {
+                let li = document.getElementById("todo-" + id);
+                if (result === "1") {
+                    li.style.textDecoration = "line-through";
+                    li.style.color = "#999";
+                } else {
+                    li.style.textDecoration = "none";
+                    li.style.color = "#000";
+                }
+            });
+    }
+
+    resetIdleTimer();
+    setTimeout(startIdleAnimation, 3000);
+
+    if (isSad) {
+        setTimeout(() => {
+            speechBubble.textContent = '😢 Aku butuh ' + patsNeeded + ' pelukan untuk ceria lagi...';
+            speechBubble.classList.add('show');
+            setTimeout(() => {
+                speechBubble.classList.remove('show');
+            }, 4000);
+        }, 1000);
+    }
+    </script>
+
+    <footer>
+        <?php include 'footer.html'; ?>
+    </footer>
 
 </body>
 </html>

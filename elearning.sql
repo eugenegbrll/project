@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Dec 06, 2025 at 04:16 PM
+-- Generation Time: Dec 10, 2025 at 06:50 PM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -24,6 +24,48 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `boss_battles`
+--
+
+CREATE TABLE `boss_battles` (
+  `boss_id` int(11) NOT NULL,
+  `material_id` int(11) NOT NULL,
+  `boss_name` varchar(100) NOT NULL,
+  `boss_health` int(11) DEFAULT 100,
+  `boss_description` text DEFAULT NULL,
+  `boss_image` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `boss_type` enum('escape','maze','mystery','combat') DEFAULT 'combat'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `boss_battles`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `boss_battle_results`
+--
+
+CREATE TABLE `boss_battle_results` (
+  `result_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `boss_id` int(11) NOT NULL,
+  `material_id` int(11) NOT NULL,
+  `is_defeated` tinyint(1) DEFAULT 0,
+  `attempts` int(11) DEFAULT 0,
+  `defeated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `boss_battle_results`
+--
+
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `courses`
 --
 
@@ -40,9 +82,6 @@ CREATE TABLE `courses` (
 -- Dumping data for table `courses`
 --
 
-INSERT INTO `courses` (`course_id`, `course_name`, `description`, `created_at`, `teacher_id`, `teacher_name`) VALUES
-(1, 'cookie', 'cookies', '2025-12-06 22:12:10', 7, 'lance kings'),
-(2, 'ball', NULL, '2025-12-06 22:14:43', 6, 'lancelot');
 
 -- --------------------------------------------------------
 
@@ -55,6 +94,9 @@ CREATE TABLE `materials` (
   `course_id` int(11) DEFAULT NULL,
   `material_title` varchar(100) NOT NULL,
   `material_content` text DEFAULT NULL,
+  `file_path` varchar(255) DEFAULT NULL,
+  `file_name` varchar(255) DEFAULT NULL,
+  `file_type` varchar(50) DEFAULT NULL,
   `level` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -62,9 +104,6 @@ CREATE TABLE `materials` (
 -- Dumping data for table `materials`
 --
 
-INSERT INTO `materials` (`material_id`, `course_id`, `material_title`, `material_content`, `level`) VALUES
-(1, 1, 'math', 'math lol', 1),
-(2, 2, 'cokie question', '', 1);
 
 -- --------------------------------------------------------
 
@@ -78,6 +117,10 @@ CREATE TABLE `material_completions` (
   `material_id` int(11) NOT NULL,
   `completed_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `material_completions`
+--
 
 -- --------------------------------------------------------
 
@@ -100,11 +143,6 @@ CREATE TABLE `quizzes` (
 -- Dumping data for table `quizzes`
 --
 
-INSERT INTO `quizzes` (`quiz_id`, `material_id`, `question`, `option_a`, `option_b`, `option_c`, `option_d`, `correct_answer`) VALUES
-(1, 1, '1 + 1', '1', '2', '3', '4', 'B'),
-(2, 1, '1+2', '3', '4', '5', '6', 'A'),
-(3, 2, 'what do you do to a cookie when meet a cookie', 'say hello', 'eat it', 'kiss it', 'pat it', 'A'),
-(4, 2, 'do you like cookie', 'yes', 'no', 'yesnt', 'what?', 'A');
 
 -- --------------------------------------------------------
 
@@ -122,6 +160,10 @@ CREATE TABLE `quiz_results` (
   `answered_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `quiz_results`
+--
+
 -- --------------------------------------------------------
 
 --
@@ -138,9 +180,6 @@ CREATE TABLE `student_courses` (
 --
 -- Dumping data for table `student_courses`
 --
-
-INSERT INTO `student_courses` (`student_course_id`, `user_id`, `course_id`, `progress`) VALUES
-(1, 3, 1, 0);
 
 -- --------------------------------------------------------
 
@@ -160,10 +199,6 @@ CREATE TABLE `todo_list` (
 -- Dumping data for table `todo_list`
 --
 
-INSERT INTO `todo_list` (`todo_id`, `user_id`, `task_description`, `is_completed`, `created_at`) VALUES
-(1, 3, 'yipee', 1, '2025-12-06 20:09:53'),
-(2, 4, 'car', 1, '2025-12-06 20:51:22'),
-(3, 4, 'bikin kucing', 0, '2025-12-06 21:56:11');
 
 -- --------------------------------------------------------
 
@@ -176,23 +211,34 @@ CREATE TABLE `users` (
   `username` varchar(50) NOT NULL,
   `password` varchar(255) NOT NULL,
   `role` enum('student','admin') DEFAULT 'student',
-  `full_name` varchar(100) NOT NULL
+  `full_name` varchar(100) NOT NULL,
+  `favorite_animal` varchar(50) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`user_id`, `username`, `password`, `role`, `full_name`) VALUES
-(1, 'lance', '$2y$10$XSF7jQWZjVb5DOsiWJlTcupYq8Aiuyyrg1TPBAFA6KbsSmaKRklri', 'admin', 'lancelot'),
-(2, 'lence', '$2y$10$3mbRM83Iw0z/takweILcyehD.mbqMs2AZGREjyc1pGGo7MOS09kOW', 'admin', 'lance kings'),
-(3, 'kucing', '$2y$10$xifZxPetr/vLOav1hUmei.TrTgFh95rYqOLT1sCHRbKpG97nQ7ZPu', 'student', 'kcuing goreng'),
-(4, 'bebek', '$2y$10$/mfuSx2ZI7sa/Rg75c6KcOz7Z25LGvDplwHOynZr3/M1hLaAjxsOm', 'student', 'bebek');
-
 
 --
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `boss_battles`
+--
+ALTER TABLE `boss_battles`
+  ADD PRIMARY KEY (`boss_id`),
+  ADD UNIQUE KEY `unique_material_boss` (`material_id`);
+
+--
+-- Indexes for table `boss_battle_results`
+--
+ALTER TABLE `boss_battle_results`
+  ADD PRIMARY KEY (`result_id`),
+  ADD UNIQUE KEY `unique_user_boss` (`user_id`,`boss_id`),
+  ADD KEY `boss_id` (`boss_id`),
+  ADD KEY `material_id` (`material_id`);
 
 --
 -- Indexes for table `courses`
@@ -259,56 +305,82 @@ ALTER TABLE `users`
 --
 
 --
+-- AUTO_INCREMENT for table `boss_battles`
+--
+ALTER TABLE `boss_battles`
+  MODIFY `boss_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+
+--
+-- AUTO_INCREMENT for table `boss_battle_results`
+--
+ALTER TABLE `boss_battle_results`
+  MODIFY `result_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+
+--
 -- AUTO_INCREMENT for table `courses`
 --
 ALTER TABLE `courses`
-  MODIFY `course_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `course_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 
 --
 -- AUTO_INCREMENT for table `materials`
 --
 ALTER TABLE `materials`
-  MODIFY `material_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `material_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 
 --
 -- AUTO_INCREMENT for table `material_completions`
 --
 ALTER TABLE `material_completions`
-  MODIFY `completion_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `completion_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 
 --
 -- AUTO_INCREMENT for table `quizzes`
 --
 ALTER TABLE `quizzes`
-  MODIFY `quiz_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `quiz_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 
 --
 -- AUTO_INCREMENT for table `quiz_results`
 --
 ALTER TABLE `quiz_results`
-  MODIFY `result_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `result_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 
 --
 -- AUTO_INCREMENT for table `student_courses`
 --
 ALTER TABLE `student_courses`
-  MODIFY `student_course_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `student_course_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 
 --
 -- AUTO_INCREMENT for table `todo_list`
 --
 ALTER TABLE `todo_list`
-  MODIFY `todo_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `todo_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `boss_battles`
+--
+ALTER TABLE `boss_battles`
+  ADD CONSTRAINT `boss_battles_ibfk_1` FOREIGN KEY (`material_id`) REFERENCES `materials` (`material_id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `boss_battle_results`
+--
+ALTER TABLE `boss_battle_results`
+  ADD CONSTRAINT `boss_battle_results_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `boss_battle_results_ibfk_2` FOREIGN KEY (`boss_id`) REFERENCES `boss_battles` (`boss_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `boss_battle_results_ibfk_3` FOREIGN KEY (`material_id`) REFERENCES `materials` (`material_id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `courses`
