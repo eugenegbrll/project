@@ -27,7 +27,7 @@ header {
     justify-content: space-between;
     align-items: center; 
     color: white;
-    margin: 10px 30px;
+    margin: 10px 20px;
 }
 
 .container h1 {
@@ -123,6 +123,10 @@ header {
     transition: width 0.25s ease;
 }
 
+.container nav p a::after{
+    background-color: red;
+}
+
 .container nav a:hover::after {
     width: 80%;
 }
@@ -153,9 +157,7 @@ hr {
 form {
     margin: auto;
     width: 100%;
-    padding: 20px;
     border-radius: 6px;
-    max-width: 800px;
 }
 
 input[type="text"],

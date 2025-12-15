@@ -236,6 +236,7 @@ $selected_material_id = $_GET['material_id'] ?? '';
                 
                 echo "<p style='color: #888;'>📚 {$material_count} materi | 👥 {$student_count} siswa";
                 echo " <a href='view_students.php?course_id={$course['course_id']}' class='student-link'>[Show Students]</a></p>";
+                echo "<a href='edit_course.php?course_id={$course['course_id']}'>[Edit Course]</a> ";
                 echo "<a href='?delete_course={$course['course_id']}' onclick='return confirm(\"Yakin hapus course ini? Semua materi dan quiz akan terhapus!\");' style='color: red;'>[Hapus Course]</a>";
                 echo "</div>";
             }
@@ -343,8 +344,8 @@ $selected_material_id = $_GET['material_id'] ?? '';
                 <option value="D">D</option>
             </select><br><br>
 
-            <button type="submit" name="add_another" value="1">➕ Simpan & Tambah Pertanyaan Lagi</button>
-            <button type="submit">✅ Simpan & Selesai</button>
+            <button type="submit" name="add_another" value="1">Simpan & Tambah Pertanyaan Lagi</button>
+            <button type="submit">Simpan & Selesai</button>
         </form>
     </div>
 
@@ -384,7 +385,6 @@ $selected_material_id = $_GET['material_id'] ?? '';
         }
         ?>
     </div>
-    
 
 <footer>
     <?php include 'footer.html'; ?>
