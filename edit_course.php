@@ -10,7 +10,6 @@ include 'db.php';
 $teacher_id = $_SESSION['user_id'];
 $course_id = $_GET['course_id'] ?? 0;
 
-// Verify ownership
 $verify = $conn->prepare("SELECT * FROM courses WHERE course_id = ? AND teacher_id = ?");
 $verify->bind_param("ii", $course_id, $teacher_id);
 $verify->execute();
@@ -23,7 +22,6 @@ if ($result->num_rows == 0) {
 
 $course = $result->fetch_assoc();
 
-// Handle form submission
 if (isset($_POST['update_course'])) {
     $course_name = $_POST['course_name'];
     $description = !empty($_POST['description']) ? $_POST['description'] : null;

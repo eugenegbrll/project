@@ -168,12 +168,12 @@ $selected_material_id = $_GET['material_id'] ?? '';
 <link rel="stylesheet" href="admin_dashboard.css">
 
 <head>
-    <title>Admin Dashboard</title>
+    <title>Admin Dashboard</a></title>
 </head>
 <body>
     <header>
         <div class="container">
-            <h1><a href="admin_dashboard.php" style="color:white;text-decoration:none;"></a>EduQuest</h1>
+            <h1><a href="admin_dashboard.php" style="color:white;text-decoration:none;">EduQuest</a></h1>
             <nav>
                 <a href="#tambah-course">Tambah Course Baru</a>
                 <a href="#course-terbuat">Course Terbuat</a>
