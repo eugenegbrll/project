@@ -8,7 +8,6 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'student') {
 include 'db.php';
 $user_id = $_SESSION['user_id'];
 
-// Get filter and search parameters
 $search = $_GET['search'] ?? '';
 $topic_filter = $_GET['topic'] ?? '';
 
@@ -16,26 +15,21 @@ $sql_all_courses = "SELECT COUNT(*) as total FROM courses";
 $result_all = $conn->query($sql_all_courses);
 $total_courses = $result_all->fetch_assoc()['total'];
 
-// Base query
 $sql = "SELECT * FROM courses 
         WHERE course_id NOT IN (
             SELECT course_id FROM student_courses WHERE user_id = ?
         )";
 
-// Add search condition
 if (!empty($search)) {
     $sql .= " AND (course_name LIKE ? OR description LIKE ? OR teacher_name LIKE ?)";
 }
 
-// Add topic filter condition (assuming you have a 'topic' or 'category' column)
-// If you don't have this column, you can filter by keywords in course_name or description
 if (!empty($topic_filter)) {
     $sql .= " AND (course_name LIKE ? OR description LIKE ?)";
 }
 
 $stmt = $conn->prepare($sql);
 
-// Bind parameters based on conditions
 if (!empty($search) && !empty($topic_filter)) {
     $search_param = "%$search%";
     $topic_param = "%$topic_filter%";
@@ -53,7 +47,6 @@ if (!empty($search) && !empty($topic_filter)) {
 $stmt->execute();
 $result = $stmt->get_result();
 
-// Get available topics (extract from existing courses)
 $topics_sql = "SELECT DISTINCT 
                 CASE 
                     WHEN course_name LIKE '%Math%' OR course_name LIKE '%Matematika%' THEN 'Matematika'
@@ -133,7 +126,7 @@ $topics_result = $conn->query($topics_sql);
                     <span class="filter-tag">Topik: <?= htmlspecialchars($topic_filter) ?></span>
                 <?php endif; ?>
             </div>
-        <?php endif; ?>
+        <?php endif; ?> <br>
 
         <div class="courses-list">
             <?php

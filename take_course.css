@@ -45,6 +45,7 @@ main{
     padding: 10px 30px;
 }
 
+/* Search and Filter Styles */
 .search-filter-container {
     background: white;
     padding: 20px;
@@ -150,6 +151,7 @@ main{
     transform: translateY(0);
 }
 
+/* Active Filters Display */
 .active-filters {
     background: #e7f3ff;
     padding: 12px 15px;
@@ -175,8 +177,100 @@ main{
     font-weight: 500;
 }
 
+/* Horizontal Slider for Courses */
+.courses-wrapper {
+    position: relative;
+    width: 95%;
+    margin: 20px auto;
+    overflow: hidden;
+}
+
 .courses-list {
-    margin-top: 20px;
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    padding: 20px 10px;
+    scrollbar-width: thin;
+    scrollbar-color: #2c5aa0 #f0f0f0;
+}
+
+.courses-list::-webkit-scrollbar {
+    height: 8px;
+}
+
+.courses-list::-webkit-scrollbar-track {
+    background: #f0f0f0;
+    border-radius: 10px;
+}
+
+.courses-list::-webkit-scrollbar-thumb {
+    background: #2c5aa0;
+    border-radius: 10px;
+}
+
+.courses-list::-webkit-scrollbar-thumb:hover {
+    background: #1e3a6f;
+}
+
+.course-slide {
+    min-width: 300px;
+    max-width: 300px;
+    flex-shrink: 0;
+}
+
+.slider-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(44, 90, 160, 0.9);
+    color: white;
+    border: none;
+    font-size: 32px;
+    width: 45px;
+    height: 45px;
+    cursor: pointer;
+    border-radius: 50%;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+}
+
+.slider-btn:hover {
+    background: rgba(30, 58, 111, 1);
+    transform: translateY(-50%) scale(1.1);
+}
+
+.slider-btn.left {
+    left: -15px;
+}
+
+.slider-btn.right {
+    right: -15px;
+}
+
+@media (max-width: 768px) {
+    .slider-btn {
+        width: 35px;
+        height: 35px;
+        font-size: 24px;
+    }
+    
+    .slider-btn.left {
+        left: 5px;
+    }
+    
+    .slider-btn.right {
+        right: 5px;
+    }
+    
+    .course-slide {
+        min-width: 250px;
+        max-width: 250px;
+    }
 }
 
 .course-box {
@@ -259,6 +353,7 @@ main{
     margin-bottom: 0;
 }
 
+/* Responsive Design */
 @media (max-width: 768px) {
     .search-filter-form {
         flex-direction: column;
