@@ -10,7 +10,6 @@ include 'db.php';
 $teacher_id = $_SESSION['user_id'];
 $material_id = $_GET['material_id'] ?? 0;
 
-// Verify ownership
 $verify = $conn->prepare("SELECT m.*, c.course_name, c.course_id 
                           FROM materials m 
                           JOIN courses c ON m.course_id = c.course_id 
@@ -26,7 +25,6 @@ if ($result->num_rows == 0) {
 
 $material = $result->fetch_assoc();
 
-// Handle quiz update
 if (isset($_POST['update_quiz'])) {
     $quiz_id = $_POST['quiz_id'];
     $question = $_POST['question'];
@@ -48,7 +46,6 @@ if (isset($_POST['update_quiz'])) {
     exit();
 }
 
-// Handle quiz deletion
 if (isset($_GET['delete_quiz'])) {
     $quiz_id = $_GET['delete_quiz'];
     
@@ -61,10 +58,8 @@ if (isset($_GET['delete_quiz'])) {
     exit();
 }
 
-// Get all quizzes for this material
 $quizzes = $conn->query("SELECT * FROM quizzes WHERE material_id = $material_id ORDER BY quiz_id");
 
-// Get quiz to edit if specified
 $edit_quiz = null;
 if (isset($_GET['edit_quiz_id'])) {
     $edit_quiz_id = $_GET['edit_quiz_id'];

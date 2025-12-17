@@ -7,6 +7,9 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'student') {
 include 'db.php';
 $user_id = $_SESSION['user_id'];
 
+$search = $_GET['search'] ?? '';
+$topic_filter = $_GET['topic'] ?? '';
+
 $sql_user = "SELECT favorite_animal FROM users WHERE user_id = ?";
 $stmt_user = $conn->prepare($sql_user);
 $stmt_user->bind_param("i", $user_id);
@@ -17,7 +20,7 @@ $favorite_animal = $user_data['favorite_animal'] ?? 'cat';
 $animal_emojis = [
     'cat' => '🐈',
     'dog' => '🐕',
-    'chicken' => '🐓',
+    'chicken' => '🐔',
     'fish' => '🐠',
     'rabbit' => '🐇',
     'lizard' => '🦎'
@@ -56,6 +59,141 @@ $wrong_count = $_SESSION['wrong_answer_count'] ?? 0;
     <link rel="stylesheet" href="student_dashboard.css">
     <script src="student_dashboard.js" defer></script>
     <audio id="petSound" src="sounds/<?php echo $pet_sound; ?>"></audio>
+    <style>
+        /* Search and Filter Styles */
+        .search-filter-container {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin: 15px 30px;
+        }
+
+        .search-filter-form {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .search-input {
+            flex: 1;
+            min-width: 250px;
+            padding: 10px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #2c5aa0;
+            box-shadow: 0 0 0 3px rgba(44, 90, 160, 0.1);
+        }
+
+        .topic-filter {
+            min-width: 180px;
+            padding: 10px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            background-color: white;
+            cursor: pointer;
+            transition: border-color 0.3s ease;
+        }
+
+        .topic-filter:focus {
+            outline: none;
+            border-color: #2c5aa0;
+            box-shadow: 0 0 0 3px rgba(44, 90, 160, 0.1);
+        }
+
+        .btn-search {
+            padding: 10px 20px;
+            background-color: #2c5aa0;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-search:hover {
+            background-color: #1e3a6f;
+        }
+
+        .btn-reset {
+            padding: 10px 20px;
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            display: inline-block;
+        }
+
+        .btn-reset:hover {
+            background-color: #545b62;
+        }
+
+        .active-filters {
+            background: #e7f3ff;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin: 10px 30px;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .filter-label {
+            font-weight: 600;
+            color: #2c5aa0;
+        }
+
+        .filter-tag {
+            background: #2c5aa0;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .empty-message {
+            padding: 30px;
+            background-color: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 10px;
+            text-align: center;
+            margin: 20px;
+        }
+
+        .empty-message h3 {
+            margin-top: 0;
+            color: #856404;
+        }
+
+        .topic-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            color: white;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-left: 10px;
+        }
+    </style>
     <script>
         function deleteTodo(todoId) {
             if (!confirm("Yakin hapus tugas ini?")) return;
@@ -119,7 +257,6 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 </script>
 
-
 </head>
 <body>
 <header>
@@ -135,10 +272,51 @@ document.addEventListener("DOMContentLoaded", () => {
 <main>
     <div class="subcontainer">
         <h2>Course yang Diambil</h2>
-    <a href="take_course.php" style="text-decoration:underline;">Ambil Course Baru</a>
+        <a href="take_course.php" style="text-decoration:underline;">Ambil Course Baru</a>
     </div>
 
     <hr>
+
+    <!-- Search and Filter Section -->
+    <div class="search-filter-container">
+        <form method="GET" action="student_dashboard.php" class="search-filter-form">
+            <input type="text" 
+                   name="search" 
+                   placeholder="🔍 Cari course..." 
+                   value="<?= htmlspecialchars($search) ?>" 
+                   class="search-input">
+
+            <select name="topic" class="topic-filter">
+                <option value="">Semua Topik</option>
+                <option value="Matematika" <?= $topic_filter == 'Matematika' ? 'selected' : '' ?>>Matematika</option>
+                <option value="Sains" <?= $topic_filter == 'Sains' ? 'selected' : '' ?>>Sains</option>
+                <option value="Bahasa Inggris" <?= $topic_filter == 'Bahasa Inggris' ? 'selected' : '' ?>>Bahasa Inggris</option>
+                <option value="Bahasa Indonesia" <?= $topic_filter == 'Bahasa Indonesia' ? 'selected' : '' ?>>Bahasa Indonesia</option>
+                <option value="Sejarah" <?= $topic_filter == 'Sejarah' ? 'selected' : '' ?>>Sejarah</option>
+                <option value="Fisika" <?= $topic_filter == 'Fisika' ? 'selected' : '' ?>>Fisika</option>
+                <option value="Kimia" <?= $topic_filter == 'Kimia' ? 'selected' : '' ?>>Kimia</option>
+                <option value="Biologi" <?= $topic_filter == 'Biologi' ? 'selected' : '' ?>>Biologi</option>
+                <option value="Komputer" <?= $topic_filter == 'Komputer' ? 'selected' : '' ?>>Komputer</option>
+                <option value="Lainnya" <?= $topic_filter == 'Lainnya' ? 'selected' : '' ?>>Lainnya</option>
+            </select>
+
+            <button type="submit" class="btn-search">Cari</button>
+            <a href="student_dashboard.php" class="btn-reset">Reset</a>
+        </form>
+    </div>
+
+    <?php if (!empty($search) || !empty($topic_filter)): ?>
+        <div class="active-filters">
+            <span class="filter-label">Filter aktif:</span>
+            <?php if (!empty($search)): ?>
+                <span class="filter-tag">Pencarian: "<?= htmlspecialchars($search) ?>"</span>
+            <?php endif; ?>
+            <?php if (!empty($topic_filter)): ?>
+                <span class="filter-tag">Topik: <?= htmlspecialchars($topic_filter) ?></span>
+            <?php endif; ?>
+        </div>
+    <?php endif; ?>
+
 
     <div class="courses-container">
         <?php
@@ -146,6 +324,8 @@ document.addEventListener("DOMContentLoaded", () => {
         SELECT 
             c.course_id,
             c.course_name,
+            c.description,
+            c.teacher_name,
 
             -- total materi per course
             (SELECT COUNT(*) 
@@ -162,23 +342,87 @@ document.addEventListener("DOMContentLoaded", () => {
         JOIN student_courses sc ON c.course_id = sc.course_id
         WHERE sc.user_id = ?
         ";
+        
+        if (!empty($search)) {
+            $sql .= " AND (c.course_name LIKE ? OR c.description LIKE ? OR c.teacher_name LIKE ?)";
+        }
+        
+        if (!empty($topic_filter)) {
+            $sql .= " AND (c.course_name LIKE ? OR c.description LIKE ?)";
+        }
+        
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ii", $user_id, $user_id);
+        
+        if (!empty($search) && !empty($topic_filter)) {
+            $search_param = "%$search%";
+            $topic_param = "%$topic_filter%";
+            $stmt->bind_param("iisssss", $user_id, $user_id, $search_param, $search_param, $search_param, $topic_param, $topic_param);
+        } elseif (!empty($search)) {
+            $search_param = "%$search%";
+            $stmt->bind_param("iisss", $user_id, $user_id, $search_param, $search_param, $search_param);
+        } elseif (!empty($topic_filter)) {
+            $topic_param = "%$topic_filter%";
+            $stmt->bind_param("iiss", $user_id, $user_id, $topic_param, $topic_param);
+        } else {
+            $stmt->bind_param("ii", $user_id, $user_id);
+        }
+        
         $stmt->execute();
         $result = $stmt->get_result();
 
         if ($result->num_rows == 0) {
-            echo "<div class='course-card'><p>Kamu belum mengambil course apapun. Silakan ambil course baru!</p></div>";
+            if (!empty($search) || !empty($topic_filter)) {
+                echo "<div class='empty-message'>
+                        <h3>Tidak Ada Hasil</h3>
+                        <p>Tidak ada course yang sesuai dengan pencarian atau filter Anda. Coba kata kunci lain atau reset filter.</p>
+                    </div>";
+            } else {
+                echo "<div class='course-card'><p>Kamu belum mengambil course apapun. Silakan ambil course baru!</p></div>";
+            }
         }
 
         while ($course = $result->fetch_assoc()) {
             $total = $course['total_materials'];
             $completed = $course['completed_materials'];
-
             $progress = ($total > 0) ? round(($completed / $total) * 100) : 0;
+            
+            $course_name = $course['course_name'];
+            $topic_badge = 'Lainnya';
+            $badge_color = '#a5aeb7ff';
+            
+            if (stripos($course_name, 'Math') !== false || stripos($course_name, 'Matematika') !== false) {
+                $topic_badge = 'Matematika';
+                $badge_color = '#8a90ffff';
+            } elseif (stripos($course_name, 'Science') !== false || stripos($course_name, 'Sains') !== false || stripos($course_name, 'IPA') !== false) {
+                $topic_badge = 'Sains';
+                $badge_color = '#81ff9eff';
+            } elseif (stripos($course_name, 'English') !== false || stripos($course_name, 'Inggris') !== false) {
+                $topic_badge = 'Bahasa Inggris';
+                $badge_color = '#ef717eff';
+            } elseif (stripos($course_name, 'Indonesian') !== false || stripos($course_name, 'Indonesia') !== false) {
+                $topic_badge = 'Bahasa Indonesia';
+                $badge_color = '#f3c55aff';
+            } elseif (stripos($course_name, 'History') !== false || stripos($course_name, 'Sejarah') !== false) {
+                $topic_badge = 'Sejarah';
+                $badge_color = '#bc7f69ff';
+            } elseif (stripos($course_name, 'Physics') !== false || stripos($course_name, 'Fisika') !== false) {
+                $topic_badge = 'Fisika';
+                $badge_color = '#d983e9ff';
+            } elseif (stripos($course_name, 'Chemistry') !== false || stripos($course_name, 'Kimia') !== false) {
+                $topic_badge = 'Kimia';
+                $badge_color = '#faa676ff';
+            } elseif (stripos($course_name, 'Biology') !== false || stripos($course_name, 'Biologi') !== false) {
+                $topic_badge = 'Biologi';
+                $badge_color = '#52ce56ff';
+            } elseif (stripos($course_name, 'Programming') !== false || stripos($course_name, 'Coding') !== false || stripos($course_name, 'Computer') !== false) {
+                $topic_badge = 'Komputer';
+                $badge_color = '#39c9dcff';
+            }
 
             echo "<div class='course-card'>";
-            echo "<h3>" . htmlspecialchars($course['course_name']) . "</h3>";
+            echo "<h3>" . htmlspecialchars($course['course_name']);
+            echo "<span class='topic-badge' style='background-color: $badge_color;'>$topic_badge</span>";
+            echo "</h3>";
             echo "<p>Progress: $progress%</p>";
             echo "<a href='course_detail.php?id=" . $course['course_id'] . "'>Lihat Detail</a>";
             echo "</div>";
@@ -187,7 +431,7 @@ document.addEventListener("DOMContentLoaded", () => {
     </div>
 
     <hr>
-
+    
     <div class="todo-container">
         <h2>To-Do List</h2>
 
@@ -286,7 +530,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const happyMoods = [
         '😊 Senang',
         '🥰 Loved',
-        '😍 Girang',
+        '😄 Girang',
         '✨ Gembira',
         '💖 Blessed'
     ];

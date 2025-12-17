@@ -334,3 +334,60 @@ header {
     50% { transform: translateY(-10px); }
 }
 
+
+
+.courses-wrapper {
+    position: relative;
+    width: 90%;
+    margin: auto;
+    overflow: hidden;
+}
+
+.courses-container {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    padding: 20px 10px;
+}
+
+.courses-container::-webkit-scrollbar {
+    display: none; /* hide scrollbar */
+}
+
+.course-card {
+    min-width: 260px;
+    max-width: 260px;
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    flex-shrink: 0;
+}
+
+.slider-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #2c5aa0;
+    color: white;
+    border: none;
+    font-size: 28px;
+    padding: 8px 14px;
+    cursor: pointer;
+    border-radius: 50%;
+    z-index: 10;
+}
+
+.slider-btn.left {
+    left: -10px;
+}
+
+.slider-btn.right {
+    right: -10px;
+}
+
+.slider-btn:hover {
+    background: #1f447d;
+}
+

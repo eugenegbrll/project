@@ -10,7 +10,6 @@ include 'db.php';
 $teacher_id = $_SESSION['user_id'];
 $material_id = $_GET['material_id'] ?? 0;
 
-// Verify ownership
 $verify = $conn->prepare("SELECT m.*, c.course_name, c.course_id 
                           FROM materials m 
                           JOIN courses c ON m.course_id = c.course_id 
@@ -26,7 +25,6 @@ if ($result->num_rows == 0) {
 
 $material = $result->fetch_assoc();
 
-// Handle form submission
 if (isset($_POST['update_material'])) {
     $title = $_POST['title'];
     $content = $_POST['content'];
@@ -35,7 +33,6 @@ if (isset($_POST['update_material'])) {
     $file_name = $material['file_name'];
     $file_type = $material['file_type'];
 
-    // Handle file upload
     if (isset($_FILES['material_file']) && $_FILES['material_file']['error'] == 0) {
         $allowed_extensions = ['ppt', 'pptx', 'jpg', 'jpeg', 'png', 'docx', 'pdf', 'mov', 'mp4', 'mp3'];
         $file_info = pathinfo($_FILES['material_file']['name']);
@@ -47,7 +44,6 @@ if (isset($_POST['update_material'])) {
                 mkdir($upload_dir, 0777, true);
             }
             
-            // Delete old file if exists
             if (!empty($material['file_path']) && file_exists($material['file_path'])) {
                 unlink($material['file_path']);
             }
@@ -63,7 +59,6 @@ if (isset($_POST['update_material'])) {
         }
     }
 
-    // Handle file deletion
     if (isset($_POST['delete_file']) && $_POST['delete_file'] == '1') {
         if (!empty($material['file_path']) && file_exists($material['file_path'])) {
             unlink($material['file_path']);
