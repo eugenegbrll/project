@@ -368,7 +368,7 @@ document.addEventListener("DOMContentLoaded", () => {
         '<?php echo $pet_sound; ?>',
         '❤️ Love you!',
         '😊 Yay!',
-        '✨ Ahhh enak banget!',
+        '✨ Yipeeeee!',
         '🥰 Elus dong!',
         '💕 Thank you!',
         '🎉 Woohoo!'
