@@ -31,6 +31,7 @@ $course = $conn->query("SELECT * FROM courses WHERE course_id = $course_id")->fe
             <h1><a href="student_dashboard.php" style="color:white;text-decoration:none;">EduQuest</a></h1>
             <nav>
                 <p>Halo, <?= htmlspecialchars($_SESSION['full_name']) ?></p>
+                <p><a href="student_profile.php" style="color: white; text-decoration: none;">Profile</a></p>
                 <p><a href="logout.php">Logout</a></p>
             </nav>
         </div>

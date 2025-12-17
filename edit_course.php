@@ -46,8 +46,9 @@ if (isset($_POST['update_course'])) {
         <div class="container">
             <h1><a href="admin_dashboard.php" style="color:white;text-decoration:none;">EduQuest</a></h1>
             <nav>
-                <a href="admin_dashboard.php">← Kembali ke Dashboard</a>
+                <a href="edit_course.php?course_id=<?= $material['course_id'] ?>">← Kembali ke Course</a>
                 <p>Selamat Datang, <?= htmlspecialchars($_SESSION['full_name']) ?></p>
+                <p><a href="admin_profile.php" class="prof" style="color: white; text-decoration: none;">Profile</a></p>
                 <p><a href="logout.php" style="color:rgb(255, 62, 62);font-size:medium;">Logout</a></p>
             </nav>
         </div>

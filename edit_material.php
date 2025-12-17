@@ -93,13 +93,14 @@ if (isset($_POST['update_material'])) {
             <nav>
                 <a href="edit_course.php?course_id=<?= $material['course_id'] ?>">← Kembali ke Course</a>
                 <p>Selamat Datang, <?= htmlspecialchars($_SESSION['full_name']) ?></p>
+                <p><a href="admin_profile.php" class="prof" style="color: white; text-decoration: none;">Profile</a></p>
                 <p><a href="logout.php" style="color:rgb(255, 62, 62);font-size:medium;">Logout</a></p>
             </nav>
         </div>
     </header>
 
     <h1>Edit Materi</h1>
-    <h3>Course: <?= htmlspecialchars($material['course_name']) ?></h3>
+    <h3 style="margin-left:9%">Course: <?= htmlspecialchars($material['course_name']) ?></h3>
     
     <div class="material-list">
         <form method="POST" enctype="multipart/form-data">

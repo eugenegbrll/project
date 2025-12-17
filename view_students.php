@@ -30,7 +30,20 @@ $course = $course_result->fetch_assoc();
     <link rel="stylesheet" href="view_students.css">
 </head>
 <body>
-    <div class="container">
+    <header>
+        <div class="bar">
+            <h1><a href="admin_dashboard.php" style="color:white;text-decoration:none">EduQuest</a></h1>
+            <nav>
+                <a href="edit_course.php?course_id=<?= $material['course_id'] ?>" style="color: white; text-decoration: none;">← Kembali ke Course</a>
+                <p>Selamat Datang, <?= htmlspecialchars($_SESSION['full_name']) ?></p>
+                <p><a href="admin_profile.php" class="prof" style="color: white; text-decoration: none;">Profile</a></p>
+                <p><a href="logout.php" class="logout">Logout</a></p>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
         <a href="admin_dashboard.php" class="back-link">⬅ Kembali ke Dashboard</a>
         
         <h1>📚 <?= htmlspecialchars($course['course_name']) ?></h1>
@@ -103,9 +116,10 @@ $course = $course_result->fetch_assoc();
             echo "</table>";
         }
         ?>
-    </div>
+        </div>
+    </main>
 
-    <footer style="margin-top: 40px;">
+    <footer style="margin-top: 40px;padding:0;margin:0;">
         <?php include 'footer.html'; ?>
     </footer>
 </body>

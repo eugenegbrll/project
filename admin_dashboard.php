@@ -181,6 +181,7 @@ $selected_material_id = $_GET['material_id'] ?? '';
                 <a href="#buat-quiz">Buat Quiz</a>
                 <a href="#kelola-materi">Kelola Materi</a>
                 <p>Selamat Datang, <?= htmlspecialchars($_SESSION['full_name']) ?></p>
+                <p><a href="admin_profile.php" class="prof" style="color: white; text-decoration: none;">Profile</a></p>
                 <p><a href="logout.php" style="color:rgb(255, 62, 62);font-size:medium;">Logout</a></p>
             </nav>
         </div>

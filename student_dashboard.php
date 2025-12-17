@@ -126,9 +126,10 @@ document.addEventListener("DOMContentLoaded", () => {
 <body>
 <header>
     <div class="container">
-        <h1>EduQuest</h1>
+        <h1><a href="student_dashboard.php" style="color:white">EduQuest</a></h1>
         <nav>
             <p>Halo, <?= htmlspecialchars($_SESSION['full_name']) ?></p>
+            <p><a href="student_profile.php" style="color: white; text-decoration: none;">Profile</a></p>
             <p><a href="logout.php">Logout</a></p>
         </nav>
     </div>

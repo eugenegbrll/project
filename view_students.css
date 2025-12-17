@@ -2,7 +2,79 @@ body {
     font-family: Arial, sans-serif;
     margin: 20px;
     background-color: #f5f5f5;
+    padding: 0%;
+    margin: 0%;
 }
+
+header {
+    background-color: #2c5aa0;
+    padding: 5px 0;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+.bar nav a::after {
+    content: "";
+    position: absolute;
+    left: 10%;
+    bottom: -6px;
+    width: 0;
+    height: 2px;
+    background-color: white;
+    transition: width 0.25s ease;
+}
+
+.bar nav a {
+    color: white;
+    font-weight: 500;
+    padding: 6px 10px;
+    border-radius: 4px;
+    transition: background 0.2s ease;
+}
+
+.bar nav a {
+    position: relative;
+}
+
+.bar nav p .logout::after{
+    background-color: red;
+}
+
+.bar nav p .prof::after{
+    background-color: rgb(255, 255, 255);
+}
+
+.bar nav a:hover::after {
+    width: 80%;
+}
+
+.bar nav a.active::after {
+    width: 80%;
+}
+
+.bar {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    color: white;
+    margin-left: 30px;
+    margin-right: 30px;
+}
+
+.bar nav {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.bar nav p a {
+    color: rgb(255, 62, 62);
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
 .container {
     max-width: 900px;
     margin: 0 auto;
@@ -11,11 +83,12 @@ body {
     border-radius: 10px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
+
 h1 {
     color: #333;
-    border-bottom: 3px solid #007bff;
     padding-bottom: 10px;
 }
+
 .back-link {
     display: inline-block;
     margin-bottom: 20px;
