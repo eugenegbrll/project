@@ -7,7 +7,6 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'student') {
 include 'db.php';
 $user_id = $_SESSION['user_id'];
 
-// Get search and filter parameters
 $search = $_GET['search'] ?? '';
 $topic_filter = $_GET['topic'] ?? '';
 
@@ -344,19 +343,16 @@ document.addEventListener("DOMContentLoaded", () => {
         WHERE sc.user_id = ?
         ";
         
-        // Add search filter
         if (!empty($search)) {
             $sql .= " AND (c.course_name LIKE ? OR c.description LIKE ? OR c.teacher_name LIKE ?)";
         }
         
-        // Add topic filter
         if (!empty($topic_filter)) {
             $sql .= " AND (c.course_name LIKE ? OR c.description LIKE ?)";
         }
         
         $stmt = $conn->prepare($sql);
         
-        // Bind parameters based on filters
         if (!empty($search) && !empty($topic_filter)) {
             $search_param = "%$search%";
             $topic_param = "%$topic_filter%";
@@ -390,7 +386,6 @@ document.addEventListener("DOMContentLoaded", () => {
             $completed = $course['completed_materials'];
             $progress = ($total > 0) ? round(($completed / $total) * 100) : 0;
             
-            // Determine topic badge
             $course_name = $course['course_name'];
             $topic_badge = 'Lainnya';
             $badge_color = '#a5aeb7ff';
@@ -435,6 +430,8 @@ document.addEventListener("DOMContentLoaded", () => {
         ?>
     </div>
 
+    <hr>
+    
     <div class="todo-container">
         <h2>To-Do List</h2>
 
