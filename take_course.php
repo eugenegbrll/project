@@ -90,11 +90,11 @@ $topics_result = $conn->query($topics_sql);
         <div class="search-filter-container">
             <form method="GET" action="take_course.php" class="search-filter-form">
                 <div class="search-box">
-                    <input type="text" style= "width:32%;padding:5px 10px" name="search" placeholder="🔍 Cari course berdasarkan nama, deskripsi, atau guru..." value="<?= htmlspecialchars($search) ?>" class="search-input">
+                    <input type="text" name="search" style="width:50%" placeholder="🔍 Cari course berdasarkan nama, deskripsi, atau guru" value="<?= htmlspecialchars($search) ?>" class="search-input">
                 </div>
-                
-                <div class="filter-box">
-                    <select name="topic" class="topic-filter"  style= "width:20%;padding:5px 10px;margin-top:10px" >
+
+                <div class="filter-box" style="width:15%">
+                    <select name="topic" class="topic-filter" >
                         <option value="">Semua Topik</option>
                         <option value="Matematika" <?= $topic_filter == 'Matematika' ? 'selected' : '' ?>>Matematika</option>
                         <option value="Sains" <?= $topic_filter == 'Sains' ? 'selected' : '' ?>>Sains</option>
@@ -110,7 +110,7 @@ $topics_result = $conn->query($topics_sql);
                 </div>
 
                 <div class="button-group" style="margin-top:10px;">
-                    <button type="submit" style="color : white; background-color:#4CAF50;border:none;padding:8px 20px;border-radius:5px;margin-bottom:10px" class="btn-search">Cari</button>
+                    <button type="submit" class="btn-search">Cari</button>
                     <a href="take_course.php" class="btn-reset">Reset</a>
                 </div>
             </form>
