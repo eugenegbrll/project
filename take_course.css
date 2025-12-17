@@ -45,33 +45,242 @@ main{
     padding: 10px 30px;
 }
 
+.search-filter-container {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    margin: 20px 0;
+}
+
+.search-filter-form {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.search-box {
+    flex: 1;
+    min-width: 250px;
+}
+
+.search-input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 15px;
+    transition: border-color 0.3s ease;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #2c5aa0;
+    box-shadow: 0 0 0 3px rgba(44, 90, 160, 0.1);
+}
+
+.filter-box {
+    min-width: 200px;
+}
+
+.topic-filter {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 15px;
+    background-color: white;
+    cursor: pointer;
+    transition: border-color 0.3s ease;
+}
+
+.topic-filter:focus {
+    outline: none;
+    border-color: #2c5aa0;
+    box-shadow: 0 0 0 3px rgba(44, 90, 160, 0.1);
+}
+
+.button-group {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-search {
+    padding: 12px 25px;
+    background-color: #2c5aa0;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+}
+
+.btn-search:hover {
+    background-color: #1e3a6f;
+    transform: translateY(-2px);
+}
+
+.btn-search:active {
+    transform: translateY(0);
+}
+
+.btn-reset {
+    padding: 12px 25px;
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+    display: inline-block;
+}
+
+.btn-reset:hover {
+    background-color: #545b62;
+    transform: translateY(-2px);
+}
+
+.btn-reset:active {
+    transform: translateY(0);
+}
+
+.active-filters {
+    background: #e7f3ff;
+    padding: 12px 15px;
+    border-radius: 8px;
+    margin: 15px 0;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.filter-label {
+    font-weight: 600;
+    color: #2c5aa0;
+}
+
+.filter-tag {
+    background: #2c5aa0;
+    color: white;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.courses-list {
+    margin-top: 20px;
+}
+
 .course-box {
     border: 1px solid #ddd;
-    padding: 15px;
+    padding: 20px;
     margin-bottom: 15px;
-    border-radius: 5px;
-    background-color: #f9f9f9;
+    border-radius: 10px;
+    background-color: white;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
+
+.course-box:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.course-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
 .course-box strong {
     font-size: 18px;
     color: #333;
 }
-.course-box a {
+
+.topic-badge {
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: 20px;
+    color: white;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.btn-take-course {
     display: inline-block;
     margin-top: 10px;
-    padding: 8px 15px;
+    padding: 10px 20px;
     background-color: #4CAF50;
     color: white;
     text-decoration: none;
-    border-radius: 5px;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: background-color 0.3s ease, transform 0.1s ease;
 }
-.course-box a:hover {
+
+.btn-take-course:hover {
     background-color: #45a049;
+    transform: translateY(-2px);
 }
+
+.btn-take-course:active {
+    transform: translateY(0);
+}
+
 .empty-message {
-    padding: 20px;
+    padding: 30px;
     background-color: #fff3cd;
     border: 1px solid #ffc107;
-    border-radius: 5px;
+    border-radius: 10px;
     text-align: center;
+    margin-top: 20px;
+}
+
+.empty-message h3 {
+    margin-top: 0;
+    color: #856404;
+}
+
+.empty-message p {
+    color: #856404;
+    margin-bottom: 0;
+}
+
+@media (max-width: 768px) {
+    .search-filter-form {
+        flex-direction: column;
+    }
+    
+    .search-box,
+    .filter-box {
+        width: 100%;
+        min-width: 100%;
+    }
+    
+    .button-group {
+        width: 100%;
+    }
+    
+    .btn-search,
+    .btn-reset {
+        flex: 1;
+    }
+    
+    .course-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
 }
