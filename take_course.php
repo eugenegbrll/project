@@ -162,7 +162,7 @@ $topics_result = $conn->query($topics_sql);
                     
                     if (stripos($course_name, 'Math') !== false || stripos($course_name, 'Matematika') !== false) {
                         $topic_badge = 'Matematika';
-                        $badge_color = '#8ac3ffff';
+                        $badge_color = '#8a90ffff';
                     } elseif (stripos($course_name, 'Science') !== false || stripos($course_name, 'Sains') !== false || stripos($course_name, 'IPA') !== false) {
                         $topic_badge = 'Sains';
                         $badge_color = '#81ff9eff';
@@ -171,7 +171,7 @@ $topics_result = $conn->query($topics_sql);
                         $badge_color = '#ef717eff';
                     } elseif (stripos($course_name, 'Indonesian') !== false || stripos($course_name, 'Indonesia') !== false) {
                         $topic_badge = 'Bahasa Indonesia';
-                        $badge_color = '#c55858ff';
+                        $badge_color = '#f3c55aff';
                     } elseif (stripos($course_name, 'History') !== false || stripos($course_name, 'Sejarah') !== false) {
                         $topic_badge = 'Sejarah';
                         $badge_color = '#bc7f69ff';
@@ -180,7 +180,7 @@ $topics_result = $conn->query($topics_sql);
                         $badge_color = '#d983e9ff';
                     } elseif (stripos($course_name, 'Chemistry') !== false || stripos($course_name, 'Kimia') !== false) {
                         $topic_badge = 'Kimia';
-                        $badge_color = '#fac576ff';
+                        $badge_color = '#faa676ff';
                     } elseif (stripos($course_name, 'Biology') !== false || stripos($course_name, 'Biologi') !== false) {
                         $topic_badge = 'Biologi';
                         $badge_color = '#52ce56ff';
