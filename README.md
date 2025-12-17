@@ -1,5 +1,5 @@
 Projek dibuat oleh 
-- kelompok 4 :
+kelompok 4 :
 - Eugene Gabriella Setiawan – 2802448591
 - Victoria Tansanjaya - 2802394550
 - Sherlvyna Raphaella - 2802392665
@@ -30,6 +30,10 @@ Fitur 3 =
 - Pet muncul di dashboard student dan dielus-elus
 - to do list yang sudah pernah dibikin bisa di delete
 - pet container boxnya bisa digerak-gerakin
+
+Q4 Assignment 4
+- Selesai Challenge 1 yaitu membuat filter dan search bar saat ambil course(tambahan : filter dan search bar juga ada di student dashboard)
+- Profile untuk admin dan student
 
 Docs dokumentasi :
 https://docs.google.com/document/d/1C99qOebzaYZp50c80h-rO4b6ZwngwcecUPMeaqlsVY4/edit?usp=sharing
