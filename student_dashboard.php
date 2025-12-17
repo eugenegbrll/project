@@ -59,141 +59,6 @@ $wrong_count = $_SESSION['wrong_answer_count'] ?? 0;
     <link rel="stylesheet" href="student_dashboard.css">
     <script src="student_dashboard.js" defer></script>
     <audio id="petSound" src="sounds/<?php echo $pet_sound; ?>"></audio>
-    <style>
-        /* Search and Filter Styles */
-        .search-filter-container {
-            background: white;
-            padding: 15px 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            margin: 15px 30px;
-        }
-
-        .search-filter-form {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-
-        .search-input {
-            flex: 1;
-            min-width: 250px;
-            padding: 10px 15px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 14px;
-            transition: border-color 0.3s ease;
-        }
-
-        .search-input:focus {
-            outline: none;
-            border-color: #2c5aa0;
-            box-shadow: 0 0 0 3px rgba(44, 90, 160, 0.1);
-        }
-
-        .topic-filter {
-            min-width: 180px;
-            padding: 10px 15px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 14px;
-            background-color: white;
-            cursor: pointer;
-            transition: border-color 0.3s ease;
-        }
-
-        .topic-filter:focus {
-            outline: none;
-            border-color: #2c5aa0;
-            box-shadow: 0 0 0 3px rgba(44, 90, 160, 0.1);
-        }
-
-        .btn-search {
-            padding: 10px 20px;
-            background-color: #2c5aa0;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        .btn-search:hover {
-            background-color: #1e3a6f;
-        }
-
-        .btn-reset {
-            padding: 10px 20px;
-            background-color: #6c757d;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            text-decoration: none;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            display: inline-block;
-        }
-
-        .btn-reset:hover {
-            background-color: #545b62;
-        }
-
-        .active-filters {
-            background: #e7f3ff;
-            padding: 10px 15px;
-            border-radius: 8px;
-            margin: 10px 30px;
-            display: flex;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .filter-label {
-            font-weight: 600;
-            color: #2c5aa0;
-        }
-
-        .filter-tag {
-            background: #2c5aa0;
-            color: white;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 500;
-        }
-
-        .empty-message {
-            padding: 30px;
-            background-color: #fff3cd;
-            border: 1px solid #ffc107;
-            border-radius: 10px;
-            text-align: center;
-            margin: 20px;
-        }
-
-        .empty-message h3 {
-            margin-top: 0;
-            color: #856404;
-        }
-
-        .topic-badge {
-            display: inline-block;
-            padding: 5px 12px;
-            border-radius: 20px;
-            color: white;
-            font-size: 11px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-left: 10px;
-        }
-    </style>
     <script>
         function deleteTodo(todoId) {
             if (!confirm("Yakin hapus tugas ini?")) return;
@@ -261,9 +126,10 @@ document.addEventListener("DOMContentLoaded", () => {
 <body>
 <header>
     <div class="container">
-        <h1>EduQuest</h1>
+        <h1><a href="student_dashboard.php" style="color:white">EduQuest</a></h1>
         <nav>
             <p>Halo, <?= htmlspecialchars($_SESSION['full_name']) ?></p>
+            <p><a href="student_profile.php" style="color: white; text-decoration: none;">Profile</a></p>
             <p><a href="logout.php">Logout</a></p>
         </nav>
     </div>
@@ -277,7 +143,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     <hr>
 
-    <!-- Search and Filter Section -->
     <div class="search-filter-container">
         <form method="GET" action="student_dashboard.php" class="search-filter-form">
             <input type="text" 
@@ -431,7 +296,7 @@ document.addEventListener("DOMContentLoaded", () => {
     </div>
 
     <hr>
-    
+
     <div class="todo-container">
         <h2>To-Do List</h2>
 
@@ -504,7 +369,7 @@ document.addEventListener("DOMContentLoaded", () => {
         '<?php echo $pet_sound; ?>',
         '❤️ Love you!',
         '😊 Yay!',
-        '✨ Ahhh enak banget!',
+        '✨ Yipeeeee!',
         '🥰 Elus dong!',
         '💕 Thank you!',
         '🎉 Woohoo!'

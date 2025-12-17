@@ -110,6 +110,7 @@ if (isset($_GET['edit_quiz_id'])) {
             <nav>
                 <a href="edit_course.php?course_id=<?= $material['course_id'] ?>">← Kembali ke Course</a>
                 <p>Selamat Datang, <?= htmlspecialchars($_SESSION['full_name']) ?></p>
+                <p><a href="admin_profile.php" class="prof" style="color: white; text-decoration: none;">Profile</a></p>
                 <p><a href="logout.php" style="color:rgb(255, 62, 62);font-size:medium;">Logout</a></p>
             </nav>
         </div>
