@@ -9,6 +9,7 @@ include 'db.php';
 
 $material_id = $_GET['material_id'] ?? 0;
 $user_id = $_SESSION['user_id'];
+$completed = $_GET['completed'] ?? 0;
 
 $sql_user = "SELECT favorite_animal FROM users WHERE user_id = ?";
 $stmt_user = $conn->prepare($sql_user);
@@ -20,7 +21,7 @@ $favorite_animal = $user_data['favorite_animal'] ?? 'cat';
 $animal_emojis = [
     'cat' => '🐈',
     'dog' => '🐕',
-    'chicken' => '🐓',
+    'chicken' => '🐔',
     'fish' => '🐠',
     'rabbit' => '🐇',
     'lizard' => '🦎'
@@ -65,6 +66,28 @@ $stmt_check = $conn->prepare($sql_check);
 $stmt_check->bind_param("ii", $user_id, $quiz['quiz_id']);
 $stmt_check->execute();
 $already_answered = $stmt_check->get_result()->fetch_assoc();
+
+// Check if all questions answered for score display
+$sql_all_answered = "SELECT COUNT(*) as answered FROM quiz_results WHERE user_id = ? AND material_id = ?";
+$stmt_all = $conn->prepare($sql_all_answered);
+$stmt_all->bind_param("ii", $user_id, $material_id);
+$stmt_all->execute();
+$all_answered = $stmt_all->get_result()->fetch_assoc()['answered'] == $total_questions;
+
+// Calculate score if completed
+$score_data = null;
+if ($completed && $all_answered) {
+    $sql_score = "SELECT 
+                    COUNT(*) as total,
+                    SUM(is_correct) as correct
+                  FROM quiz_results 
+                  WHERE user_id = ? AND material_id = ?";
+    $stmt_score = $conn->prepare($sql_score);
+    $stmt_score->bind_param("ii", $user_id, $material_id);
+    $stmt_score->execute();
+    $score_data = $stmt_score->get_result()->fetch_assoc();
+    $score_data['percentage'] = round(($score_data['correct'] / $score_data['total']) * 100);
+}
 ?>
 
 <!DOCTYPE html>
@@ -92,8 +115,37 @@ $already_answered = $stmt_check->get_result()->fetch_assoc();
             echo $course_q->fetch_assoc()['course_id'];
         ?>" style="color:#2c5aa0">⬅ Kembali ke Course</a>
 
-        <h2>🚨 Selamatkan <?php echo $animal_name; ?>mu! 🚨</h2>
-        <p style="text-align: center; color: #666;">Jawab pertanyaan dengan benar sebelum air naik!</p>
+        <?php if ($completed && $score_data): ?>
+            <div class="score-display">
+                <h2>🎉 Quiz Selesai! 🎉</h2>
+                <div class="score-card">
+                    <div class="score-number"><?= $score_data['percentage'] ?>%</div>
+                    <p>Kamu menjawab <strong><?= $score_data['correct'] ?></strong> dari <strong><?= $score_data['total'] ?></strong> pertanyaan dengan benar!</p>
+                    
+                    <?php if ($score_data['percentage'] >= 90): ?>
+                        <p class="score-message excellent">🌟 Sempurna! <?= $animal_name ?>mu sangat bangga! 🌟</p>
+                    <?php elseif ($score_data['percentage'] >= 80): ?>
+                        <p class="score-message great">👏 Bagus sekali! <?= $animal_name ?>mu senang! 👏</p>
+                    <?php elseif ($score_data['percentage'] >= 70): ?>
+                        <p class="score-message good">👍 Lumayan! <?= $animal_name ?>mu tersenyum! 👍</p>
+                    <?php elseif ($score_data['percentage'] >= 60): ?>
+                        <p class="score-message okay">😊 Cukup baik! Terus belajar ya! 😊</p>
+                    <?php else: ?>
+                        <p class="score-message need-improvement">😢 <?= $animal_name ?>mu sedih. Coba lagi ya! 😢</p>
+                    <?php endif; ?>
+                    
+                    <a href="course_detail.php?id=<?php 
+                        $course_q = $conn->query("SELECT course_id FROM materials WHERE material_id = $material_id");
+                        echo $course_q->fetch_assoc()['course_id'];
+                    ?>">
+                        <button type="button">Kembali ke Course</button>
+                    </a>
+                </div>
+            </div>
+        <?php else: ?>
+            <h2>🚨 Selamatkan <?php echo $animal_name; ?>mu! 🚨</h2>
+            <p style="text-align: center; color: #666;">Jawab pertanyaan dengan benar sebelum air naik!</p>
+        <?php endif; ?>
 
         <div class="progress-bar">
             <div class="progress-fill" style="width: <?php echo (($current_index + 1) / $total_questions) * 100; ?>%;"></div>
@@ -101,7 +153,7 @@ $already_answered = $stmt_check->get_result()->fetch_assoc();
             
         <p style="text-align: center;"><strong>Pertanyaan <?php echo ($current_index + 1); ?> dari <?php echo $total_questions; ?></strong></p>
 
-        <?php if (!$already_answered): ?>
+        <?php if (!$already_answered && !$completed): ?>
         <div class="timer-container" id="timerContainer">
             <div class="timer-text" id="timerText">30</div>
             <div class="animal" id="animal"><?php echo $animal_emoji; ?></div>
@@ -119,13 +171,14 @@ $already_answered = $stmt_check->get_result()->fetch_assoc();
                 <p>Jawabanmu: <strong><?php echo $already_answered['user_answer']; ?></strong></p>
                 <p>Jawaban benar: <strong><?php echo $quiz['correct_answer']; ?></strong></p>
                 <?php if ($already_answered['user_answer'] == $quiz['correct_answer']): ?>
-                    <p style="color: green; font-size: 24px;">✓ Benar! <?php echo $animal_name; ?>mu selamat! 🎉</p>
+                    <p style="color: green; font-size: 24px;">✔ Benar! <?php echo $animal_name; ?>mu selamat! 🎉</p>
                 <?php else: ?>
                     <p style="color: red; font-size: 24px;">✗ Salah! Tapi <?php echo $animal_name; ?>mu sudah diselamatkan.</p>
                 <?php endif; ?>
             </div>
         <?php endif; ?>
 
+        <?php if (!$completed): ?>
         <div class="quiz-form">
             <form action="quiz_submit.php" method="POST" id="quizForm">
                 <input type="hidden" name="quiz_id" value="<?php echo $quiz['quiz_id']; ?>">
@@ -161,17 +214,14 @@ $already_answered = $stmt_check->get_result()->fetch_assoc();
                             <button type="button">Pertanyaan Selanjutnya ➡</button>
                         </a>
                     <?php else: ?>
-                        <p style="color: green; font-size: 20px;"><strong>🎉 Kamu sudah menyelesaikan semua pertanyaan!</strong></p>
-                        <a href="course_detail.php?id=<?php 
-                            $course_q = $conn->query("SELECT course_id FROM materials WHERE material_id = $material_id");
-                            echo $course_q->fetch_assoc()['course_id'];
-                        ?>">
-                            <button type="button">Kembali ke Course</button>
+                        <a href="quiz.php?material_id=<?php echo $material_id; ?>&question=<?php echo $current_index; ?>&completed=1">
+                            <button type="button">Lihat Skor Akhir 🎯</button>
                         </a>
                     <?php endif; ?>
                 <?php endif; ?>
             </form>
         </div>
+        <?php endif; ?>
 
         <div class="navigation">
             <h4>Navigasi Pertanyaan:</h4>
@@ -180,14 +230,14 @@ $already_answered = $stmt_check->get_result()->fetch_assoc();
                 $check_q = $conn->query("SELECT * FROM quiz_results WHERE user_id = $user_id AND quiz_id = {$quizzes[$i]['quiz_id']}");
                 $is_answered = $check_q->num_rows > 0;
                 $class = $is_answered ? 'answered' : 'unanswered';
-                    $current_class = ($i == $current_index) ? 'current' : '';
+                $current_class = ($i == $current_index) ? 'current' : '';
                 ?>
                 <a href="quiz.php?material_id=<?php echo $material_id; ?>&question=<?php echo $i; ?>" 
                 class="nav-button <?php echo $class . ' ' . $current_class; ?>">
                     <?php echo ($i + 1); ?> <?php echo $is_answered ? '✓' : ''; ?>
                 </a>
             <?php endfor; ?>
-            </div>
+        </div>
         </div>
 
         <div class="game-over" id="gameOver">
@@ -209,7 +259,7 @@ $already_answered = $stmt_check->get_result()->fetch_assoc();
             </div>
         </div>
 
-        <?php if (!$already_answered): ?>
+        <?php if (!$already_answered && !$completed): ?>
         <script>
         let timeLeft = 30;
         let timerId;
@@ -396,11 +446,6 @@ $already_answered = $stmt_check->get_result()->fetch_assoc();
                     gameOver.classList.add('show');
 
                     fetch("quiz_failed.php", { method: "POST" });
-
-                    try {
-                        localStorage.setItem('petMood', 'sad');
-                        localStorage.setItem('petReason', 'drowned');
-                    } catch(e) {}
                     
                     animal.removeEventListener('mousedown', startDrag);
                     document.removeEventListener('mousemove', drag);
@@ -439,7 +484,6 @@ $already_answered = $stmt_check->get_result()->fetch_assoc();
         </script>
         <?php endif; ?>
     </main>
-
 
     <footer>
         <?php include 'footer.html'; ?>
