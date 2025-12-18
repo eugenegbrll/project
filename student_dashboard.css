@@ -496,3 +496,154 @@ header {
     white-space: pre-line;
     width: 80%;
 }
+
+.score-analytics-container {
+    background: white;
+    padding: 25px;
+    margin: 30px 30px;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.score-analytics-container h2 {
+    color: #2c5aa0;
+    border-bottom: 3px solid #2c5aa0;
+    padding-bottom: 10px;
+    margin-bottom: 25px;
+    font-size: 24px;
+}
+
+.analytics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.stat-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    transition: transform 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+}
+
+.stat-value {
+    font-size: 36px;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.stat-label {
+    font-size: 14px;
+    opacity: 0.95;
+    font-weight: 500;
+}
+
+.performance-badge {
+    display: inline-block;
+    padding: 12px 24px;
+    border-radius: 25px;
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+.badge-excellent {
+    background: linear-gradient(135deg, #4CAF50, #45a049);
+    color: white;
+}
+
+.badge-good {
+    background: linear-gradient(135deg, #2196F3, #1976D2);
+    color: white;
+}
+
+.badge-average {
+    background: linear-gradient(135deg, #FF9800, #F57C00);
+    color: white;
+}
+
+.badge-poor {
+    background: linear-gradient(135deg, #f44336, #d32f2f);
+    color: white;
+}
+
+.chart-wrapper {
+    position: relative;
+    height: 400px;
+    margin-bottom: 20px;
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.recent-scores {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.score-item {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 10px;
+    border-left: 5px solid #667eea;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.score-item:hover {
+    transform: translateX(5px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.score-item-title {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+    font-size: 16px;
+}
+
+.score-item-course {
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 8px;
+}
+
+.score-item-value {
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.score-excellent { color: #4CAF50; }
+.score-good { color: #2196F3; }
+.score-average { color: #FF9800; }
+.score-poor { color: #f44336; }
+
+.no-score-data {
+    text-align: center;
+    padding: 50px 20px;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    border-radius: 15px;
+    color: #666;
+}
+
+.no-score-data h3 {
+    color: #2c5aa0;
+    margin-bottom: 10px;
+}
+
+.loading-scores {
+    text-align: center;
+    padding: 40px;
+    color: #666;
+    font-style: italic;
+}
