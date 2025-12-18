@@ -355,9 +355,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     <hr>
 
-    <!-- Score Analytics Section -->
     <div class="score-analytics-container">
-        <h2>📊 Score Analytics</h2>
+        <h2>📊 Grafik Nilai</h2>
         <div id="scoreLoadingIndicator" class="loading-scores">
             <p>Memuat data score...</p>
         </div>
@@ -386,7 +385,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 <canvas id="courseScoreChart"></canvas>
             </div>
 
-            <h3 style="color: #2c5aa0; margin-top: 30px; margin-bottom: 15px;">📚 Recent Materials</h3>
+            <h3 style="color: #2c5aa0; margin-top: 30px; margin-bottom: 15px;">📚 Material yang Telah Dikerjakan</h3>
             <div class="recent-scores" id="recentScores"></div>
         </div>
     </div>
@@ -501,11 +500,11 @@ document.addEventListener("DOMContentLoaded", () => {
         } else if (score >= 60) {
             className = 'badge-average';
             text = 'Average Performance';
-            icon = '📊';
+            icon = '🤌';
         } else {
             className = 'badge-poor';
             text = 'Needs Improvement';
-            icon = '💪';
+            icon = '✍️';
         }
 
         badge.className = `performance-badge ${className}`;
