@@ -98,8 +98,9 @@ if (isset($_GET['edit_quiz_id'])) {
             background: #fff3cd;
             padding: 20px;
             border-radius: 5px;
-            margin: 20px 0;
+            width: 80%;
             border: 2px solid #ffc107;
+            margin: auto;
         }
     </style>
 </head>
