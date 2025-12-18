@@ -40,9 +40,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } elseif ($new_password !== $confirm_password) {
                 $message = "Password baru dan konfirmasi tidak cocok!";
                 $message_type = "error";
-            } elseif (strlen($new_password) < 6) {
-                $message = "Password baru minimal 6 karakter!";
-                $message_type = "error";
             } else {
                 $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
                 $sql_update = "UPDATE users SET full_name = ?, username = ?, favorite_animal = ?, password = ? WHERE user_id = ?";
@@ -235,12 +232,12 @@ $animal_names = [
 
                 <div class="form-group">
                     <label>Password Baru</label>
-                    <input type="password" name="new_password" id="new_password" minlength="6">
+                    <input type="password" name="new_password" id="new_password">
                 </div>
 
                 <div class="form-group">
                     <label>Konfirmasi Password Baru</label>
-                    <input type="password" name="confirm_password" id="confirm_password" minlength="6">
+                    <input type="password" name="confirm_password" id="confirm_password">
                 </div>
 
                 <div class="button-group">
@@ -285,7 +282,7 @@ document.getElementById('editForm').addEventListener('submit', function(e) {
     const currentPassword = document.getElementById('current_password').value;
     const newPassword = document.getElementById('new_password').value;
     const confirmPassword = document.getElementById('confirm_password').value;
-    
+
     if (newPassword || confirmPassword) {
         if (!currentPassword) {
             e.preventDefault();
@@ -296,12 +293,6 @@ document.getElementById('editForm').addEventListener('submit', function(e) {
         if (newPassword !== confirmPassword) {
             e.preventDefault();
             alert('Password baru dan konfirmasi tidak cocok!');
-            return;
-        }
-        
-        if (newPassword.length < 6) {
-            e.preventDefault();
-            alert('Password baru minimal 6 karakter!');
             return;
         }
     }

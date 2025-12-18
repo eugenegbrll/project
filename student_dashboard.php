@@ -698,9 +698,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const sadPhrases = [
         '😢 Aku sedih',
         '💔 Maafkan aku',
-        '😭 Aku mengecewakanmu',
+        '😭 Sangat mengecewakan',
         '🥺 Elus aku dong...',
-        '💧 Kenapa aku begini...'
+        '💧 ...'
     ];
 
     const proudPhrases = [
