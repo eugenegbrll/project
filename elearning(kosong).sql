@@ -230,18 +230,13 @@ CREATE TABLE `material_scores` (
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`score_id`),
   UNIQUE KEY `unique_user_material_score` (`user_id`, `material_id`),
-  KEY `user_id` (`user_id`),
-  KEY `material_id` (`material_id`),
-  KEY `course_id` (`course_id`),
-  CONSTRAINT `material_scores_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE,
-  CONSTRAINT `material_scores_ibfk_2` FOREIGN KEY (`material_id`) REFERENCES `materials` (`material_id`) ON DELETE CASCADE,
-  CONSTRAINT `material_scores_ibfk_3` FOREIGN KEY (`course_id`) REFERENCES `courses` (`course_id`) ON DELETE CASCADE
+  KEY `idx_user_id` (`user_id`),
+  KEY `idx_material_id` (`material_id`),
+  KEY `idx_course_id` (`course_id`),
+  KEY `idx_user_completed` (`user_id`, `completed_at`),
+  KEY `idx_course_scores` (`course_id`, `user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Index for faster graph queries
-CREATE INDEX idx_user_completed ON material_scores(user_id, completed_at);
-CREATE INDEX idx_course_scores ON material_scores(course_id, user_id);
---
 -- Dumping data for table `users`
 --
 
