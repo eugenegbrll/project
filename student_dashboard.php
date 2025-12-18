@@ -5,6 +5,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'student') {
     exit();
 }
 include 'db.php';
+
 $user_id = $_SESSION['user_id'];
 
 $search = $_GET['search'] ?? '';
@@ -20,7 +21,7 @@ $favorite_animal = $user_data['favorite_animal'] ?? 'cat';
 $animal_emojis = [
     'cat' => '🐈',
     'dog' => '🐕',
-    'chicken' => '🐥',
+    'chicken' => '🐓',
     'fish' => '🐠',
     'rabbit' => '🐇',
     'lizard' => '🦎'
