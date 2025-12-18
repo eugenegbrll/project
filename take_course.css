@@ -85,7 +85,7 @@ main{
 }
 
 .topic-filter {
-    width: 100%;
+    width: 80%;
     padding: 12px 15px;
     border: 2px solid #ddd;
     border-radius: 8px;
@@ -176,40 +176,6 @@ main{
     width: 95%;
     margin: 20px auto;
     overflow: hidden;
-}
-
-.courses-list {
-    display: flex;
-    gap: 20px;
-    overflow-x: auto;
-    scroll-behavior: smooth;
-    padding: 20px 10px;
-    scrollbar-width: thin;
-    scrollbar-color: #2c5aa0 #f0f0f0;
-}
-
-.courses-list::-webkit-scrollbar {
-    height: 8px;
-}
-
-.courses-list::-webkit-scrollbar-track {
-    background: #f0f0f0;
-    border-radius: 10px;
-}
-
-.courses-list::-webkit-scrollbar-thumb {
-    background: #2c5aa0;
-    border-radius: 10px;
-}
-
-.courses-list::-webkit-scrollbar-thumb:hover {
-    background: #1e3a6f;
-}
-
-.course-slide {
-    min-width: 300px;
-    max-width: 300px;
-    flex-shrink: 0;
 }
 
 .course-box {

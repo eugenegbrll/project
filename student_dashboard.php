@@ -49,7 +49,17 @@ $pet_name = $animal_names[$favorite_animal] ?? 'Kucing';
 $pet_sound = $animal_sounds[$favorite_animal] ?? 'cat.mp3';
 
 $is_pet_sad = isset($_SESSION['pet_sad']) && $_SESSION['pet_sad'];
+$is_pet_proud = isset($_SESSION['pet_proud']) && $_SESSION['pet_proud'];
 $wrong_count = $_SESSION['wrong_answer_count'] ?? 0;
+$quiz_score = $_SESSION['quiz_score'] ?? null;
+$quiz_correct = $_SESSION['quiz_correct'] ?? null;
+$quiz_total = $_SESSION['quiz_total'] ?? null;
+
+if ($quiz_score !== null) {
+    unset($_SESSION['quiz_score']);
+    unset($_SESSION['quiz_correct']);
+    unset($_SESSION['quiz_total']);
+}
 ?>
 
 <!DOCTYPE html>
@@ -59,6 +69,15 @@ $wrong_count = $_SESSION['wrong_answer_count'] ?? 0;
     <link rel="stylesheet" href="student_dashboard.css">
     <script src="student_dashboard.js" defer></script>
     <audio id="petSound" src="sounds/<?php echo $pet_sound; ?>"></audio>
+    
+    <?php if ($quiz_score !== null): ?>
+    <script>
+        window.quizScore = <?= $quiz_score ?>;
+        window.quizCorrect = <?= $quiz_correct ?>;
+        window.quizTotal = <?= $quiz_total ?>;
+    </script>
+    <?php endif; ?>
+    
     <script>
         function deleteTodo(todoId) {
             if (!confirm("Yakin hapus tugas ini?")) return;
@@ -191,18 +210,13 @@ document.addEventListener("DOMContentLoaded", () => {
             c.course_name,
             c.description,
             c.teacher_name,
-
-            -- total materi per course
             (SELECT COUNT(*) 
             FROM materials m 
             WHERE m.course_id = c.course_id) AS total_materials,
-
-            -- materi yang sudah diselesaikan oleh user
             (SELECT COUNT(*) 
             FROM material_completions mc
             JOIN materials m2 ON mc.material_id = m2.material_id
             WHERE mc.user_id = ? AND m2.course_id = c.course_id) AS completed_materials
-
         FROM courses c
         JOIN student_courses sc ON c.course_id = sc.course_id
         WHERE sc.user_id = ?
@@ -339,14 +353,14 @@ document.addEventListener("DOMContentLoaded", () => {
     </div>
 
     <div class="pet-container" id="petContainer">
-        <div class="pet-box <?php echo $is_pet_sad ? 'sad' : ''; ?>" id="petBox">
-            <div class="pat-counter <?php echo $is_pet_sad ? 'healing' : ''; ?>" id="patCounter">
+        <div class="pet-box <?php echo $is_pet_sad ? 'sad' : ($is_pet_proud ? 'proud' : ''); ?>" id="petBox">
+            <div class="pat-counter <?php echo $is_pet_sad ? 'healing' : ($is_pet_proud ? 'proud' : ''); ?>" id="patCounter">
                 <?php echo $is_pet_sad ? ($wrong_count > 0 ? $wrong_count : '!') : '0'; ?>
             </div>
             <div class="speech-bubble" id="speechBubble"></div>
-            <div class="pet-emoji <?php echo $is_pet_sad ? 'sad crying' : ''; ?>" id="petEmoji" onclick="patPet()"><?php echo $pet_emoji; ?></div>
+            <div class="pet-emoji <?php echo $is_pet_sad ? 'sad crying' : ($is_pet_proud ? 'proud' : ''); ?>" id="petEmoji" onclick="patPet()"><?php echo $pet_emoji; ?></div>
             <div class="pet-name">My <?php echo $pet_name; ?></div>
-            <div class="pet-mood" id="petMood"><?php echo $is_pet_sad ? '😢 Sedih' : '😊 Happy'; ?></div>
+            <div class="pet-mood" id="petMood"><?php echo $is_pet_sad ? '😢 Sedih' : ($is_pet_proud ? '🌟 Proud!' : '😊 Happy'); ?></div>
         </div>
     </div>
     </main>
@@ -356,6 +370,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let idleTimer;
     let lastPatTime = Date.now();
     let isSad = <?php echo $is_pet_sad ? 'true' : 'false'; ?>;
+    let isProud = <?php echo $is_pet_proud ? 'true' : 'false'; ?>;
     let patsNeeded = <?php echo max($wrong_count, 5); ?>;
     let healingPats = 0;
 
@@ -383,6 +398,17 @@ document.addEventListener("DOMContentLoaded", () => {
         '💧 Kenapa aku begini...'
     ];
 
+    const proudPhrases = [
+        '🌟 Kamu hebat!',
+        '🏆 Good job!',
+        '👏 Amazing!',
+        '💪 You did it!',
+        '⭐ Sempurna!',
+        '🎯 Excellent!',
+        '🎉 Aku bangga!',
+        '💖 You are the best!'
+    ];
+
     const healingPhrases = [
         '🌟 Oh!',
         '💚 Aku merasa baikan',
@@ -407,6 +433,78 @@ document.addEventListener("DOMContentLoaded", () => {
         '🥺 Cemberut',
         '😿 Kecewa'
     ];
+
+    const proudMoods = [
+        '🌟 Proud!',
+        '🏆 Bangga!',
+        '👑 You rock!',
+        '⭐ Amazing!',
+        '💫 Terbaik!'
+    ];
+
+    const lastGreeting = localStorage.getItem('petLastGreeting');
+    const now = Date.now();
+    const fiveMinutes = 5 * 60 * 1000;
+    
+    const shouldGreet = !lastGreeting || (now - parseInt(lastGreeting)) > fiveMinutes;
+    
+    if (shouldGreet) {
+        setTimeout(() => {
+            const hour = new Date().getHours();
+            let greeting = '';
+            
+            if (hour >= 5 && hour < 12) {
+                greeting = '🌅 Selamat pagi! Semangat belajar!';
+            } else if (hour >= 12 && hour < 15) {
+                greeting = '☀️ Selamat siang! Waktunya makan!';
+            } else if (hour >= 15 && hour < 18) {
+                greeting = '🌤️ Selamat sore! Waktunya nyantai!';
+            } else if (hour >= 18 && hour < 22) {
+                greeting = '🌆 Selamat malam! Waktunya enak untuk tidur!';
+            } else {
+                greeting = '🌙 Selamat malam! Jangan begadang ya!';
+            }
+            
+            speechBubble.textContent = greeting;
+            speechBubble.classList.add('show');
+            
+            petEmoji.classList.add('happy');
+            
+            for (let i = 0; i < 5; i++) {
+                setTimeout(() => createHeart(), i * 150);
+            }
+            
+            setTimeout(() => {
+                speechBubble.classList.remove('show');
+                petEmoji.classList.remove('happy');
+            }, 4000);
+            
+            localStorage.setItem('petLastGreeting', now.toString());
+        }, 800);
+    }
+    
+    if (typeof window.quizScore !== 'undefined' && isProud) {
+        setTimeout(() => {
+            const scoreMessage = `🎉 Skor kamu ${window.quizScore}%! Aku sangat bangga padamu! (${window.quizCorrect}/${window.quizTotal} benar)`;
+            speechBubble.textContent = scoreMessage;
+            speechBubble.classList.add('show');
+            
+            petEmoji.classList.add('happy');
+            
+            for (let i = 0; i < 15; i++) {
+                setTimeout(() => createHeart(), i * 100);
+            }
+            
+            setTimeout(() => {
+                speechBubble.classList.remove('show');
+                petEmoji.classList.remove('happy');
+            }, 5000);
+        }, shouldGreet ? 5000 : 500);
+        
+        setTimeout(() => {
+            fetch('clear_pet_proud.php');
+        }, shouldGreet ? 10500 : 6000);
+    }
 
     if (isSad) {
         setInterval(() => {
@@ -441,6 +539,28 @@ document.addEventListener("DOMContentLoaded", () => {
                 petEmoji.classList.remove('squish');
             }, 500);
             
+        } else if (isProud) {
+            patCount++;
+            patCounter.textContent = patCount;
+            
+            petEmoji.classList.remove('squish', 'happy', 'wiggle', 'proud');
+            petEmoji.classList.add('happy');
+            
+            const randomPhrase = proudPhrases[Math.floor(Math.random() * proudPhrases.length)];
+            speechBubble.textContent = randomPhrase;
+            speechBubble.classList.add('show');
+            
+            const randomMood = proudMoods[Math.floor(Math.random() * proudMoods.length)];
+            petMood.textContent = randomMood;
+            
+            for (let i = 0; i < 3; i++) {
+                setTimeout(() => createHeart(), i * 100);
+            }
+            
+            setTimeout(() => {
+                petEmoji.classList.remove('happy');
+            }, 500);
+            
         } else {
             patCount++;
             patCounter.textContent = patCount;
@@ -463,9 +583,9 @@ document.addEventListener("DOMContentLoaded", () => {
             setTimeout(() => {
                 petEmoji.classList.remove(randomAnim);
             }, 500);
-            
-            resetIdleTimer();
         }
+        
+        resetIdleTimer();
         
         setTimeout(() => {
             speechBubble.classList.remove('show');
@@ -553,6 +673,17 @@ document.addEventListener("DOMContentLoaded", () => {
             petMood.textContent = randomMood;
             
             return;
+        }
+        
+        if (Math.random() < 0.3) {
+            const timeBasedPhrases = getTimeBasedPhrase();
+            const randomTimePhrase = timeBasedPhrases[Math.floor(Math.random() * timeBasedPhrases.length)];
+            speechBubble.textContent = randomTimePhrase;
+            speechBubble.classList.add('show');
+            
+            setTimeout(() => {
+                speechBubble.classList.remove('show');
+            }, 3000);
         }
         
         const idleAnimations = ['idle-blink', 'idle-bounce'];

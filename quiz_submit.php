@@ -43,6 +43,20 @@ $stmt_answered->execute();
 $answered_count = $stmt_answered->get_result()->fetch_assoc()['answered'];
 
 if ($answered_count == $total_questions) {
+    $sql_check_all = "SELECT COUNT(*) as total_correct 
+                      FROM quiz_results 
+                      WHERE user_id = ? AND material_id = ? AND is_correct = 1";
+    $stmt_check_all = $conn->prepare($sql_check_all);
+    $stmt_check_all->bind_param("ii", $user_id, $material_id);
+    $stmt_check_all->execute();
+    $total_correct = $stmt_check_all->get_result()->fetch_assoc()['total_correct'];
+    
+    $score_percentage = round(($total_correct / $total_questions) * 100);
+    
+    $_SESSION['quiz_score'] = $score_percentage;
+    $_SESSION['quiz_correct'] = $total_correct;
+    $_SESSION['quiz_total'] = $total_questions;
+    
     $sql_check_completion = "SELECT completed_at FROM material_completions 
                              WHERE user_id = ? AND material_id = ?";
     $stmt_check_comp = $conn->prepare($sql_check_completion);
@@ -72,22 +86,17 @@ if ($answered_count == $total_questions) {
         $stmt_update->execute();
     }
     
-    $sql_check_all = "SELECT COUNT(*) as total_correct 
-                      FROM quiz_results 
-                      WHERE user_id = ? AND material_id = ? AND is_correct = 1";
-    $stmt_check_all = $conn->prepare($sql_check_all);
-    $stmt_check_all->bind_param("ii", $user_id, $material_id);
-    $stmt_check_all->execute();
-    $total_correct = $stmt_check_all->get_result()->fetch_assoc()['total_correct'];
-    
-    if ($total_correct < $total_questions) {
+    if ($score_percentage >= 80) {
+        $_SESSION['pet_proud'] = true;
+        $_SESSION['pet_sad'] = false;
+        $_SESSION['wrong_answer_count'] = 0;
+    } elseif ($total_correct < $total_questions) {
         $_SESSION['pet_sad'] = true;
         $_SESSION['quiz_failed_material'] = $material_id;
     }
 }
 
 if (!$is_correct) {
-    $_SESSION['pet_sad'] = true;
     $_SESSION['wrong_answer_count'] = ($_SESSION['wrong_answer_count'] ?? 0) + 1;
 }
 

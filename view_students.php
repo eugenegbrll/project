@@ -34,7 +34,7 @@ $course = $course_result->fetch_assoc();
         <div class="bar">
             <h1><a href="admin_dashboard.php" style="color:white;text-decoration:none">EduQuest</a></h1>
             <nav>
-                <a href="edit_course.php?course_id=<?= $material['course_id'] ?>" style="color: white; text-decoration: none;">← Kembali ke Course</a>
+                <a href="edit_course.php?course_id=<?= $material['course_id'] ?>" style="color: white; text-decoration: none;">⬅ Kembali ke Course</a>
                 <p>Selamat Datang, <?= htmlspecialchars($_SESSION['full_name']) ?></p>
                 <p><a href="admin_profile.php" class="prof" style="color: white; text-decoration: none;">Profile</a></p>
                 <p><a href="logout.php" class="logout">Logout</a></p>

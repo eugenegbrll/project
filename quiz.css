@@ -47,6 +47,73 @@ header {
 main{
     flex: 1 0 auto;
 }
+
+.score-display {
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+    margin: 20px 0;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.score-display h2 {
+    color: #2c5aa0;
+    font-size: 32px;
+    margin-bottom: 20px;
+}
+
+.score-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 15px;
+    padding: 30px;
+    color: white;
+}
+
+.score-number {
+    font-size: 72px;
+    font-weight: bold;
+    margin: 20px 0;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.score-card p {
+    font-size: 18px;
+    margin: 15px 0;
+}
+
+.score-message {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 20px 0;
+    padding: 15px;
+    border-radius: 10px;
+}
+
+.score-message.excellent {
+    background: rgba(255, 215, 0, 0.3);
+    color: #FFD700;
+}
+
+.score-message.great {
+    background: rgba(76, 175, 80, 0.3);
+    color: #4CAF50;
+}
+
+.score-message.good {
+    background: rgba(33, 150, 243, 0.3);
+    color: #2196F3;
+}
+
+.score-message.okay {
+    background: rgba(255, 152, 0, 0.3);
+    color: #FF9800;
+}
+
+.score-message.need-improvement {
+    background: rgba(244, 67, 54, 0.3);
+    color: #F44336;
+}
         
 .game-container {
     background: white;
@@ -277,7 +344,7 @@ button:disabled {
 }
         
 .game-over-content h2 {
-    color: red  ; 
+    color: red; 
     font-size: 32px;
     margin-bottom: 20px;
 }
