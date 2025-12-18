@@ -95,8 +95,8 @@ header {
 .pet-container {
     position: fixed;
     bottom: 20px;
-    right: 20px;
-    z-index: 1000;
+    right: 10px;
+    z-index: 900;
     cursor: grab;
 }
 
@@ -491,3 +491,8 @@ header {
     letter-spacing: 0.5px;
     margin-left: 10px;
         }
+
+.speech-bubble {
+    white-space: pre-line;
+    width: 80%;
+}

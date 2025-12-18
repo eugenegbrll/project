@@ -392,18 +392,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const sadPhrases = [
         '😢 Aku sedih',
-        '💔 Kenapa..?',
-        '😭 Sangat mengecewakanmu',
+        '💔 Maafkan aku',
+        '😭 Aku mengecewakanmu',
         '🥺 Elus aku dong...',
-        '💧 ...'
+        '💧 Kenapa aku begini...'
     ];
 
     const proudPhrases = [
         '🌟 Kamu hebat!',
         '🏆 Good job!',
         '👏 Amazing!',
-        '💪 Kamu jago sekali!',
+        '💪 You did it!',
         '⭐ Sempurna!',
+        '🎯 Excellent!',
         '🎉 Aku bangga!',
         '💖 You are the best!'
     ];
@@ -436,11 +437,52 @@ document.addEventListener("DOMContentLoaded", () => {
     const proudMoods = [
         '🌟 Proud!',
         '🏆 Bangga!',
-        '👑 Big W!',
+        '👑 You rock!',
         '⭐ Amazing!',
         '💫 Terbaik!'
     ];
 
+    const lastGreeting = localStorage.getItem('petLastGreeting');
+    const now = Date.now();
+    const fiveMinutes = 5 * 60 * 1000;
+    
+    const shouldGreet = !lastGreeting || (now - parseInt(lastGreeting)) > fiveMinutes;
+    
+    if (shouldGreet) {
+        setTimeout(() => {
+            const hour = new Date().getHours();
+            let greeting = '';
+            
+            if (hour >= 5 && hour < 12) {
+                greeting = '🌅 Selamat pagi! Semangat belajar!';
+            } else if (hour >= 12 && hour < 15) {
+                greeting = '☀️ Selamat siang! Waktunya makan!';
+            } else if (hour >= 15 && hour < 18) {
+                greeting = '🌤️ Selamat sore! Waktunya nyantai!';
+            } else if (hour >= 18 && hour < 22) {
+                greeting = '🌆 Selamat malam! Waktunya enak untuk tidur!';
+            } else {
+                greeting = '🌙 Selamat malam! Jangan begadang ya!';
+            }
+            
+            speechBubble.textContent = greeting;
+            speechBubble.classList.add('show');
+            
+            petEmoji.classList.add('happy');
+            
+            for (let i = 0; i < 5; i++) {
+                setTimeout(() => createHeart(), i * 150);
+            }
+            
+            setTimeout(() => {
+                speechBubble.classList.remove('show');
+                petEmoji.classList.remove('happy');
+            }, 4000);
+            
+            localStorage.setItem('petLastGreeting', now.toString());
+        }, 800);
+    }
+    
     if (typeof window.quizScore !== 'undefined' && isProud) {
         setTimeout(() => {
             const scoreMessage = `🎉 Skor kamu ${window.quizScore}%! Aku sangat bangga padamu! (${window.quizCorrect}/${window.quizTotal} benar)`;
@@ -457,11 +499,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 speechBubble.classList.remove('show');
                 petEmoji.classList.remove('happy');
             }, 5000);
-        }, 500);
+        }, shouldGreet ? 5000 : 500);
         
         setTimeout(() => {
             fetch('clear_pet_proud.php');
-        }, 6000);
+        }, shouldGreet ? 10500 : 6000);
     }
 
     if (isSad) {
@@ -631,6 +673,17 @@ document.addEventListener("DOMContentLoaded", () => {
             petMood.textContent = randomMood;
             
             return;
+        }
+        
+        if (Math.random() < 0.3) {
+            const timeBasedPhrases = getTimeBasedPhrase();
+            const randomTimePhrase = timeBasedPhrases[Math.floor(Math.random() * timeBasedPhrases.length)];
+            speechBubble.textContent = randomTimePhrase;
+            speechBubble.classList.add('show');
+            
+            setTimeout(() => {
+                speechBubble.classList.remove('show');
+            }, 3000);
         }
         
         const idleAnimations = ['idle-blink', 'idle-bounce'];

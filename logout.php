@@ -4,5 +4,17 @@ session_start();
 session_unset();
 session_destroy();
 
-header("Location: login.php");
-exit();
+?>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Logging out...</title>
+    <script>
+        localStorage.removeItem('petLastGreeting');
+        window.location.href = 'login.php';
+    </script>
+</head>
+<body>
+    <p>Logging out...</p>
+</body>
+</html>
