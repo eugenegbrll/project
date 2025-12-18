@@ -20,7 +20,7 @@ $favorite_animal = $user_data['favorite_animal'] ?? 'cat';
 $animal_emojis = [
     'cat' => '🐈',
     'dog' => '🐕',
-    'chicken' => '🐔',
+    'chicken' => '🐥',
     'fish' => '🐠',
     'rabbit' => '🐇',
     'lizard' => '🦎'
@@ -420,7 +420,8 @@ document.addEventListener("DOMContentLoaded", () => {
             "😊 Bagus! Kamu di jalur yang benar!",
             "💪 Good work! Sedikit lagi jadi sempurna!",
             "🎯 Nice! Progress yang solid!",
-            "✨ Well done! Terus semangat!"
+            "✨ Well done! Terus semangat!",
+            "🥳 Widih, kerennn!"
         ],
         average: [
             "💙 Kamu bisa lebih baik! Aku percaya!",
@@ -434,7 +435,8 @@ document.addEventListener("DOMContentLoaded", () => {
             "💕 Ayo, kamu pasti bisa lebih baik lagi!",
             "🌈 Kesalahan bisa membuat kita lebih kuat!",
             "🫂 Jangan sedih, kamu tidak sendiri!",
-            "💖 Aku tahu kamu bisa lebih baik! Yuk coba lagi!"
+            "💖 Aku tahu kamu bisa lebih baik! Yuk coba lagi!",
+            "✨ Jangan stress ya, bisa kok"
         ]
     };
 
@@ -449,7 +451,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             scoreData = data;
             renderScoreAnalytics();
-            updatePetWithScoreData();
+            observeScoreSection();
         } catch (error) {
             console.error('Error loading scores:', error);
             document.getElementById('scoreLoadingIndicator').innerHTML = 
@@ -671,6 +673,38 @@ document.addEventListener("DOMContentLoaded", () => {
         loadScoreData();
     });
 
+    function observeScoreSection() {
+        if (!scoreAnalyticsContainer) return;
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+
+                if (entry.isIntersecting) {
+                    if (!isWatchingGraph) {
+                        isWatchingGraph = true;
+
+                        petTalkAboutScore();
+
+                        graphTalkInterval = setInterval(() => {
+                            if (isWatchingGraph) {
+                                petTalkAboutScore();
+                            }
+                        }, 7000);
+                    }
+                } else {
+                    isWatchingGraph = false;
+                    clearInterval(graphTalkInterval);
+                    graphTalkInterval = null;
+                }
+
+            });
+        }, {
+            threshold: 0.4
+        });
+
+        observer.observe(scoreAnalyticsContainer);
+    }
+
     let patCount = 0;
     let idleTimer;
     let lastPatTime = Date.now();
@@ -678,12 +712,19 @@ document.addEventListener("DOMContentLoaded", () => {
     let isProud = <?php echo $is_pet_proud ? 'true' : 'false'; ?>;
     let patsNeeded = <?php echo max($wrong_count, 5); ?>;
     let healingPats = 0;
+    let isTrackingCursor = false;
+    let hasReactedToGraph = false;
+    let graphTalkInterval = null;
+    let isWatchingGraph = false;
+
 
     const petEmoji = document.getElementById('petEmoji');
+    const petContainer = document.getElementById('petContainer');
     const patCounter = document.getElementById('patCounter');
     const speechBubble = document.getElementById('speechBubble');
     const petMood = document.getElementById('petMood');
     const petBox = document.getElementById('petBox');
+    const scoreAnalyticsContainer = document.querySelector('.score-analytics-container');
 
     const happyPhrases = [
         '🎵 <?php echo $pet_sound; ?> noises',
@@ -1027,6 +1068,29 @@ document.addEventListener("DOMContentLoaded", () => {
             }, 4000);
         }, 1000);
     }
+
+    function petTalkAboutScore() {
+        if (!scoreData || !scoreData.overall.total_answered) return;
+
+        const score = parseFloat(scoreData.overall.overall_percentage) || 0;
+        let category = 'average';
+
+        if (score >= 90) category = 'excellent';
+        else if (score >= 75) category = 'good';
+        else if (score >= 60) category = 'average';
+        else category = 'poor';
+
+        const messages = scoreBasedMessages[category];
+        const message = messages[Math.floor(Math.random() * messages.length)];
+
+        speechBubble.textContent = message;
+        speechBubble.classList.add('show');
+
+        setTimeout(() => {
+            speechBubble.classList.remove('show');
+        }, 4000);
+    }
+
     </script>
 
     <footer>

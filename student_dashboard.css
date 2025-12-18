@@ -98,10 +98,15 @@ header {
     right: 10px;
     z-index: 900;
     cursor: grab;
+    transition: transform 0.3s ease-out;
 }
 
 .pet-container:active {
     cursor: grabbing;
+}
+
+.pet-container.tracking {
+    transition: transform 0.15s ease-out;
 }
 
 .pet-box {
