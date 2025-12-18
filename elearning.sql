@@ -215,6 +215,32 @@ CREATE TABLE `users` (
   `favorite_animal` varchar(50) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+-- Optional enhancement: Add a table to store aggregated material scores
+-- This improves performance for the graph and allows historical tracking
+
+CREATE TABLE `material_scores` (
+  `score_id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `material_id` int(11) NOT NULL,
+  `course_id` int(11) NOT NULL,
+  `correct_answers` int(11) NOT NULL DEFAULT 0,
+  `total_questions` int(11) NOT NULL,
+  `score_percentage` decimal(5,2) NOT NULL,
+  `completed_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`score_id`),
+  UNIQUE KEY `unique_user_material_score` (`user_id`, `material_id`),
+  KEY `user_id` (`user_id`),
+  KEY `material_id` (`material_id`),
+  KEY `course_id` (`course_id`),
+  CONSTRAINT `material_scores_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE,
+  CONSTRAINT `material_scores_ibfk_2` FOREIGN KEY (`material_id`) REFERENCES `materials` (`material_id`) ON DELETE CASCADE,
+  CONSTRAINT `material_scores_ibfk_3` FOREIGN KEY (`course_id`) REFERENCES `courses` (`course_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Index for faster graph queries
+CREATE INDEX idx_user_completed ON material_scores(user_id, completed_at);
+CREATE INDEX idx_course_scores ON material_scores(course_id, user_id);
 --
 -- Dumping data for table `users`
 --
