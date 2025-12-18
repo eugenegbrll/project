@@ -454,3 +454,28 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
+-- Recalculate all course progress after import
+UPDATE student_courses sc
+SET progress = (
+    SELECT ROUND(
+        IFNULL(
+            (COUNT(DISTINCT mc.material_id) * 100.0) / 
+            NULLIF((SELECT COUNT(*) FROM materials m WHERE m.course_id = sc.course_id), 0),
+            0
+        )
+    )
+    FROM material_completions mc
+    INNER JOIN materials m ON mc.material_id = m.material_id
+    WHERE mc.user_id = sc.user_id 
+    AND m.course_id = sc.course_id
+)
+WHERE EXISTS (
+    SELECT 1 FROM courses c WHERE c.course_id = sc.course_id
+);
+
+-- Ensure progress doesn't exceed 100
+UPDATE student_courses SET progress = 100 WHERE progress > 100;
+
+-- Ensure progress is at least 0
+UPDATE student_courses SET progress = 0 WHERE progress IS NULL;
