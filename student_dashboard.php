@@ -182,7 +182,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 <option value="Fisika" <?= $topic_filter == 'Fisika' ? 'selected' : '' ?>>Fisika</option>
                 <option value="Kimia" <?= $topic_filter == 'Kimia' ? 'selected' : '' ?>>Kimia</option>
                 <option value="Biologi" <?= $topic_filter == 'Biologi' ? 'selected' : '' ?>>Biologi</option>
-                <option value="Komputer" <?= $topic_filter == 'Komputer' ? 'selected' : '' ?>>Komputer</option>
+                <option value="Komputer" <?= $topic_filter == 'Komputer' ? 'selected' : '' ?>>Komputer & Programming</option>
                 <option value="Lainnya" <?= $topic_filter == 'Lainnya' ? 'selected' : '' ?>>Lainnya</option>
             </select>
 
@@ -223,31 +223,63 @@ document.addEventListener("DOMContentLoaded", () => {
         JOIN student_courses sc ON c.course_id = sc.course_id
         WHERE sc.user_id = ?
         ";
-        
+
         if (!empty($search)) {
             $sql .= " AND (c.course_name LIKE ? OR c.description LIKE ? OR c.teacher_name LIKE ?)";
         }
-        
+
         if (!empty($topic_filter)) {
-            $sql .= " AND (c.course_name LIKE ? OR c.description LIKE ?)";
+            if ($topic_filter === 'Lainnya') {
+                $sql .= " AND NOT (
+                    c.course_name LIKE '%Math%' OR c.course_name LIKE '%Matematika%' OR
+                    c.course_name LIKE '%Science%' OR c.course_name LIKE '%Sains%' OR c.course_name LIKE '%IPA%' OR
+                    c.course_name LIKE '%English%' OR c.course_name LIKE '%Inggris%' OR
+                    c.course_name LIKE '%Indonesian%' OR c.course_name LIKE '%Indonesia%' OR
+                    c.course_name LIKE '%History%' OR c.course_name LIKE '%Sejarah%' OR
+                    c.course_name LIKE '%Physics%' OR c.course_name LIKE '%Fisika%' OR
+                    c.course_name LIKE '%Chemistry%' OR c.course_name LIKE '%Kimia%' OR
+                    c.course_name LIKE '%Biology%' OR c.course_name LIKE '%Biologi%' OR
+                    c.course_name LIKE '%Programming%' OR c.course_name LIKE '%Coding%' OR c.course_name LIKE '%Computer%' OR c.course_name LIKE '%Informatika%' OR
+                    c.description LIKE '%Math%' OR c.description LIKE '%Matematika%' OR
+                    c.description LIKE '%Science%' OR c.description LIKE '%Sains%' OR c.description LIKE '%IPA%' OR
+                    c.description LIKE '%English%' OR c.description LIKE '%Inggris%' OR
+                    c.description LIKE '%Indonesian%' OR c.description LIKE '%Indonesia%' OR
+                    c.description LIKE '%History%' OR c.description LIKE '%Sejarah%' OR
+                    c.description LIKE '%Physics%' OR c.description LIKE '%Fisika%' OR
+                    c.description LIKE '%Chemistry%' OR c.description LIKE '%Kimia%' OR
+                    c.description LIKE '%Biology%' OR c.description LIKE '%Biologi%' OR
+                    c.description LIKE '%Programming%' OR c.description LIKE '%Coding%' OR c.description LIKE '%Computer%' OR c.description LIKE '%Informatika%'
+                )";
+            } else {
+                $sql .= " AND (c.course_name LIKE ? OR c.description LIKE ?)";
+            }
         }
-        
+
         $stmt = $conn->prepare($sql);
-        
+
         if (!empty($search) && !empty($topic_filter)) {
-            $search_param = "%$search%";
-            $topic_param = "%$topic_filter%";
-            $stmt->bind_param("iisssss", $user_id, $user_id, $search_param, $search_param, $search_param, $topic_param, $topic_param);
+            if ($topic_filter === 'Lainnya') {
+                $search_param = "%$search%";
+                $stmt->bind_param("iisss", $user_id, $user_id, $search_param, $search_param, $search_param);
+            } else {
+                $search_param = "%$search%";
+                $topic_param = "%$topic_filter%";
+                $stmt->bind_param("iisssss", $user_id, $user_id, $search_param, $search_param, $search_param, $topic_param, $topic_param);
+            }
         } elseif (!empty($search)) {
             $search_param = "%$search%";
             $stmt->bind_param("iisss", $user_id, $user_id, $search_param, $search_param, $search_param);
         } elseif (!empty($topic_filter)) {
-            $topic_param = "%$topic_filter%";
-            $stmt->bind_param("iiss", $user_id, $user_id, $topic_param, $topic_param);
+            if ($topic_filter !== 'Lainnya') {
+                $topic_param = "%$topic_filter%";
+                $stmt->bind_param("iiss", $user_id, $user_id, $topic_param, $topic_param);
+            } else {
+                $stmt->bind_param("ii", $user_id, $user_id);
+            }
         } else {
             $stmt->bind_param("ii", $user_id, $user_id);
         }
-        
+
         $stmt->execute();
         $result = $stmt->get_result();
 
@@ -295,10 +327,13 @@ document.addEventListener("DOMContentLoaded", () => {
             } elseif (stripos($course_name, 'Biology') !== false || stripos($course_name, 'Biologi') !== false) {
                 $topic_badge = 'Biologi';
                 $badge_color = '#52ce56ff';
-            } elseif (stripos($course_name, 'Programming') !== false || stripos($course_name, 'Coding') !== false || stripos($course_name, 'Computer') !== false) {
-                $topic_badge = 'Komputer';
-                $badge_color = '#39c9dcff';
-            }
+            } elseif (stripos($course_name, 'Programming') !== false || 
+                stripos($course_name, 'Coding') !== false || 
+                stripos($course_name, 'Computer') !== false || 
+                stripos($course_name, 'Informatika') !== false) {
+            $topic_badge = 'Komputer';
+            $badge_color = '#39c9dcff';
+        }
 
             echo "<div class='course-card'>";
             echo "<h3>" . htmlspecialchars($course['course_name']);
