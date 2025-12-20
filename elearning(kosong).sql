@@ -359,6 +359,19 @@ CREATE TABLE `material_scores` (
 -- Dumping data for table `users`
 --
 
+--
+-- Table structure for table `notifications`
+--
+
+CREATE TABLE `notifications` (
+  id INT AUTO_INCREMENT PRIMARY KEY, 
+  message VARCHAR(255) NOT NULL, 
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `notifications`
+--
 
 --
 -- Indexes for dumped tables
