@@ -11,7 +11,7 @@ session_destroy();
     <title>Logging out...</title>
     <script>
         localStorage.removeItem('petLastGreeting');
-        window.location.href = 'login.php';
+        window.location.href = 'guest_dashboard.php';
     </script>
 </head>
 <body>
