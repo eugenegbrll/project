@@ -9,7 +9,7 @@ CHALLENGE YANG DIBERIKAN :
 - bikin filter dan search bar saat ambil course
 - bikin grafik di student dashboard dan pet bisa bereaksi sesuai nilai
 
-Projek ini tentang 
+Projek ini memakai SDGs ke-4 yaittu quality education karena dia sebuah platform e-learning bernama Eduquest untuk student belajar ditemani dengan pet seperti tamagochi sambil belajar courses yang telah diberikan oleh teacher.
 
 Q1 Assignment 1
 Fitur 1 = 
