@@ -40,6 +40,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
 
 <main>
+
+<header>
+    <div class="container">
+        <h1><a href="guest_dashboard.php" style="color:white;text-decoration:none">EduQuest</a></h1>
+        <nav>
+            <p><a href="register.php">Register</a></p>
+            <p><a href="login.php">Login</a></p>
+        </nav>
+    </div>
+</header>
+
+<body>
     <div class="register-container">
     <h2>Register</h2>
 
@@ -87,6 +99,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <a href="login.php">Sudah punya akun? Login</a>
     </form>
     </div>
+</body>
+
 </main>
 
 <footer>
