@@ -67,13 +67,16 @@ $stmt_check->bind_param("ii", $user_id, $quiz['quiz_id']);
 $stmt_check->execute();
 $already_answered = $stmt_check->get_result()->fetch_assoc();
 
+// Check if all questions answered for score display
 $sql_all_answered = "SELECT COUNT(*) as answered FROM quiz_results WHERE user_id = ? AND material_id = ?";
 $stmt_all = $conn->prepare($sql_all_answered);
 $stmt_all->bind_param("ii", $user_id, $material_id);
 $stmt_all->execute();
 $all_answered = $stmt_all->get_result()->fetch_assoc()['answered'] == $total_questions;
 
+// Calculate score if completed
 $score_data = null;
+$notif_sent = false;
 if ($completed && $all_answered) {
     $sql_score = "SELECT 
                     COUNT(*) as total,
@@ -85,6 +88,13 @@ if ($completed && $all_answered) {
     $stmt_score->execute();
     $score_data = $stmt_score->get_result()->fetch_assoc();
     $score_data['percentage'] = round(($score_data['correct'] / $score_data['total']) * 100);
+    $studentName = $_SESSION['full_name']; 
+    $message = "$studentName sudah mengerjakan quiz.";
+    $stmt_notif = $conn->prepare("INSERT INTO notifications (message) VALUES (?)");
+    $stmt_notif->bind_param("s", $message);
+    if($stmt_notif->execute()) {
+        $notif_sent = true;
+    }
 }
 ?>
 
@@ -131,7 +141,11 @@ if ($completed && $all_answered) {
                     <?php else: ?>
                         <p class="score-message need-improvement">😢 <?= $animal_name ?>mu sedih. Coba lagi ya! 😢</p>
                     <?php endif; ?>
-                    
+                    <?php if ($notif_sent): ?>
+                        <div style="background: #e1f5fe; color: #01579b; padding: 12px; border-radius: 8px; margin: 15px 0; border: 1px solid #b3e5fc; font-size: 14px;">
+                        💙 <?php echo $message; ?>
+                        </div>
+                    <?php endif; ?>
                     <a href="course_detail.php?id=<?php 
                         $course_q = $conn->query("SELECT course_id FROM materials WHERE material_id = $material_id");
                         echo $course_q->fetch_assoc()['course_id'];
