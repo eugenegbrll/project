@@ -44,5 +44,8 @@ Fitur 4 =
 - Selesai Challenge 2 yaitu membuat grafik untuk setiap nilai yang didapatkan dan pet bisa react sesuai nilai yang didapatkan, kalau bagus dia senang, kalau jelek dia menghiburmu, pet akan react ketika hanya melihat grafiknya, pet akan react setiap 7 detik
 - Membuat guest dashboard untuk guest, jadi mulai awalnya itu di guest dashboard
 
+Docs fitur 1, 2, dan 3:
+https://docs.google.com/document/d/1xRgf1urOB4hNDHr7nFiTDXTqLkoIMBF9RYg3sn-ULVw/edit?usp=sharing
+
 Docs dokumentasi :
 https://docs.google.com/document/d/1C99qOebzaYZp50c80h-rO4b6ZwngwcecUPMeaqlsVY4/edit?usp=sharing
