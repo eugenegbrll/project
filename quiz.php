@@ -107,7 +107,7 @@ if ($completed && $all_answered) {
 <body>
     <header>
         <div class="bar">
-            <h1><a href="admin_dashboard.php" style="color:white;text-decoration:none">EduQuest - Admin</a></h1>
+            <h1><a href="student_dashboard.php" style="color:white;text-decoration:none">EduQuest</a></h1>
             <nav>
                 <p>Halo, <?= htmlspecialchars($_SESSION['full_name']) ?></p>
                 <p><a href="student_profile.php" style="color: white; text-decoration: none;">Profile</a></p>
