@@ -37,16 +37,12 @@ Fitur 3 =
 
 Q4 Assignment 4
 Fitur 4 =
-- Selesai Challenge 1 yaitu membuat filter dan search bar saat ambil course(tambahan : filter dan search bar juga ada di student dashboard)
-- Profile untuk admin dan student
-
-Q4 Assignment 4
-Fitur 4 =
 - Membuat edit materi, course, quiz untuk admin 
 - Selesai Challenge 1 yaitu membuat filter dan search bar saat ambil course(tambahan : filter dan search bar juga ada di student dashboard)
 - Membuat profile untuk admin dan student untuk melihat statistik keseluruhan dan mengedit username, nama lengkap, dan password
 - Setelah mengerjakan quiz bisa di melihat nilainya dan nanti pet bisa react sesuai nilai yang kamu dapatkan, kalau bagus dia bangga, kalau jelek dia sedih
 - Selesai Challenge 2 yaitu membuat grafik untuk setiap nilai yang didapatkan dan pet bisa react sesuai nilai yang didapatkan, kalau bagus dia senang, kalau jelek dia menghiburmu, pet akan react ketika hanya melihat grafiknya, pet akan react setiap 7 detik
+- Membuat guest dashboard untuk guest, jadi mulai awalnya itu di guest dashboard
 
 Docs dokumentasi :
 https://docs.google.com/document/d/1C99qOebzaYZp50c80h-rO4b6ZwngwcecUPMeaqlsVY4/edit?usp=sharing
