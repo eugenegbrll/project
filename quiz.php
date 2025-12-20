@@ -67,14 +67,12 @@ $stmt_check->bind_param("ii", $user_id, $quiz['quiz_id']);
 $stmt_check->execute();
 $already_answered = $stmt_check->get_result()->fetch_assoc();
 
-// Check if all questions answered for score display
 $sql_all_answered = "SELECT COUNT(*) as answered FROM quiz_results WHERE user_id = ? AND material_id = ?";
 $stmt_all = $conn->prepare($sql_all_answered);
 $stmt_all->bind_param("ii", $user_id, $material_id);
 $stmt_all->execute();
 $all_answered = $stmt_all->get_result()->fetch_assoc()['answered'] == $total_questions;
 
-// Calculate score if completed
 $score_data = null;
 if ($completed && $all_answered) {
     $sql_score = "SELECT 

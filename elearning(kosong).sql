@@ -81,6 +81,17 @@ CREATE TABLE `courses` (
 --
 -- Dumping data for table `courses`
 --
+INSERT INTO courses (course_id, course_name, description, teacher_id, teacher_name) VALUES
+(1, 'Matematika', 'Materi Matematika', 1, 'Guru 1'),
+(2, 'Fisika', 'Dasar-dasar Fisika', 1, 'Guru 1'),
+(3, 'Kimia', 'Konsep dasar Kimia', 1, 'Guru 1'),
+(4, 'Biologi', 'Ilmu kehidupan', 1, 'Guru 1'),
+(5, 'Informatika', 'Dasar komputer dan logika', 1, 'Guru 1'),
+(6, 'Ekonomi', 'Dasar ilmu ekonomi', 2, 'Guru 2'),
+(7, 'Geografi', 'Ilmu bumi dan lingkungan', 2, 'Guru 2'),
+(8, 'Sejarah', 'Sejarah Indonesia', 2, 'Guru 2'),
+(9, 'Sosiologi', 'Ilmu sosial', 2, 'Guru 2'),
+(10, 'Bahasa Indonesia', 'Bahasa dan sastra', 2, 'Guru 2');
 
 
 -- --------------------------------------------------------
@@ -104,6 +115,17 @@ CREATE TABLE `materials` (
 -- Dumping data for table `materials`
 --
 
+INSERT INTO materials (material_id, course_id, material_title, material_content, level) VALUES
+(1, 1, 'Persamaan Linear', 'Mengenal persamaan linear satu variabel', 1),
+(2, 2, 'Hukum Newton', 'Konsep gaya dan gerak', 1),
+(3, 3, 'Atom dan Unsur', 'Struktur atom dasar', 1),
+(4, 4, 'Sistem Pencernaan', 'Organ pencernaan manusia', 1),
+(5, 5, 'Algoritma Dasar', 'Logika dan langkah sistematis', 1),
+(6, 6, 'Permintaan dan Penawaran', 'Konsep pasar', 1),
+(7, 7, 'Peta dan Skala', 'Membaca peta', 1),
+(8, 8, 'Proklamasi Kemerdekaan', 'Sejarah 17 Agustus 1945', 1),
+(9, 9, 'Interaksi Sosial', 'Bentuk-bentuk interaksi sosial', 1),
+(10, 10, 'Teks Narasi', 'Ciri dan struktur teks narasi', 1);
 
 -- --------------------------------------------------------
 
@@ -142,6 +164,99 @@ CREATE TABLE `quizzes` (
 --
 -- Dumping data for table `quizzes`
 --
+
+INSERT INTO quizzes (quiz_id, material_id, question, option_a, option_b, option_c, option_d, correct_answer) VALUES
+
+-- 
+-- MATEMATIKA (Material 1)
+-- 
+(1, 1, '2x + 3 = 7, nilai x adalah?', '1', '2', '3', '4', 'B'),
+(2, 1, 'Bentuk umum persamaan linear satu variabel adalah?', 'ax + b = 0', 'ax² + bx + c = 0', 'a/b = c', 'x² = a', 'A'),
+(3, 1, 'Jika x = 3, maka nilai 5x adalah?', '8', '10', '15', '20', 'C'),
+(4, 1, '2x = 10, nilai x adalah?', '2', '5', '10', '20', 'B'),
+(5, 1, 'Persamaan linear memiliki pangkat tertinggi?', '0', '1', '2', '3', 'B'),
+
+-- 
+-- FISIKA (Material 2)
+-- 
+(6, 2, 'Hukum Newton I disebut hukum?', 'Aksi reaksi', 'Inersia', 'Gravitasi', 'Momentum', 'B'),
+(7, 2, 'Satuan gaya dalam SI adalah?', 'Joule', 'Newton', 'Watt', 'Pascal', 'B'),
+(8, 2, 'Alat untuk mengukur gaya adalah?', 'Termometer', 'Barometer', 'Dinamometer', 'Voltmeter', 'C'),
+(9, 2, 'Gaya dapat menyebabkan benda?', 'Diam saja', 'Berubah warna', 'Berubah bentuk', 'Menguap', 'C'),
+(10, 2, 'Hukum Newton II membahas tentang?', 'Inersia', 'Gaya dan percepatan', 'Aksi reaksi', 'Gravitasi', 'B'),
+
+-- 
+-- KIMIA (Material 3)
+-- 
+(11, 3, 'Partikel bermuatan negatif adalah?', 'Proton', 'Neutron', 'Elektron', 'Ion', 'C'),
+(12, 3, 'Jumlah proton menentukan?', 'Massa atom', 'Nomor atom', 'Isotop', 'Ion', 'B'),
+(13, 3, 'Inti atom terdiri dari?', 'Elektron', 'Proton dan neutron', 'Ion', 'Molekul', 'B'),
+(14, 3, 'Atom netral berarti jumlah proton dan elektron?', 'Berbeda', 'Tidak tentu', 'Sama', 'Nol', 'C'),
+(15, 3, 'Partikel atom yang tidak bermuatan adalah?', 'Proton', 'Elektron', 'Neutron', 'Ion', 'C'),
+
+-- 
+-- BIOLOGI (Material 4)
+-- 
+(16, 4, 'Fungsi lambung adalah?', 'Menyerap air', 'Mencerna protein', 'Menyaring darah', 'Mengatur suhu', 'B'),
+(17, 4, 'Pencernaan pertama kali terjadi di?', 'Lambung', 'Usus halus', 'Mulut', 'Kerongkongan', 'C'),
+(18, 4, 'Enzim ptialin terdapat di?', 'Lambung', 'Mulut', 'Usus', 'Hati', 'B'),
+(19, 4, 'Fungsi usus halus adalah?', 'Menyerap air', 'Mencerna dan menyerap sari makanan', 'Menghancurkan protein', 'Mengatur suhu', 'B'),
+(20, 4, 'Organ pencernaan terpanjang adalah?', 'Lambung', 'Usus halus', 'Usus besar', 'Kerongkongan', 'B'),
+
+-- 
+-- INFORMATIKA (Material 5)
+-- 
+(21, 5, 'Algoritma adalah?', 'Bahasa pemrograman', 'Langkah sistematis', 'Perangkat keras', 'Jaringan', 'B'),
+(22, 5, 'Algoritma harus bersifat?', 'Acak', 'Tidak jelas', 'Sistematis', 'Berulang', 'C'),
+(23, 5, 'Contoh algoritma dalam kehidupan sehari-hari?', 'Menonton TV', 'Memasak mie instan', 'Tidur', 'Berjalan', 'B'),
+(24, 5, 'Flowchart digunakan untuk?', 'Menggambar', 'Menulis kode', 'Menyusun algoritma', 'Mengedit video', 'C'),
+(25, 5, 'Urutan langkah algoritma harus?', 'Terbalik', 'Acak', 'Berurutan', 'Rahasia', 'C'),
+
+-- 
+-- EKONOMI (Material 6)
+-- 
+(26, 6, 'Jika harga naik, permintaan akan?', 'Naik', 'Tetap', 'Turun', 'Hilang', 'C'),
+(27, 6, 'Permintaan adalah?', 'Jumlah barang yang ditawarkan', 'Jumlah barang yang dibeli', 'Jumlah barang yang diminta', 'Jumlah produksi', 'C'),
+(28, 6, 'Jika harga turun, permintaan akan?', 'Turun', 'Naik', 'Tetap', 'Hilang', 'B'),
+(29, 6, 'Hukum permintaan menyatakan harga dan permintaan bersifat?', 'Sejalan', 'Berbanding lurus', 'Berbanding terbalik', 'Tetap', 'C'),
+(30, 6, 'Contoh kebutuhan primer adalah?', 'Televisi', 'Mobil', 'Makanan', 'Emas', 'C'),
+
+-- 
+-- GEOGRAFI (Material 7)
+-- 
+(31, 7, 'Skala peta 1:100.000 artinya?', '1 cm = 1 km', '1 cm = 100 km', '1 cm = 100 m', '1 cm = 10 km', 'A'),
+(32, 7, 'Peta digunakan untuk?', 'Menghias dinding', 'Menunjukkan lokasi', 'Mengukur suhu', 'Menentukan waktu', 'B'),
+(33, 7, 'Skala besar menunjukkan wilayah?', 'Luas', 'Sempit', 'Negara', 'Benua', 'B'),
+(34, 7, 'Contoh skala angka adalah?', '1 : 100.000', 'Legenda', 'Warna', 'Simbol', 'A'),
+(35, 7, 'Garis lintang digunakan untuk menentukan?', 'Waktu', 'Iklim', 'Letak astronomis', 'Ketinggian', 'C'),
+
+-- 
+-- SEJARAH (Material 7)
+-- 
+(36, 8, 'Proklamasi dibacakan oleh?', 'Soedirman', 'Soekarno', 'Hatta', 'Sjahrir', 'B'),
+(37, 8, 'Proklamasi kemerdekaan terjadi pada tahun?', '1944', '1945', '1946', '1950', 'B'),
+(38, 8, 'Naskah proklamasi diketik oleh?', 'Soekarno', 'Sayuti Melik', 'Hatta', 'Ahmad Soebardjo', 'B'),
+(39, 8, 'Tempat pembacaan proklamasi adalah?', 'Istana Negara', 'Rengasdengklok', 'Pegangsaan Timur', 'Monas', 'C'),
+(40, 8, 'Tujuan proklamasi adalah?', 'Menguasai wilayah', 'Menyatakan kemerdekaan', 'Menjajah', 'Perdagangan', 'B'),
+
+-- 
+-- SOSIOLOGI (Material 9)
+-- 
+(41, 9, 'Interaksi sosial adalah?', 'Hubungan antar individu', 'Pertentangan sosial', 'Isolasi sosial', 'Konflik sosial', 'A'),
+(42, 9, 'Contoh interaksi sosial positif adalah?', 'Bullying', 'Kerjasama', 'Perkelahian', 'Diskriminasi', 'B'),
+(43, 9, 'Sosialisasi bertujuan untuk?', 'Mengisolasi individu', 'Membentuk norma sosial', 'Meningkatkan konflik', 'Mengurangi interaksi', 'B'),
+(44, 9, 'Norma sosial berfungsi untuk?', 'Membingungkan masyarakat', 'Mengatur perilaku', 'Meningkatkan konflik', 'Mengisolasi individu', 'B'),
+(45, 9, 'Contoh bentuk interaksi sosial adalah?', 'Pertengkaran', 'Kerjasama dalam kelompok', 'Isolasi diri', 'Diskriminasi', 'B'),
+
+
+-- 
+-- BAHASA INDONESIA (Material 10)
+-- 
+(46, 10, 'Teks narasi berfungsi untuk?', 'Membujuk', 'Menghibur', 'Menjelaskan', 'Mengkritik', 'B'),
+(47, 10, 'Teks narasi berisi?', 'Langkah-langkah', 'Cerita', 'Pendapat', 'Data', 'B'),
+(48, 10, 'Tokoh dalam narasi disebut?', 'Objek', 'Subjek', 'Pelaku', 'Tema', 'C'),
+(49, 10, 'Latar dalam cerita meliputi?', 'Tema', 'Amanat', 'Waktu dan tempat', 'Judul', 'C'),
+(50, 10, 'Contoh teks narasi adalah?', 'Cerpen', 'Pidato', 'Laporan', 'Iklan', 'A');
 
 
 -- --------------------------------------------------------
@@ -215,7 +330,32 @@ CREATE TABLE `users` (
   `favorite_animal` varchar(50) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
+INSERT INTO users (user_id, username, password, role, full_name, favorite_animal) VALUES
+(1, 'admin1', '$2a$12$4x8ctF4D18135Yi9nmKvleeDUxmb93dXgJF1OQDLAnfTrWkvRm15O', 'admin', 'Guru 1', ''),
+(2, 'admin2', '$2a$12$5fK/8km86cpnfIZQOyg5A..dE9zrX2big/9nF9zkiHnSga/pDG/Ci', 'admin', 'Guru 2', '');
+
+-- Optional enhancement: Add a table to store aggregated material scores
+-- This improves performance for the graph and allows historical tracking
+
+CREATE TABLE `material_scores` (
+  `score_id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `material_id` int(11) NOT NULL,
+  `course_id` int(11) NOT NULL,
+  `correct_answers` int(11) NOT NULL DEFAULT 0,
+  `total_questions` int(11) NOT NULL,
+  `score_percentage` decimal(5,2) NOT NULL,
+  `completed_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`score_id`),
+  UNIQUE KEY `unique_user_material_score` (`user_id`, `material_id`),
+  KEY `idx_user_id` (`user_id`),
+  KEY `idx_material_id` (`material_id`),
+  KEY `idx_course_id` (`course_id`),
+  KEY `idx_user_completed` (`user_id`, `completed_at`),
+  KEY `idx_course_scores` (`course_id`, `user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 -- Dumping data for table `users`
 --
 
@@ -433,3 +573,28 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
+-- Recalculate all course progress after import
+UPDATE student_courses sc
+SET progress = (
+    SELECT ROUND(
+        IFNULL(
+            (COUNT(DISTINCT mc.material_id) * 100.0) / 
+            NULLIF((SELECT COUNT(*) FROM materials m WHERE m.course_id = sc.course_id), 0),
+            0
+        )
+    )
+    FROM material_completions mc
+    INNER JOIN materials m ON mc.material_id = m.material_id
+    WHERE mc.user_id = sc.user_id 
+    AND m.course_id = sc.course_id
+)
+WHERE EXISTS (
+    SELECT 1 FROM courses c WHERE c.course_id = sc.course_id
+);
+
+-- Ensure progress doesn't exceed 100
+UPDATE student_courses SET progress = 100 WHERE progress > 100;
+
+-- Ensure progress is at least 0
+UPDATE student_courses SET progress = 0 WHERE progress IS NULL;

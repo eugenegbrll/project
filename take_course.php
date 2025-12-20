@@ -25,21 +25,53 @@ if (!empty($search)) {
 }
 
 if (!empty($topic_filter)) {
-    $sql .= " AND (course_name LIKE ? OR description LIKE ?)";
+    if ($topic_filter === 'Lainnya') {
+        $sql .= " AND NOT (
+            course_name LIKE '%Math%' OR course_name LIKE '%Matematika%' OR
+            course_name LIKE '%Science%' OR course_name LIKE '%Sains%' OR course_name LIKE '%IPA%' OR
+            course_name LIKE '%English%' OR course_name LIKE '%Inggris%' OR
+            course_name LIKE '%Indonesian%' OR course_name LIKE '%Indonesia%' OR
+            course_name LIKE '%History%' OR course_name LIKE '%Sejarah%' OR
+            course_name LIKE '%Physics%' OR course_name LIKE '%Fisika%' OR
+            course_name LIKE '%Chemistry%' OR course_name LIKE '%Kimia%' OR
+            course_name LIKE '%Biology%' OR course_name LIKE '%Biologi%' OR
+            course_name LIKE '%Programming%' OR course_name LIKE '%Coding%' OR course_name LIKE '%Computer%' OR course_name LIKE '%Informatika%' OR
+            description LIKE '%Math%' OR description LIKE '%Matematika%' OR
+            description LIKE '%Science%' OR description LIKE '%Sains%' OR description LIKE '%IPA%' OR
+            description LIKE '%English%' OR description LIKE '%Inggris%' OR
+            description LIKE '%Indonesian%' OR description LIKE '%Indonesia%' OR
+            description LIKE '%History%' OR description LIKE '%Sejarah%' OR
+            description LIKE '%Physics%' OR description LIKE '%Fisika%' OR
+            description LIKE '%Chemistry%' OR description LIKE '%Kimia%' OR
+            description LIKE '%Biology%' OR description LIKE '%Biologi%' OR
+            description LIKE '%Programming%' OR description LIKE '%Coding%' OR description LIKE '%Computer%' OR description LIKE '%Informatika%'
+        )";
+    } else {
+        $sql .= " AND (course_name LIKE ? OR description LIKE ?)";
+    }
 }
 
 $stmt = $conn->prepare($sql);
 
 if (!empty($search) && !empty($topic_filter)) {
-    $search_param = "%$search%";
-    $topic_param = "%$topic_filter%";
-    $stmt->bind_param("isssss", $user_id, $search_param, $search_param, $search_param, $topic_param, $topic_param);
+    if ($topic_filter === 'Lainnya') {
+        $search_param = "%$search%";
+        $stmt->bind_param("isss", $user_id, $search_param, $search_param, $search_param);
+    } else {
+        $search_param = "%$search%";
+        $topic_param = "%$topic_filter%";
+        $stmt->bind_param("isssss", $user_id, $search_param, $search_param, $search_param, $topic_param, $topic_param);
+    }
 } elseif (!empty($search)) {
     $search_param = "%$search%";
     $stmt->bind_param("isss", $user_id, $search_param, $search_param, $search_param);
 } elseif (!empty($topic_filter)) {
-    $topic_param = "%$topic_filter%";
-    $stmt->bind_param("iss", $user_id, $topic_param, $topic_param);
+    if ($topic_filter !== 'Lainnya') {
+        $topic_param = "%$topic_filter%";
+        $stmt->bind_param("iss", $user_id, $topic_param, $topic_param);
+    } else {
+        $stmt->bind_param("i", $user_id);
+    }
 } else {
     $stmt->bind_param("i", $user_id);
 }
@@ -47,21 +79,6 @@ if (!empty($search) && !empty($topic_filter)) {
 $stmt->execute();
 $result = $stmt->get_result();
 
-$topics_sql = "SELECT DISTINCT 
-                CASE 
-                    WHEN course_name LIKE '%Math%' OR course_name LIKE '%Matematika%' THEN 'Matematika'
-                    WHEN course_name LIKE '%Science%' OR course_name LIKE '%Sains%' OR course_name LIKE '%IPA%' THEN 'Sains'
-                    WHEN course_name LIKE '%English%' OR course_name LIKE '%Bahasa Inggris%' THEN 'Bahasa Inggris'
-                    WHEN course_name LIKE '%Indonesian%' OR course_name LIKE '%Bahasa Indonesia%' THEN 'Bahasa Indonesia'
-                    WHEN course_name LIKE '%History%' OR course_name LIKE '%Sejarah%' THEN 'Sejarah'
-                    WHEN course_name LIKE '%Physics%' OR course_name LIKE '%Fisika%' THEN 'Fisika'
-                    WHEN course_name LIKE '%Chemistry%' OR course_name LIKE '%Kimia%' THEN 'Kimia'
-                    WHEN course_name LIKE '%Biology%' OR course_name LIKE '%Biologi%' THEN 'Biologi'
-                    WHEN course_name LIKE '%Programming%' OR course_name LIKE '%Coding%' OR course_name LIKE '%Computer%' THEN 'Komputer'
-                    ELSE 'Lainnya'
-                END as topic
-                FROM courses";
-$topics_result = $conn->query($topics_sql);
 ?>
 
 <!DOCTYPE html>
@@ -87,7 +104,6 @@ $topics_result = $conn->query($topics_sql);
         <br>
         <h2>Pilih Course Baru</h2>
        
-
         <div class="search-filter-container">
             <form method="GET" action="take_course.php" class="search-filter-form">
                 <div class="search-box">
@@ -95,7 +111,7 @@ $topics_result = $conn->query($topics_sql);
                 </div>
 
                 <div class="filter-box" style="width:15%">
-                    <select name="topic" class="topic-filter" >
+                    <select name="topic" class="topic-filter">
                         <option value="">Semua Topik</option>
                         <option value="Matematika" <?= $topic_filter == 'Matematika' ? 'selected' : '' ?>>Matematika</option>
                         <option value="Sains" <?= $topic_filter == 'Sains' ? 'selected' : '' ?>>Sains</option>
@@ -178,7 +194,7 @@ $topics_result = $conn->query($topics_sql);
                     } elseif (stripos($course_name, 'Biology') !== false || stripos($course_name, 'Biologi') !== false) {
                         $topic_badge = 'Biologi';
                         $badge_color = '#52ce56ff';
-                    } elseif (stripos($course_name, 'Programming') !== false || stripos($course_name, 'Coding') !== false || stripos($course_name, 'Computer') !== false) {
+                    } elseif (stripos($course_name, 'Programming') !== false || stripos($course_name, 'Coding') !== false || stripos($course_name, 'Computer') !== false || stripos($course_name, 'Informatika') !== false) {
                         $topic_badge = 'Komputer';
                         $badge_color = '#39c9dcff';
                     }
