@@ -5,8 +5,13 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'student') {
     exit();
 }
 include 'db.php';
-
 $user_id = $_SESSION['user_id'];
+
+$sql_notif = "SELECT id, message FROM notifications WHERE user_id = ? ORDER BY created_at DESC LIMIT 1";
+$stmt_get = $conn->prepare($sql_notif);
+$stmt_get->bind_param("i", $user_id);
+$stmt_get->execute();
+$notif_data = $stmt_get->get_result()->fetch_assoc();
 
 $search = $_GET['search'] ?? '';
 $topic_filter = $_GET['topic'] ?? '';
@@ -21,7 +26,7 @@ $favorite_animal = $user_data['favorite_animal'] ?? 'cat';
 $animal_emojis = [
     'cat' => '🐈',
     'dog' => '🐕',
-    'chicken' => '🐓',
+    'chicken' => '🐔',
     'fish' => '🐠',
     'rabbit' => '🐇',
     'lizard' => '🦎'
@@ -68,7 +73,6 @@ if ($quiz_score !== null) {
 <head>
     <title>Student Dashboard</title>
     <link rel="stylesheet" href="student_dashboard.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="student_dashboard.js" defer></script>
     <audio id="petSound" src="sounds/<?php echo $pet_sound; ?>"></audio>
     
@@ -156,6 +160,26 @@ document.addEventListener("DOMContentLoaded", () => {
     </div>
 </header>
 
+<?php if ($notif_data): ?>
+    <div class="dashboard-alert">
+        <div class="container" style="display: flex; justify-content: space-between; align-items: center;">
+            <span>🔔 <strong>Info:</strong> <?= htmlspecialchars($notif_data['message']) ?></span>
+            <a href="clear_notif.php?id=<?= $notif_data['id'] ?>" style="color: #0d47a1; text-decoration: none; font-size: 20px;">&times;</a>
+        </div>
+    </div>
+    
+    <style>
+        .dashboard-alert {
+            background: #2196f3;
+            color: #0d47a1;
+            padding: 15px;
+            border-bottom: 2px solid #2196f3;
+            margin-bottom: 20px;
+            
+        }
+    </style>
+<?php endif; ?>
+
 <main>
     <div class="subcontainer">
         <h2>Course yang Diambil</h2>
@@ -182,7 +206,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 <option value="Fisika" <?= $topic_filter == 'Fisika' ? 'selected' : '' ?>>Fisika</option>
                 <option value="Kimia" <?= $topic_filter == 'Kimia' ? 'selected' : '' ?>>Kimia</option>
                 <option value="Biologi" <?= $topic_filter == 'Biologi' ? 'selected' : '' ?>>Biologi</option>
-                <option value="Komputer" <?= $topic_filter == 'Komputer' ? 'selected' : '' ?>>Komputer & Programming</option>
+                <option value="Komputer" <?= $topic_filter == 'Komputer' ? 'selected' : '' ?>>Komputer</option>
                 <option value="Lainnya" <?= $topic_filter == 'Lainnya' ? 'selected' : '' ?>>Lainnya</option>
             </select>
 
@@ -223,63 +247,31 @@ document.addEventListener("DOMContentLoaded", () => {
         JOIN student_courses sc ON c.course_id = sc.course_id
         WHERE sc.user_id = ?
         ";
-
+        
         if (!empty($search)) {
             $sql .= " AND (c.course_name LIKE ? OR c.description LIKE ? OR c.teacher_name LIKE ?)";
         }
-
+        
         if (!empty($topic_filter)) {
-            if ($topic_filter === 'Lainnya') {
-                $sql .= " AND NOT (
-                    c.course_name LIKE '%Math%' OR c.course_name LIKE '%Matematika%' OR
-                    c.course_name LIKE '%Science%' OR c.course_name LIKE '%Sains%' OR c.course_name LIKE '%IPA%' OR
-                    c.course_name LIKE '%English%' OR c.course_name LIKE '%Inggris%' OR
-                    c.course_name LIKE '%Indonesian%' OR c.course_name LIKE '%Indonesia%' OR
-                    c.course_name LIKE '%History%' OR c.course_name LIKE '%Sejarah%' OR
-                    c.course_name LIKE '%Physics%' OR c.course_name LIKE '%Fisika%' OR
-                    c.course_name LIKE '%Chemistry%' OR c.course_name LIKE '%Kimia%' OR
-                    c.course_name LIKE '%Biology%' OR c.course_name LIKE '%Biologi%' OR
-                    c.course_name LIKE '%Programming%' OR c.course_name LIKE '%Coding%' OR c.course_name LIKE '%Computer%' OR c.course_name LIKE '%Informatika%' OR
-                    c.description LIKE '%Math%' OR c.description LIKE '%Matematika%' OR
-                    c.description LIKE '%Science%' OR c.description LIKE '%Sains%' OR c.description LIKE '%IPA%' OR
-                    c.description LIKE '%English%' OR c.description LIKE '%Inggris%' OR
-                    c.description LIKE '%Indonesian%' OR c.description LIKE '%Indonesia%' OR
-                    c.description LIKE '%History%' OR c.description LIKE '%Sejarah%' OR
-                    c.description LIKE '%Physics%' OR c.description LIKE '%Fisika%' OR
-                    c.description LIKE '%Chemistry%' OR c.description LIKE '%Kimia%' OR
-                    c.description LIKE '%Biology%' OR c.description LIKE '%Biologi%' OR
-                    c.description LIKE '%Programming%' OR c.description LIKE '%Coding%' OR c.description LIKE '%Computer%' OR c.description LIKE '%Informatika%'
-                )";
-            } else {
-                $sql .= " AND (c.course_name LIKE ? OR c.description LIKE ?)";
-            }
+            $sql .= " AND (c.course_name LIKE ? OR c.description LIKE ?)";
         }
-
+        
         $stmt = $conn->prepare($sql);
-
+        
         if (!empty($search) && !empty($topic_filter)) {
-            if ($topic_filter === 'Lainnya') {
-                $search_param = "%$search%";
-                $stmt->bind_param("iisss", $user_id, $user_id, $search_param, $search_param, $search_param);
-            } else {
-                $search_param = "%$search%";
-                $topic_param = "%$topic_filter%";
-                $stmt->bind_param("iisssss", $user_id, $user_id, $search_param, $search_param, $search_param, $topic_param, $topic_param);
-            }
+            $search_param = "%$search%";
+            $topic_param = "%$topic_filter%";
+            $stmt->bind_param("iisssss", $user_id, $user_id, $search_param, $search_param, $search_param, $topic_param, $topic_param);
         } elseif (!empty($search)) {
             $search_param = "%$search%";
             $stmt->bind_param("iisss", $user_id, $user_id, $search_param, $search_param, $search_param);
         } elseif (!empty($topic_filter)) {
-            if ($topic_filter !== 'Lainnya') {
-                $topic_param = "%$topic_filter%";
-                $stmt->bind_param("iiss", $user_id, $user_id, $topic_param, $topic_param);
-            } else {
-                $stmt->bind_param("ii", $user_id, $user_id);
-            }
+            $topic_param = "%$topic_filter%";
+            $stmt->bind_param("iiss", $user_id, $user_id, $topic_param, $topic_param);
         } else {
             $stmt->bind_param("ii", $user_id, $user_id);
         }
-
+        
         $stmt->execute();
         $result = $stmt->get_result();
 
@@ -327,13 +319,10 @@ document.addEventListener("DOMContentLoaded", () => {
             } elseif (stripos($course_name, 'Biology') !== false || stripos($course_name, 'Biologi') !== false) {
                 $topic_badge = 'Biologi';
                 $badge_color = '#52ce56ff';
-            } elseif (stripos($course_name, 'Programming') !== false || 
-                stripos($course_name, 'Coding') !== false || 
-                stripos($course_name, 'Computer') !== false || 
-                stripos($course_name, 'Informatika') !== false) {
-            $topic_badge = 'Komputer';
-            $badge_color = '#39c9dcff';
-        }
+            } elseif (stripos($course_name, 'Programming') !== false || stripos($course_name, 'Coding') !== false || stripos($course_name, 'Computer') !== false) {
+                $topic_badge = 'Komputer';
+                $badge_color = '#39c9dcff';
+            }
 
             echo "<div class='course-card'>";
             echo "<h3>" . htmlspecialchars($course['course_name']);
@@ -389,43 +378,6 @@ document.addEventListener("DOMContentLoaded", () => {
         </ul>
     </div>
 
-    <hr>
-
-    <div class="score-analytics-container">
-        <h2>📊 Grafik Nilai</h2>
-        <div id="scoreLoadingIndicator" class="loading-scores">
-            <p>Memuat data score...</p>
-        </div>
-        <div id="scoreContent" style="display: none;">
-            <div id="performanceBadge"></div>
-            <div class="analytics-grid">
-                <div class="stat-card">
-                    <div class="stat-value" id="overallScore">0%</div>
-                    <div class="stat-label">Overall Score</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="materialsCompleted">0</div>
-                    <div class="stat-label">Materials Completed</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="totalCorrect">0</div>
-                    <div class="stat-label">Correct Answers</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="totalAnswered">0</div>
-                    <div class="stat-label">Total Questions</div>
-                </div>
-            </div>
-            
-            <div class="chart-wrapper">
-                <canvas id="courseScoreChart"></canvas>
-            </div>
-
-            <h3 style="color: #2c5aa0; margin-top: 30px; margin-bottom: 15px;">📚 Material yang Telah Dikerjakan</h3>
-            <div class="recent-scores" id="recentScores"></div>
-        </div>
-    </div>
-
     <div class="pet-container" id="petContainer">
         <div class="pet-box <?php echo $is_pet_sad ? 'sad' : ($is_pet_proud ? 'proud' : ''); ?>" id="petBox">
             <div class="pat-counter <?php echo $is_pet_sad ? 'healing' : ($is_pet_proud ? 'proud' : ''); ?>" id="patCounter">
@@ -440,307 +392,6 @@ document.addEventListener("DOMContentLoaded", () => {
     </main>
 
     <script>
-    let scoreData = null;
-    let scoreChart = null;
-
-    const scoreBasedMessages = {
-        excellent: [
-            "🌟 Wow! Kamu luar biasa!",
-            "🏆 Perfect! Aku sangat bangga padamu!",
-            "⭐ Incredible! Kamu juara sejati!",
-            "💯 Amazing work! Pertahankan ya!",
-            "🎉 Outstanding! Kamu memang hebat!"
-        ],
-        good: [
-            "👏 Great job! Score kamu bagus sekali!",
-            "😊 Bagus! Kamu di jalur yang benar!",
-            "💪 Good work! Sedikit lagi jadi sempurna!",
-            "🎯 Nice! Progress yang solid!",
-            "✨ Well done! Terus semangat!",
-            "🥳 Widih, kerennn!"
-        ],
-        average: [
-            "💙 Kamu bisa lebih baik! Aku percaya!",
-            "🌱 Tetap belajar! Kamu pasti bisa!",
-            "📚 Jangan menyerah! Practice makes perfect!",
-            "🤗 Ayo semangat! Kamu mampu lebih!",
-            "💫 Terus belajar! Aku akan menemanimu!"
-        ],
-        poor: [
-            "🤗 Tidak apa-apa! Semua orang pernah struggle!",
-            "💕 Ayo, kamu pasti bisa lebih baik lagi!",
-            "🌈 Kesalahan bisa membuat kita lebih kuat!",
-            "🫂 Jangan sedih, kamu tidak sendiri!",
-            "💖 Aku tahu kamu bisa lebih baik! Yuk coba lagi!",
-            "✨ Jangan stress ya, bisa kok"
-        ]
-    };
-
-    async function loadScoreData() {
-        try {
-            const response = await fetch('get_scores.php');
-            const data = await response.json();
-            
-            if (data.error) {
-                throw new Error(data.error);
-            }
-
-            scoreData = data;
-            renderScoreAnalytics();
-            observeScoreSection();
-        } catch (error) {
-            console.error('Error loading scores:', error);
-            document.getElementById('scoreLoadingIndicator').innerHTML = 
-                '<div class="no-score-data"><h3>❌ Error</h3><p>Gagal memuat data. Silakan refresh halaman.</p></div>';
-        }
-    }
-
-    function renderScoreAnalytics() {
-        const overall = scoreData.overall;
-        
-        if (!overall.total_answered || overall.total_answered === 0) {
-            document.getElementById('scoreLoadingIndicator').innerHTML = 
-                '<div class="no-score-data"><h3>📚 Belum Ada Data Quiz</h3><p>Mulai mengerjakan quiz untuk melihat statistik kamu!</p></div>';
-            return;
-        }
-
-        document.getElementById('scoreLoadingIndicator').style.display = 'none';
-        document.getElementById('scoreContent').style.display = 'block';
-
-        document.getElementById('overallScore').textContent = 
-            (overall.overall_percentage || 0) + '%';
-        document.getElementById('materialsCompleted').textContent = 
-            overall.materials_completed || 0;
-        document.getElementById('totalCorrect').textContent = 
-            overall.total_correct || 0;
-        document.getElementById('totalAnswered').textContent = 
-            overall.total_answered || 0;
-
-        renderPerformanceBadge(overall.overall_percentage);
-        renderCourseScoreChart();
-        renderRecentScores();
-    }
-
-    function renderPerformanceBadge(score) {
-        const badge = document.getElementById('performanceBadge');
-        let className = '';
-        let text = '';
-        let icon = '';
-
-        if (score >= 90) {
-            className = 'badge-excellent';
-            text = 'Excellent Performance!';
-            icon = '🌟';
-        } else if (score >= 75) {
-            className = 'badge-good';
-            text = 'Good Performance!';
-            icon = '👍';
-        } else if (score >= 60) {
-            className = 'badge-average';
-            text = 'Average Performance';
-            icon = '🤌';
-        } else {
-            className = 'badge-poor';
-            text = 'Needs Improvement';
-            icon = '✍️';
-        }
-
-        badge.className = `performance-badge ${className}`;
-        badge.innerHTML = `${icon} ${text}`;
-    }
-
-    function renderCourseScoreChart() {
-        const ctx = document.getElementById('courseScoreChart').getContext('2d');
-        
-        if (scoreChart) {
-            scoreChart.destroy();
-        }
-
-        const courses = scoreData.courses;
-        
-        if (courses.length === 0) {
-            document.querySelector('.chart-wrapper').innerHTML = 
-                '<p style="text-align:center;color:#999;padding:40px;">Belum ada data course</p>';
-            return;
-        }
-
-        const labels = courses.map(c => c.course_name);
-        const scores = courses.map(c => parseFloat(c.score_percentage) || 0);
-        
-        const backgroundColors = scores.map(score => {
-            if (score >= 90) return 'rgba(76, 175, 80, 0.8)';
-            if (score >= 75) return 'rgba(33, 150, 243, 0.8)';
-            if (score >= 60) return 'rgba(255, 152, 0, 0.8)';
-            return 'rgba(244, 67, 54, 0.8)';
-        });
-
-        scoreChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Score (%)',
-                    data: scores,
-                    backgroundColor: 'rgba(102, 126, 234, 0.2)',
-                    borderColor: 'rgba(102, 126, 234, 1)',
-                    borderWidth: 3,
-                    fill: true,
-                    tension: 0.4,
-                    pointBackgroundColor: scores.map(score => {
-                        if (score >= 90) return 'rgba(76, 175, 80, 1)';
-                        if (score >= 75) return 'rgba(33, 150, 243, 1)';
-                        if (score >= 60) return 'rgba(255, 152, 0, 1)';
-                        return 'rgba(244, 67, 54, 1)';
-                    }),
-                    pointBorderColor: '#fff',
-                    pointBorderWidth: 2,
-                    pointRadius: 6,
-                    pointHoverRadius: 8,
-                    pointHoverBackgroundColor: scores.map(score => {
-                        if (score >= 90) return 'rgba(76, 175, 80, 1)';
-                        if (score >= 75) return 'rgba(33, 150, 243, 1)';
-                        if (score >= 60) return 'rgba(255, 152, 0, 1)';
-                        return 'rgba(244, 67, 54, 1)';
-                    }),
-                    pointHoverBorderWidth: 3
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        max: 100,
-                        ticks: {
-                            callback: function(value) {
-                                return value + '%';
-                            }
-                        },
-                        grid: {
-                            color: 'rgba(0, 0, 0, 0.05)'
-                        }
-                    },
-                    x: {
-                        grid: {
-                            display: false
-                        }
-                    }
-                },
-                plugins: {
-                    legend: {
-                        display: false
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                return 'Score: ' + context.parsed.y.toFixed(1) + '%';
-                            }
-                        },
-                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                        padding: 12,
-                        cornerRadius: 8
-                    }
-                },
-                interaction: {
-                    intersect: false,
-                    mode: 'index'
-                }
-            }
-        });
-    }
-
-    function renderRecentScores() {
-        const container = document.getElementById('recentScores');
-        const materials = scoreData.recent_materials;
-
-        if (materials.length === 0) {
-            container.innerHTML = '<p class="no-score-data">Belum ada material yang diselesaikan</p>';
-            return;
-        }
-
-        container.innerHTML = materials.map(m => {
-            const score = parseFloat(m.score_percentage) || 0;
-            let scoreClass = 'score-poor';
-            if (score >= 90) scoreClass = 'score-excellent';
-            else if (score >= 75) scoreClass = 'score-good';
-            else if (score >= 60) scoreClass = 'score-average';
-
-            return `
-                <div class="score-item">
-                    <div class="score-item-title">${m.material_title}</div>
-                    <div class="score-item-course">📚 ${m.course_name}</div>
-                    <div class="score-item-value ${scoreClass}">
-                        ${score.toFixed(1)}% <span style="font-size:14px;">(${m.correct_answers}/${m.total_questions})</span>
-                    </div>
-                </div>
-            `;
-        }).join('');
-    }
-
-    function updatePetWithScoreData() {
-        if (!scoreData || !scoreData.overall.total_answered || scoreData.overall.total_answered === 0) {
-            return;
-        }
-
-        const score = parseFloat(scoreData.overall.overall_percentage) || 0;
-        let messageCategory = '';
-
-        if (score >= 90) messageCategory = 'excellent';
-        else if (score >= 75) messageCategory = 'good';
-        else if (score >= 60) messageCategory = 'average';
-        else messageCategory = 'poor';
-
-        const messages = scoreBasedMessages[messageCategory];
-        const randomMessage = messages[Math.floor(Math.random() * messages.length)];
-
-        setTimeout(() => {
-            const bubble = document.getElementById('speechBubble');
-            bubble.textContent = randomMessage;
-            bubble.classList.add('show');
-            
-            setTimeout(() => {
-                bubble.classList.remove('show');
-            }, 5000);
-        }, 2000);
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-        loadScoreData();
-    });
-
-    function observeScoreSection() {
-        if (!scoreAnalyticsContainer) return;
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-
-                if (entry.isIntersecting) {
-                    if (!isWatchingGraph) {
-                        isWatchingGraph = true;
-
-                        petTalkAboutScore();
-
-                        graphTalkInterval = setInterval(() => {
-                            if (isWatchingGraph) {
-                                petTalkAboutScore();
-                            }
-                        }, 7000);
-                    }
-                } else {
-                    isWatchingGraph = false;
-                    clearInterval(graphTalkInterval);
-                    graphTalkInterval = null;
-                }
-
-            });
-        }, {
-            threshold: 0.4
-        });
-
-        observer.observe(scoreAnalyticsContainer);
-    }
-
     let patCount = 0;
     let idleTimer;
     let lastPatTime = Date.now();
@@ -748,22 +399,15 @@ document.addEventListener("DOMContentLoaded", () => {
     let isProud = <?php echo $is_pet_proud ? 'true' : 'false'; ?>;
     let patsNeeded = <?php echo max($wrong_count, 5); ?>;
     let healingPats = 0;
-    let isTrackingCursor = false;
-    let hasReactedToGraph = false;
-    let graphTalkInterval = null;
-    let isWatchingGraph = false;
-
 
     const petEmoji = document.getElementById('petEmoji');
-    const petContainer = document.getElementById('petContainer');
     const patCounter = document.getElementById('patCounter');
     const speechBubble = document.getElementById('speechBubble');
     const petMood = document.getElementById('petMood');
     const petBox = document.getElementById('petBox');
-    const scoreAnalyticsContainer = document.querySelector('.score-analytics-container');
 
     const happyPhrases = [
-        '🎵 <?php echo $pet_sound; ?> noises',
+        '<?php echo $pet_sound; ?>',
         '❤️ Love you!',
         '😊 Yay!',
         '✨ Yipeeeee!',
@@ -775,9 +419,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const sadPhrases = [
         '😢 Aku sedih',
         '💔 Maafkan aku',
-        '😭 Sangat mengecewakan',
+        '😭 Aku mengecewakanmu',
         '🥺 Elus aku dong...',
-        '💧 ...'
+        '💧 Kenapa aku begini...'
     ];
 
     const proudPhrases = [
@@ -1057,6 +701,17 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
         
+        if (Math.random() < 0.3) {
+            const timeBasedPhrases = getTimeBasedPhrase();
+            const randomTimePhrase = timeBasedPhrases[Math.floor(Math.random() * timeBasedPhrases.length)];
+            speechBubble.textContent = randomTimePhrase;
+            speechBubble.classList.add('show');
+            
+            setTimeout(() => {
+                speechBubble.classList.remove('show');
+            }, 3000);
+        }
+        
         const idleAnimations = ['idle-blink', 'idle-bounce'];
         const randomIdle = idleAnimations[Math.floor(Math.random() * idleAnimations.length)];
         
@@ -1104,29 +759,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }, 4000);
         }, 1000);
     }
-
-    function petTalkAboutScore() {
-        if (!scoreData || !scoreData.overall.total_answered) return;
-
-        const score = parseFloat(scoreData.overall.overall_percentage) || 0;
-        let category = 'average';
-
-        if (score >= 90) category = 'excellent';
-        else if (score >= 75) category = 'good';
-        else if (score >= 60) category = 'average';
-        else category = 'poor';
-
-        const messages = scoreBasedMessages[category];
-        const message = messages[Math.floor(Math.random() * messages.length)];
-
-        speechBubble.textContent = message;
-        speechBubble.classList.add('show');
-
-        setTimeout(() => {
-            speechBubble.classList.remove('show');
-        }, 4000);
-    }
-
     </script>
 
     <footer>
