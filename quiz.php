@@ -107,7 +107,7 @@ if ($completed && $all_answered) {
 <body>
     <header>
         <div class="bar">
-            <h1><a href="student_dashboard.php" style="color:white;text-decoration:none">EduQuest</a></h1>
+            <h1><a href="admin_dashboard.php" style="color:white;text-decoration:none">EduQuest - Admin</a></h1>
             <nav>
                 <p>Halo, <?= htmlspecialchars($_SESSION['full_name']) ?></p>
                 <p><a href="student_profile.php" style="color: white; text-decoration: none;">Profile</a></p>
@@ -140,11 +140,6 @@ if ($completed && $all_answered) {
                         <p class="score-message okay">😊 Cukup baik! Terus belajar ya! 😊</p>
                     <?php else: ?>
                         <p class="score-message need-improvement">😢 <?= $animal_name ?>mu sedih. Coba lagi ya! 😢</p>
-                    <?php endif; ?>
-                    <?php if ($notif_sent): ?>
-                        <div style="background: #e1f5fe; color: #01579b; padding: 12px; border-radius: 8px; margin: 15px 0; border: 1px solid #b3e5fc; font-size: 14px;">
-                        💙 <?php echo $message; ?>
-                        </div>
                     <?php endif; ?>
                     <a href="course_detail.php?id=<?php 
                         $course_q = $conn->query("SELECT course_id FROM materials WHERE material_id = $material_id");
