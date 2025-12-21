@@ -89,12 +89,12 @@ if ($completed && $all_answered) {
     $score_data = $stmt_score->get_result()->fetch_assoc();
     $score_data['percentage'] = round(($score_data['correct'] / $score_data['total']) * 100);
     $studentName = $_SESSION['full_name']; 
-    $message = "$studentName sudah mengerjakan quiz.";
-    $stmt_notif = $conn->prepare("INSERT INTO notifications (message) VALUES (?)");
-    $stmt_notif->bind_param("s", $message);
-    if($stmt_notif->execute()) {
-        $notif_sent = true;
-    }
+    $message = "Selamat! Kamu telah menyelesaikan quiz dengan skor " . $score_data['percentage'] . "%.";
+    $stmt_notif = $conn->prepare("INSERT INTO notifications (user_id, message) VALUES (?, ?)");
+    $stmt_notif->bind_param("is", $user_id, $message);
+    $stmt_notif->execute();
+    header("Location: student_dashboard.php?quiz_done=1");
+    exit();
 }
 ?>
 
