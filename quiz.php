@@ -93,8 +93,6 @@ if ($completed && $all_answered) {
     $stmt_notif = $conn->prepare("INSERT INTO notifications (user_id, message) VALUES (?, ?)");
     $stmt_notif->bind_param("is", $user_id, $message);
     $stmt_notif->execute();
-    header("Location: student_dashboard.php?quiz_done=1");
-    exit();
 }
 ?>
 
