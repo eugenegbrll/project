@@ -498,15 +498,16 @@ header {
 }
 
 .dashboard-alert {
-    background: #2196f3;
-    color: #ffffff;
+    background: #2196f3; 
+    color: #ffffff;      
     padding: 15px;
     margin-bottom: 20px;
     display: flex;
-    justify-content: center; /* Mengetengahkan teks */
+    justify-content: center; 
     align-items: center;
     position: relative;
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    animation: fadeIn 0.4s ease-in-out;
 }
 
 .notif-close {
@@ -516,4 +517,14 @@ header {
     text-decoration: none;
     font-size: 24px;
     font-weight: bold;
+    line-height: 1;
+}
+
+.notif-close:hover {
+    color: #ffc107; 
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
