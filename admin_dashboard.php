@@ -19,7 +19,7 @@ if (isset($_POST['add_course'])) {
     $stmt->execute();
     $stmt->close();
 
-    header("Location: admin_dashboard.php");
+    header("Location: admin_dashboard.php?success=course_added");
     exit();
 }
 
@@ -68,7 +68,7 @@ if (isset($_POST['add_material'])) {
         $stmt->close();
     }
 
-    header("Location: admin_dashboard.php");
+    header("Location: admin_dashboard.php?success=material_added");
     exit();
 }
 
@@ -128,7 +128,7 @@ if (isset($_GET['delete_material'])) {
         $conn->query("DELETE FROM materials WHERE material_id = $id");
     }
 
-    header("Location: admin_dashboard.php");
+    header("Location: admin_dashboard.php?success=material_deleted");
     exit();
 }
 
@@ -187,18 +187,26 @@ $selected_material_id = $_GET['material_id'] ?? '';
         </div>
     </header>
 
+    <?php if (isset($_GET['success'])): ?>
+        <div class="dashboard-alert">
+            <span>
+                <?php 
+                    switch($_GET['success']) {
+                        case 'course_added': echo "✅ Course baru berhasil ditambahkan!"; break;
+                        case 'material_added': echo "📚 Materi berhasil diunggah!"; break;
+                        case 'quiz_added': echo "📝 Pertanyaan berhasil disimpan! Silakan tambah lagi."; break;
+                        case 'quiz_completed': echo "✨ Semua quiz berhasil disimpan!"; break;
+                        case 'course_deleted': echo "🗑️ Course berhasil dihapus."; break;
+                        case 'material_deleted': echo "🗑️ Materi berhasil dihapus."; break;
+                        default: echo "Aksi berhasil dilakukan.";
+                    }
+                ?>
+            </span>
+            <a href="admin_dashboard.php" class="notif-close">&times;</a>
+        </div>
+    <?php endif; ?>
+    
     <h1>Admin Dashboard</h1>
-    <?php if (isset($_GET['success']) && $_GET['success'] == 'quiz_added'): ?>
-        <p style="color: green;">✅ Quiz berhasil ditambahkan! Tambah pertanyaan lagi untuk materi yang sama.</p>
-    <?php endif; ?>
-
-    <?php if (isset($_GET['success']) && $_GET['success'] == 'quiz_completed'): ?>
-        <p style="color: green;">✅ Semua quiz berhasil disimpan!</p>
-    <?php endif; ?>
-
-    <?php if (isset($_GET['success']) && $_GET['success'] == 'course_deleted'): ?>
-        <p style="color: green;">✅ Course berhasil dihapus!</p>
-    <?php endif; ?>
 
     <h2 id="tambah-course">Tambah Course Baru</h2>
     <div class="material-list">
