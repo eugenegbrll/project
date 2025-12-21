@@ -7,11 +7,10 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'student') {
 include 'db.php';
 $user_id = $_SESSION['user_id'];
 
-$sql_notif = "SELECT id, message FROM notifications WHERE user_id = ? ORDER BY created_at DESC LIMIT 1";
-$stmt_get = $conn->prepare($sql_notif);
-$stmt_get->bind_param("i", $user_id);
-$stmt_get->execute();
-$notif_data = $stmt_get->get_result()->fetch_assoc();
+$notif_query = $conn->prepare("SELECT * FROM notifications WHERE user_id = ? ORDER BY created_at DESC LIMIT 1");
+$notif_query->bind_param("i", $user_id);
+$notif_query->execute();
+$notif_data = $notif_query->get_result()->fetch_assoc();
 
 $search = $_GET['search'] ?? '';
 $topic_filter = $_GET['topic'] ?? '';
@@ -162,22 +161,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
 <?php if ($notif_data): ?>
     <div class="dashboard-alert">
-        <div class="container" style="display: flex; justify-content: space-between; align-items: center;">
-            <span>🔔 <strong>Info:</strong> <?= htmlspecialchars($notif_data['message']) ?></span>
-            <a href="clear_notif.php?id=<?= $notif_data['id'] ?>" style="color: #0d47a1; text-decoration: none; font-size: 20px;">&times;</a>
-        </div>
+        <span>
+            🔔 <strong>Info:</strong> <?= htmlspecialchars($notif_data['message']) ?>
+        </span>
+        <a href="clear_notif.php?id=<?= $notif_data['id'] ?>" class="notif-close">&times;</a>
     </div>
-    
-    <style>
-        .dashboard-alert {
-            background: #2196f3;
-            color: #0d47a1;
-            padding: 15px;
-            border-bottom: 2px solid #2196f3;
-            margin-bottom: 20px;
-            
-        }
-    </style>
 <?php endif; ?>
 
 <main>
