@@ -454,6 +454,11 @@ ALTER TABLE `users`
   ADD UNIQUE KEY `username` (`username`);
 
 --
+-- Indexes for table `notifications`
+--
+ALTER TABLE notifications ADD COLUMN user_id INT AFTER id;
+
+--
 -- AUTO_INCREMENT for dumped tables
 --
 
