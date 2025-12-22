@@ -654,3 +654,35 @@ body[data-theme="dark"] h3 {
 [data-theme="dark"] .todo-container input::placeholder {
     color: rgba(255, 255, 255, 0.5);
 }
+
+[data-theme="dark"] .todo-container li,
+[data-theme="dark"] .todo-container span,
+[data-theme="dark"] .todo-container label {
+    color: #ffffff !important;
+}
+
+[data-theme="dark"] .todo-container input:checked + span {
+    color: rgba(255, 255, 255, 0.6) !important; 
+    text-decoration: line-through;
+}
+
+[data-theme="dark"] .todo-list-item-container, 
+[data-theme="dark"] .todo-item-box { 
+    background-color: rgba(0, 0, 0, 0.2) !important;
+    border: 1px solid var(--border-color);
+}
+
+[data-theme="dark"] .todo-container ul {
+    background: transparent !important;
+    padding: 0;
+    margin-top: 20px;
+}
+
+[data-theme="dark"] .todo-container ul li,
+[data-theme="dark"] .todo-list li {
+    background-color: #1e2d42 !important; 
+    border: 1px solid var(--border-color);
+    margin-bottom: 5px;
+    padding: 10px;
+    border-radius: 5px;
+}
