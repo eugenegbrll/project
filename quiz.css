@@ -5,6 +5,7 @@
     --text-main: #333;
     --text-muted: #666;
     --header-bg: #2c5aa0;
+    --footer-bg: #2c5aa0;
     --form-bg: #f9f9f9;
     --border-color: #ddd;
     --option-hover: #f0f0f0;
@@ -17,7 +18,8 @@ body[data-theme="dark"] {
     --form-bg: #1E2D42;
     --text-main: #e0e0e0;
     --text-muted: #b0b0b0;
-    --header-bg: #0d1b2a;
+    --header-bg: #10375B;
+    --footer-bg: #10375B;
     --form-bg: #252525;
     --border-color: #444;
     --option-hover: #333;
@@ -402,6 +404,22 @@ a:hover {
     text-decoration: underline;
 }
 
+footer {
+    background-color: var(--footer-bg); 
+    color: white;
+    text-align: center;
+    padding: 20px 0;
+    width: 100%;
+    margin-top: auto; 
+    font-size: 14px;
+}
+
+footer p {
+    margin: 0;
+}
+
+/* --- DARK MODE --- */
+
 body[data-theme="dark"] .score-display h2 {
     color: #87CEEB;
 }
@@ -421,4 +439,10 @@ body[data-theme="dark"] .score-card {
     background: linear-gradient(135deg, #2c5aa0 0%, #132135 100%);
     border: 1px solid rgba(255, 255, 255, 0.1);
     box-shadow: none; 
+}
+
+[data-theme="dark"] footer {
+    background-color: var(--header-bg); 
+    color: var(--link-color);
+    border-top: 1px solid var(--border-color);
 }
