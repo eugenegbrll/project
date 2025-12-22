@@ -341,21 +341,19 @@ header h1 a, header nav p, header nav a {
     margin-top: 30px;
 }
 
+/* Dark Mode */
+
 [data-theme="dark"] .footer {
     background-color: var(--header-bg) !important;
     color: var(--header-text) !important;
     border-top: 1px solid var(--border-color);
 }
 
-/* --- FIX DARK MODE TANPA MERUSAK LAYOUT --- */
-
-/* 1. Paksa Background & Teks Utama */
 body[data-theme="dark"] {
     background-color: #132135 !important;
     color: #ffffff !important;
 }
 
-/* 2. Header & Footer */
 body[data-theme="dark"] header, 
 body[data-theme="dark"] .footer,
 body[data-theme="dark"] .custom-footer {
@@ -363,7 +361,6 @@ body[data-theme="dark"] .custom-footer {
     color: #ADF1FF !important;
 }
 
-/* 3. Judul H1, H2, H3 di Dark Mode */
 body[data-theme="dark"] h1, 
 body[data-theme="dark"] h2, 
 body[data-theme="dark"] h3 {
@@ -371,7 +368,6 @@ body[data-theme="dark"] h3 {
     border-bottom-color: #2a3d55 !important;
 }
 
-/* 4. Box Konten (Course & Materi) */
 body[data-theme="dark"] .course-box, 
 body[data-theme="dark"] .material-list {
     background-color: #1e2d42 !important;
@@ -379,14 +375,12 @@ body[data-theme="dark"] .material-list {
     color: #ffffff !important;
 }
 
-/* 5. Teks di dalam Box agar Tetap Putih */
 body[data-theme="dark"] .course-box p, 
 body[data-theme="dark"] .material-list p,
 body[data-theme="dark"] .course-box span {
     color: #ffffff !important;
 }
 
-/* 6. LINK SPESIFIK: Edit, Show Students, PPT (Warna ADF1FF) */
 body[data-theme="dark"] a, 
 body[data-theme="dark"] .student-link,
 body[data-theme="dark"] .course-box a,
@@ -394,14 +388,12 @@ body[data-theme="dark"] .material-list a {
     color: #ADF1FF !important;
 }
 
-/* 7. Perkecualian untuk Link HAPUS (Tetap Merah) */
 body[data-theme="dark"] a[style*="color: red"],
 body[data-theme="dark"] a[onclick*="confirm"],
 body[data-theme="dark"] a[href*="delete"] {
     color: #ff5252 !important;
 }
 
-/* 8. Form Input agar tidak Silau */
 body[data-theme="dark"] input, 
 body[data-theme="dark"] textarea, 
 body[data-theme="dark"] select {
@@ -413,16 +405,14 @@ body[data-theme="dark"] select {
 .file-link { color: blue; }
 .quiz-count { color: gray; }
 
-/* Warna Saat Dark Mode Aktif */
 body[data-theme="dark"] .file-link {
-    color: #ADF1FF !important; /* Biru muda cerah agar terbaca */
+    color: #ADF1FF !important; 
 }
 
 body[data-theme="dark"] .quiz-count {
-    color: #cccccc !important; /* Abu-abu terang agar terbaca */
+    color: #cccccc !important; 
 }
 
-/* Tambahan: Pastikan teks utama di dalam material-list jadi putih */
 body[data-theme="dark"] .material-list p {
     color: #ffffff !important;
 }
