@@ -156,11 +156,26 @@ tr:hover {
     margin-top: 5px;
 }
 
+footer {
+    background-color: var(--footer-bg); 
+    text-align: center;
+    padding: 20px 0;
+    width: 100%;
+    margin-top: auto; 
+    font-size: 16px;
+}
+
+footer p {
+    margin: 0;
+}
+
 :root {
     --bg-color: #dbf3fa;
     --text-color: #333;
     --header-bg: #2c5aa0;
     --header-text: #ffffff;
+    --footer-bg: #2c5aa0;
+    --footer-text: #ffffff;
     --card-bg: #ffffff;
     --border-color: #ddd;
     --table-hover: #f5f5f5;
@@ -173,9 +188,17 @@ tr:hover {
     --text-color: #ffffff;
     --header-bg: #10375B;
     --header-text: #ADF1FF;
+    --footer-bg: #10375B;
+    --footer-text: #ADF1FF;
     --card-bg: #1e2d42;
     --border-color: #2a3d55;
     --table-hover: #25374d;
     --stat-bg: #132135;
     --link-color: #ADF1FF;
+}
+
+[data-theme="dark"] footer {
+    background-color: var(--header-bg); 
+    color: var(--link-color);
+    border-top: 1px solid var(--border-color);
 }
