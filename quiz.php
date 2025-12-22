@@ -103,10 +103,16 @@ if ($completed && $all_answered) {
     <link rel="stylesheet" href="quiz.css">
 </head>
 <body>
+    <script>
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.setAttribute('data-theme', 'dark');
+        }
+    </script>
     <header>
         <div class="bar">
             <h1><a href="admin_dashboard.php" style="color:white;text-decoration:none">EduQuest - Admin</a></h1>
-            <nav>
+            <nav style="display: flex; align-items: center; gap: 20px;">
+                <button id="theme-toggle" style="background:none; border:none; cursor:pointer; font-size:20px; padding:0; margin:0; line-height:1; display:flex; align-items:center;">🌙</button>
                 <p>Halo, <?= htmlspecialchars($_SESSION['full_name']) ?></p>
                 <p><a href="student_profile.php" style="color: white; text-decoration: none;">Profile</a></p>
                 <p><a href="logout.php">Logout</a></p>
@@ -493,5 +499,23 @@ if ($completed && $all_answered) {
     <footer>
         <?php include 'footer.html'; ?>
     </footer>
+    <script>
+        const themeToggle = document.getElementById('theme-toggle');
+        if (localStorage.getItem('theme') === 'dark') {
+            themeToggle.textContent = '☀️';
+        }
+
+        themeToggle.addEventListener('click', () => {
+            if (document.body.getAttribute('data-theme') === 'dark') {
+                document.body.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'light');
+                themeToggle.textContent = '🌙';
+            } else {
+                document.body.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+                themeToggle.textContent = '☀️';
+            }
+        });
+    </script>
 </body>
 </html>
