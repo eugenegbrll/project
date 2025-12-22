@@ -59,7 +59,7 @@ header {
 
 .todo-container {
     background: var(--card-bg);
-    color: var(--text-color);
+    color: var(--text-main);
     padding: 20px;
     margin: 15px 30px;
     border-radius: 10px;
@@ -634,4 +634,23 @@ body[data-theme="dark"] h2,
 body[data-theme="dark"] h3 {
     color: #ADF1FF !important;
     border-bottom-color: #2a3d55 !important;
+}
+
+[data-theme="dark"] .todo-container input,
+[data-theme="dark"] .todo-container textarea,
+[data-theme="dark"] .todo-container select {
+    background-color: rgba(0, 0, 0, 0.3) !important; 
+    color: #ffffff !important;                      
+    border: 1px solid var(--border-color);
+    padding: 8px;
+    border-radius: 5px;
+}
+
+[data-theme="dark"] .todo-item, 
+[data-theme="dark"] .todo-list li {
+    color: #ffffff !important;
+}
+
+[data-theme="dark"] .todo-container input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
 }
