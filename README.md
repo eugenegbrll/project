@@ -34,6 +34,9 @@ Fitur 3 =
 - Pet muncul di dashboard student dan dielus-elus
 - to do list yang sudah pernah dibikin bisa di delete
 - pet container boxnya bisa digerak-gerakin
+- notifikasi setiap kali admin menambah course, materi, atau quiz
+- notifikasi setiap kali student menyelesaikan quiz
+- toggle dark mode agar student atau admin dapat mengubah ke tampilan yang tidak terlalu sakit mata
 
 Q4 Assignment 4
 Fitur 4 =
