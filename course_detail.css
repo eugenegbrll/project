@@ -250,9 +250,9 @@ header h1 a, header nav p, header nav a {
     font-family: Arial, sans-serif;
     padding: 50px;
     margin-top: 30px;
+    font-size: 16px;
 }
 
-/* --- BASE SETUP --- */
 :root {
     --bg-color: #dbf3fa;
     --text-color: #333;
@@ -281,7 +281,6 @@ body {
     transition: background 0.3s;
 }
 
-/* --- HEADER --- */
 header {
     background-color: var(--header-bg) !important;
     padding: 10px 0;
@@ -295,7 +294,6 @@ header a { color: white; text-decoration: none; }
     display: flex; align-items: center; color: white;
 }
 
-/* --- CONTAINER & BOXES --- */
 .container {
     max-width: 900px;
     margin: 30px auto;
@@ -309,12 +307,11 @@ header a { color: white; text-decoration: none; }
     padding: 20px;
     margin: 15px 0;
     border-radius: 8px;
-    background-color: #f9f9f9; /* Light mode default */
+    background-color: #f9f9f9; 
     border: 2px solid #ddd;
     color: #333;
 }
 
-/* --- DARK MODE OVERRIDES (Paling Penting) --- */
 body[data-theme="dark"] .material-box {
     background-color: #25344a !important;
     border-color: #3a4b63 !important;
@@ -342,7 +339,6 @@ body[data-theme="dark"] .download-btn {
     color: #ADF1FF !important;
 }
 
-/* Footer Fix */
 body[data-theme="dark"] footer, 
 body[data-theme="dark"] .footer {
     background-color: var(--header-bg) !important;
