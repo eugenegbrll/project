@@ -40,6 +40,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } elseif ($new_password !== $confirm_password) {
                 $message = "Password baru dan konfirmasi tidak cocok!";
                 $message_type = "error";
+            } elseif (strlen($new_password) < 6) {
+                $message = "Password baru minimal 6 karakter!";
+                $message_type = "error";
             } else {
                 $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
                 $sql_update = "UPDATE users SET full_name = ?, username = ?, favorite_animal = ?, password = ? WHERE user_id = ?";
@@ -101,7 +104,7 @@ $correct_answers = $stmt_quizzes->get_result()->fetch_assoc()['total'];
 $animal_emojis = [
     'cat' => '🐈',
     'dog' => '🐕',
-    'chicken' => '🐓',
+    'chicken' => '🐔',
     'fish' => '🐠',
     'rabbit' => '🐇',
     'lizard' => '🦎'
@@ -124,10 +127,16 @@ $animal_names = [
     <link rel="stylesheet" href="profile.css">
 </head>
 <body>
+<script>
+    if (localStorage.getItem('theme') === 'dark') {
+        document.body.setAttribute('data-theme', 'dark');
+    }
+</script>
 <header>
     <div class="container">
         <h1><a href="student_dashboard.php" style="color:white">EduQuest</a></h1>
-        <nav>
+        <nav style="display: flex; align-items: center; gap: 20px;">
+            <button id="theme-toggle" style="background:none; border:none; cursor:pointer; font-size:20px; padding:0; margin:0; line-height:1; display:flex; align-items:center;">🌙</button>
             <p>Halo, <?= htmlspecialchars($_SESSION['full_name']) ?></p>
             <p><a href="logout.php">Logout</a></p>
             <link rel="stylesheet" href="profile.css">
@@ -232,12 +241,12 @@ $animal_names = [
 
                 <div class="form-group">
                     <label>Password Baru</label>
-                    <input type="password" name="new_password" id="new_password">
+                    <input type="password" name="new_password" id="new_password" minlength="6">
                 </div>
 
                 <div class="form-group">
                     <label>Konfirmasi Password Baru</label>
-                    <input type="password" name="confirm_password" id="confirm_password">
+                    <input type="password" name="confirm_password" id="confirm_password" minlength="6">
                 </div>
 
                 <div class="button-group">
@@ -282,7 +291,7 @@ document.getElementById('editForm').addEventListener('submit', function(e) {
     const currentPassword = document.getElementById('current_password').value;
     const newPassword = document.getElementById('new_password').value;
     const confirmPassword = document.getElementById('confirm_password').value;
-
+    
     if (newPassword || confirmPassword) {
         if (!currentPassword) {
             e.preventDefault();
@@ -295,6 +304,29 @@ document.getElementById('editForm').addEventListener('submit', function(e) {
             alert('Password baru dan konfirmasi tidak cocok!');
             return;
         }
+        
+        if (newPassword.length < 6) {
+            e.preventDefault();
+            alert('Password baru minimal 6 karakter!');
+            return;
+        }
+    }
+});
+
+const themeToggle = document.getElementById('theme-toggle');
+if (localStorage.getItem('theme') === 'dark') {
+    themeToggle.textContent = '☀️';
+}
+
+themeToggle.addEventListener('click', () => {
+    if (document.body.getAttribute('data-theme') === 'dark') {
+        document.body.removeAttribute('data-theme');
+        localStorage.setItem('theme', 'light');
+        themeToggle.textContent = '🌙';
+    } else {
+        document.body.setAttribute('data-theme', 'dark');
+        localStorage.setItem('theme', 'dark');
+        themeToggle.textContent = '☀️';
     }
 });
 </script>
