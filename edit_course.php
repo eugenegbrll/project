@@ -42,10 +42,16 @@ if (isset($_POST['update_course'])) {
     <link rel="stylesheet" href="admin_dashboard.css">
 </head>
 <body>
+    <script>
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.setAttribute('data-theme', 'dark');
+        }
+    </script>
     <header>
         <div class="container">
             <h1><a href="admin_dashboard.php" style="color:white;text-decoration:none;">EduQuest</a></h1>
-            <nav>
+            <nav style="display: flex; align-items: center; gap: 20px;">
+                <button id="theme-toggle" style="background:none; border:none; cursor:pointer; font-size:20px; padding:0; margin:0; line-height:1; display:flex; align-items:center;">🌙</button>
                 <a href="edit_course.php?course_id=<?= $material['course_id'] ?>">← Kembali ke Course</a>
                 <p>Selamat Datang, <?= htmlspecialchars($_SESSION['full_name']) ?></p>
                 <p><a href="admin_profile.php" class="prof" style="color: white; text-decoration: none;">Profile</a></p>
@@ -89,10 +95,10 @@ if (isset($_POST['update_course'])) {
                         <h3>" . htmlspecialchars($mat['material_title']) . " (Level " . $mat['level'] . ")</h3>";
                 
                 if (!empty($mat['file_name'])) {
-                    echo "<p style='color: blue;'>📎 " . htmlspecialchars($mat['file_name']) . "</p>";
+                    echo "<p class='file-link'>📎 " . htmlspecialchars($mat['file_name']) . "</p>";
                 }
                 
-                echo "<p style='color: #888;'>📝 " . $mat['quiz_count'] . " quiz</p>";
+                echo "<p class='quiz-count'>📝 " . $mat['quiz_count'] . " quiz</p>";
                 echo "<a href='edit_material.php?material_id=" . $mat['material_id'] . "'>[Edit Materi]</a> ";
                 echo "<a href='edit_quiz.php?material_id=" . $mat['material_id'] . "'>[Edit Quiz]</a>";
                 echo "</div>";
@@ -105,5 +111,23 @@ if (isset($_POST['update_course'])) {
     <footer>
         <?php include 'footer.html'; ?>
     </footer>
+    <script>
+        const themeToggle = document.getElementById('theme-toggle');
+        if (localStorage.getItem('theme') === 'dark') {
+            themeToggle.textContent = '☀️';
+        }
+
+        themeToggle.addEventListener('click', () => {
+            if (document.body.getAttribute('data-theme') === 'dark') {
+                document.body.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'light');
+                themeToggle.textContent = '🌙';
+            } else {
+                document.body.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+                themeToggle.textContent = '☀️';
+            }
+        });
+    </script>
 </body>
 </html>
