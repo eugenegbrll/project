@@ -343,7 +343,21 @@ a {
     font-weight: 600;
 }
 
-/* --- DARK MODE SUPPORT FOR PROFILE --- */
+footer {
+    background-color: #2c5aa0; 
+    color: white;
+    text-align: center;
+    padding: 20px 0;
+    width: 100%;
+    margin-top: auto; 
+    font-size: 14px;
+}
+
+footer p {
+    margin: 0;
+}
+
+/* --- DARK MODE --- */
 
 [data-theme="dark"] {
     --bg-color: #132135;
@@ -383,7 +397,6 @@ a {
     border-left-color: var(--link-color);
 }
 
-/* Info Items & Forms */
 [data-theme="dark"] .info-item {
     background-color: var(--info-item-bg);
     border-color: var(--border-color);
@@ -405,7 +418,6 @@ a {
     color: white;
 }
 
-/* Animal Selector Profile */
 [data-theme="dark"] .animal-option {
     border-color: var(--border-color);
     background-color: var(--input-bg);
@@ -419,7 +431,6 @@ a {
     color: #a0b1c5;
 }
 
-/* Link & Alert Adjustment */
 [data-theme="dark"] a, 
 [data-theme="dark"] .back-link {
     color: var(--link-color);
@@ -437,8 +448,13 @@ a {
     border-color: #2d5a36;
 }
 
-/* Stat Cards (Slightly desaturated for dark mode) */
 [data-theme="dark"] .stat-card {
     opacity: 0.9;
     box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+[data-theme="dark"] footer {
+    background-color: var(--header-bg); 
+    color: var(--link-color);
+    border-top: 1px solid var(--border-color);
 }
