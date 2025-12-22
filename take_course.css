@@ -12,7 +12,7 @@ body {
 }
 
 header {
-    background-color: #2c5aa0;
+    background-color: var(--header-bg) !important;
     padding: 5px 0;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
@@ -26,7 +26,7 @@ a{
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    color: white;
+    color: var(--header-text) !important;
     margin-left: 30px;
     margin-right: 30px;
 }
@@ -264,6 +264,15 @@ main{
 
 /* --- DARK MODE --- */
 
+:root {
+    --bg-color: #dbf3fa;
+    --text-color: #333;
+    --header-bg: #2c5aa0; 
+    --header-text: #ffffff;
+    --card-bg: #ffffff;
+    --border-color: #ddd;
+}
+
 [data-theme="dark"] {
     --bg-color: #132135;      
     --text-color: #ffffff;    
@@ -364,4 +373,8 @@ body[data-theme="dark"] h3 {
 
 [data-theme="dark"] .filter-label {
     color: var(--link-color);
+}
+
+[data-theme="dark"] .empty-message h3 {
+    color: #856404 !important;
 }
