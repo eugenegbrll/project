@@ -343,10 +343,6 @@ main {
     opacity: 0.95;
 }
 
-footer {
-    margin-top: auto;
-}
-
 @media (max-width: 768px) {
     .hero-content h2 {
         font-size: 32px;
@@ -369,4 +365,18 @@ footer {
         flex-direction: column;
         gap: 15px;
     }
+}
+
+footer {
+    background-color: #2c5aa0; 
+    text-align: center;
+    padding: 20px 0;
+    width: 100%;
+    margin-top: auto; 
+    font-size: 16px;
+    color: white;
+}
+
+footer p {
+    margin: 0;
 }
