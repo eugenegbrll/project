@@ -561,16 +561,11 @@ header {
 }
 
 [data-theme="dark"] .course-box, 
-[data-theme="dark"] .material-list, 
-[data-theme="dark"] .course-box p, 
-[data-theme="dark"] .material-list p {
+[data-theme="dark"] .course-box p {
     color: #ffffff !important;
 }
 
-[data-theme="dark"] a, 
-[data-theme="dark"] .student-link, 
-[data-theme="dark"] .material-list a[href*=".ppt"], 
-[data-theme="dark"] .material-list a[href*=".pptx"] {
+[data-theme="dark"] a {
     color: var(--link-color) !important;
     text-decoration: none;
 }
