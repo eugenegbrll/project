@@ -100,6 +100,34 @@ if (isset($_GET['edit_quiz_id'])) {
             border: 2px solid #ffc107;
             margin: auto;
         }
+        [data-theme="dark"] .edit-form {
+            background: #1E2D42 !important; 
+            border-color: #2a3d55 !important;
+            color: #ffffff !important;
+        }
+        [data-theme="dark"] .edit-form h2, 
+        [data-theme="dark"] .edit-form label {
+            color: #ADF1FF !important;
+        }
+
+        [data-theme="dark"] .edit-form input, 
+        [data-theme="dark"] .edit-form textarea, 
+        [data-theme="dark"] .edit-form select {
+            background-color: #132135;
+            color: white;
+            border: 1px solid #2a3d55;
+            padding: 8px;
+            border-radius: 4px;
+        }
+
+        [data-theme="dark"] .quiz-item {
+            background-color: #1E2D42;
+            color: #ffffff;
+        }
+
+        [data-theme="dark"] .correct-answer {
+            color: #4CAF50;
+        }
     </style>
 </head>
 <body>
