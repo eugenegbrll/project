@@ -171,10 +171,17 @@ $selected_material_id = $_GET['material_id'] ?? '';
     <title>Admin Dashboard</a></title>
 </head>
 <body>
+    <script>
+        // Cek tema 
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.setAttribute('data-theme', 'dark');
+        }
+    </script>
     <header>
         <div class="container">
             <h1><a href="admin_dashboard.php" style="color:white;text-decoration:none;">EduQuest</a></h1>
-            <nav>
+            <nav style="display: flex; align-items: center; gap: 20px;">
+                <button id="theme-toggle" style="background:none; border:none; cursor:pointer; font-size:20px; padding:0; margin:0; line-height:1; display:flex; align-items:center;">🌙</button>
                 <a href="#tambah-course">Tambah Course Baru</a>
                 <a href="#course-terbuat">Course Terbuat</a>
                 <a href="#tambah-materi">Tambah Materi</a>
@@ -385,18 +392,43 @@ $selected_material_id = $_GET['material_id'] ?? '';
                     htmlspecialchars($item['material_title']);
                 
                 if (!empty($item['file_name'])) {
-                    echo " <span style='color: blue;'>📎 " . htmlspecialchars($item['file_name']) . "</span>";
+                    echo " <span class='file-link'>📎 " . htmlspecialchars($item['file_name']) . "</span>";
                 }
                 
-                echo " <span style='color: gray;'>(" . $item['quiz_count'] . " quiz)</span> " .
+                echo " <span class='quiz-count'>(" . $item['quiz_count'] . " quiz)</span> " .
                     " <a href='?delete_material=".$item['material_id']."' onclick='return confirm(\"Yakin?\");'>[Hapus]</a></p>";
             }
         }
         ?>
     </div>
-
 <footer>
     <?php include 'footer.html'; ?>
 </footer>
+<script>
+    const themeToggle = document.getElementById('theme-toggle');
+    const currentTheme = localStorage.getItem('theme');
+
+    // Cek jika user sebelumnya sudah memilih dark mode
+    if (currentTheme === 'dark') {
+        document.body.setAttribute('data-theme', 'dark');
+        themeToggle.textContent = '☀️'; // Ubah ikon ke matahari
+    }
+
+    themeToggle.addEventListener('click', () => {
+        let theme = 'light';
+        
+        if (document.body.getAttribute('data-theme') !== 'dark') {
+            document.body.setAttribute('data-theme', 'dark');
+            themeToggle.textContent = '☀️';
+            theme = 'dark';
+        } else {
+            document.body.removeAttribute('data-theme');
+            themeToggle.textContent = '🌙';
+        }
+        
+        // Simpan pilihan ke localStorage
+        localStorage.setItem('theme', theme);
+    });
+</script>
 </body>
 </html>
