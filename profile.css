@@ -2,7 +2,7 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background: #dbf3fa;
+    background-color: var(--bg-color);
     display: flex;
     flex-direction: column;
     min-height: 100vh;
@@ -341,4 +341,104 @@ a {
     margin-bottom: 20px;
     color: #2c5aa0;
     font-weight: 600;
+}
+
+/* --- DARK MODE SUPPORT FOR PROFILE --- */
+
+[data-theme="dark"] {
+    --bg-color: #132135;
+    --text-color: #ffffff;
+    --header-bg: #10375B;
+    --card-bg: #1e2d42;
+    --border-color: #2a3d55;
+    --input-bg: #132135;
+    --info-item-bg: #25374d;
+    --link-color: #ADF1FF;
+}
+
+[data-theme="dark"] body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+}
+
+[data-theme="dark"] header {
+    background-color: var(--header-bg);
+}
+
+[data-theme="dark"] .profile-container {
+    background-color: var(--card-bg);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+}
+
+[data-theme="dark"] .profile-header {
+    border-bottom-color: var(--border-color);
+}
+
+[data-theme="dark"] .profile-header h2 {
+    color: var(--link-color);
+}
+
+[data-theme="dark"] .profile-section h3 {
+    color: var(--link-color);
+    border-left-color: var(--link-color);
+}
+
+/* Info Items & Forms */
+[data-theme="dark"] .info-item {
+    background-color: var(--info-item-bg);
+    border-color: var(--border-color);
+}
+
+[data-theme="dark"] .info-item label,
+[data-theme="dark"] .form-group label {
+    color: #a0b1c5;
+}
+
+[data-theme="dark"] .info-item .value {
+    color: var(--text-color);
+}
+
+[data-theme="dark"] .form-group input[type="text"],
+[data-theme="dark"] .form-group input[type="password"] {
+    background-color: var(--input-bg);
+    border-color: var(--border-color);
+    color: white;
+}
+
+/* Animal Selector Profile */
+[data-theme="dark"] .animal-option {
+    border-color: var(--border-color);
+    background-color: var(--input-bg);
+}
+
+[data-theme="dark"] .animal-option:hover {
+    background-color: var(--info-item-bg);
+}
+
+[data-theme="dark"] .animal-name {
+    color: #a0b1c5;
+}
+
+/* Link & Alert Adjustment */
+[data-theme="dark"] a, 
+[data-theme="dark"] .back-link {
+    color: var(--link-color);
+}
+
+[data-theme="dark"] .alert-error {
+    background-color: #442326;
+    color: #ffb3b8;
+    border-color: #6b2d32;
+}
+
+[data-theme="dark"] .alert-success {
+    background-color: #1e3a24;
+    color: #a3cfbb;
+    border-color: #2d5a36;
+}
+
+/* Stat Cards (Slightly desaturated for dark mode) */
+[data-theme="dark"] .stat-card {
+    opacity: 0.9;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
 }
