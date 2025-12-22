@@ -87,10 +87,16 @@ if (isset($_POST['update_material'])) {
     <link rel="stylesheet" href="admin_dashboard.css">
 </head>
 <body>
+    <script>
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.setAttribute('data-theme', 'dark');
+        }
+    </script>
     <header>
         <div class="container">
             <h1><a href="admin_dashboard.php" style="color:white;text-decoration:none;">EduQuest</a></h1>
-            <nav>
+            <nav style="display: flex; align-items: center; gap: 20px;">
+                <button id="theme-toggle" style="background:none; border:none; cursor:pointer; font-size:20px; padding:0; margin:0; line-height:1; display:flex; align-items:center;">🌙</button>
                 <a href="edit_course.php?course_id=<?= $material['course_id'] ?>">← Kembali ke Course</a>
                 <p>Selamat Datang, <?= htmlspecialchars($_SESSION['full_name']) ?></p>
                 <p><a href="admin_profile.php" class="prof" style="color: white; text-decoration: none;">Profile</a></p>
@@ -116,7 +122,7 @@ if (isset($_POST['update_material'])) {
             <input type="number" name="level" value="<?= $material['level'] ?>" required><br><br>
 
             <?php if (!empty($material['file_path'])): ?>
-                <div style="background:#f0f0f0; padding:10px; margin:10px 0; border-radius:5px;">
+                <div style="padding:10px; margin:10px 0; border: 1px solid #007bff; border-radius:5px;">
                     <p><strong>File saat ini:</strong></p>
 
                     <?php
@@ -150,5 +156,23 @@ if (isset($_POST['update_material'])) {
     <footer>
         <?php include 'footer.html'; ?>
     </footer>
+    <script>
+        const themeToggle = document.getElementById('theme-toggle');
+        if (localStorage.getItem('theme') === 'dark') {
+            themeToggle.textContent = '☀️';
+        }
+
+        themeToggle.addEventListener('click', () => {
+            if (document.body.getAttribute('data-theme') === 'dark') {
+                document.body.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'light');
+                themeToggle.textContent = '🌙';
+            } else {
+                document.body.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+                themeToggle.textContent = '☀️';
+            }
+        });
+    </script>
 </body>
 </html>
