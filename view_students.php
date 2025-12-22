@@ -30,10 +30,16 @@ $course = $course_result->fetch_assoc();
     <link rel="stylesheet" href="view_students.css">
 </head>
 <body>
+    <script>
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.setAttribute('data-theme', 'dark');
+        }
+    </script>
     <header>
         <div class="bar">
             <h1><a href="admin_dashboard.php" style="color:white;text-decoration:none">EduQuest</a></h1>
-            <nav>
+            <nav style="display: flex; align-items: center; gap: 20px;">
+                <button id="theme-toggle" style="background:none; border:none; cursor:pointer; font-size:20px; padding:0; margin:0; line-height:1; display:flex; align-items:center;">🌙</button>
                 <a href="edit_course.php?course_id=<?= $material['course_id'] ?>" style="color: white; text-decoration: none;">⬅ Kembali ke Course</a>
                 <p>Selamat Datang, <?= htmlspecialchars($_SESSION['full_name']) ?></p>
                 <p><a href="admin_profile.php" class="prof" style="color: white; text-decoration: none;">Profile</a></p>
@@ -119,8 +125,26 @@ $course = $course_result->fetch_assoc();
         </div>
     </main>
 
-    <footer style="margin-top: 40px;padding:0;margin:0;">
+    <footer>
         <?php include 'footer.html'; ?>
     </footer>
+    <script>
+        const themeToggle = document.getElementById('theme-toggle');
+        if (localStorage.getItem('theme') === 'dark') {
+            themeToggle.textContent = '☀️';
+        }
+
+        themeToggle.addEventListener('click', () => {
+            if (document.body.getAttribute('data-theme') === 'dark') {
+                document.body.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'light');
+                themeToggle.textContent = '🌙';
+            } else {
+                document.body.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+                themeToggle.textContent = '☀️';
+            }
+        });
+    </script>
 </body>
 </html>
