@@ -275,6 +275,8 @@ p span {
     --border-color: #ddd;
 }
 
+/* --- DARK MODE --- */
+
 [data-theme="dark"] {
     --bg-color: #132135;      
     --text-color: #ffffff;    
@@ -340,8 +342,6 @@ header h1 a, header nav p, header nav a {
     padding: 50px;
     margin-top: 30px;
 }
-
-/* Dark Mode */
 
 [data-theme="dark"] .footer {
     background-color: var(--header-bg) !important;
