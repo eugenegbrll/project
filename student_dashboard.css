@@ -896,3 +896,13 @@ body[data-theme="dark"] h3 {
 [data-theme="dark"] .speech-bubble:after {
     border-top-color: #ffffff;
 }
+
+[data-theme="dark"] .empty-message {
+    background-color: #2a3d55 !important; 
+    border: 1px solid #ADF1FF;           
+    color: #ffffff !important;           
+}
+
+[data-theme="dark"] .empty-message h3 {
+    color: #ADF1FF !important;           
+}
