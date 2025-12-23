@@ -747,7 +747,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const happyPhrases = [
         '🎵 <?php echo $pet_sound; ?> noises',
-        '<?php echo $pet_sound; ?>',
         '❤️ Love you!',
         '😊 Yay!',
         '✨ Yipeeeee!',
