@@ -708,6 +708,8 @@ header {
     --header-text: #ffffff;
     --card-bg: #ffffff;
     --border-color: #ddd;
+    --pet-text: black; 
+    --pet-mood-opacity: 0.8;
 }
 
 [data-theme="dark"] {
@@ -719,6 +721,8 @@ header {
     --border-color: #2a3d55;
     --footer-bg: #10375B;
     --link-color: #ADF1FF;
+    --pet-text: black; 
+    --pet-mood-opacity: 0.8;
 }
 
 [data-theme="dark"] .course-box, 
@@ -882,4 +886,13 @@ body[data-theme="dark"] h3 {
 
 [data-theme="dark"] .score-item-value {
     font-weight: bold;
+}
+
+[data-theme="dark"] .speech-bubble {
+    background: #ffffff; 
+    color: #333333; 
+}
+
+[data-theme="dark"] .speech-bubble:after {
+    border-top-color: #ffffff;
 }
