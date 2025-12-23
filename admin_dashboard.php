@@ -168,7 +168,7 @@ $selected_material_id = $_GET['material_id'] ?? '';
 <link rel="stylesheet" href="admin_dashboard.css">
 
 <head>
-    <title>Admin Dashboard</a></title>
+    <title>Admin Dashboard</title>
 </head>
 <body>
     <script>
